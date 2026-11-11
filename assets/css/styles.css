@@ -23,11 +23,190 @@
   --pf-gris: #a0a0a0;
   --pf-gris-oscuro: #6b6b6b;
 
+  /* Colores que cambian con el tema pero no tienen nombre de marca:
+     el amarillo como texto de acento (sobre oscuro el de marca sirve, sobre
+     claro hace falta un dorado oscuro que llegue a 4.5:1), los tonos de error
+     de los formularios y de los avisos, los dos grises con los que Tailwind
+     escribe los párrafos (neutral-200/300 y neutral-400) y el fondo sólido
+     del encabezado al hacer scroll. */
+  --pf-amarillo-texto: #ffd000;
+  --pf-error-texto: #ff8b91;
+  --pf-error-aviso: #ffd9db;
+  --pf-texto-2: #d4d4d4;
+  --pf-texto-3: #a3a3a3;
+  --pf-fondo-encabezado-fijo: rgba(10, 10, 10, 0.96);
+
   /* Movimiento y profundidad */
   --pf-transicion: 180ms ease;
   --pf-transicion-lenta: 260ms ease;
   --pf-sombra: 0 1px 2px rgba(0, 0, 0, 0.6), 0 8px 24px rgba(0, 0, 0, 0.45);
   --pf-sombra-alta: 0 10px 40px rgba(0, 0, 0, 0.7);
+}
+
+/* ---------- Modo claro ---------- */
+
+/* El sitio arranca con el esquema del sistema (prefers-color-scheme) y la
+   persona puede fijar uno desde el botón del encabezado (cookie pf_tema,
+   volcada en <html data-tema>). El arranque de assets/js/tema.js pone ese
+   atributo antes del primer pintado, así que aquí solo hace falta CSS.
+
+   La paleta clara reutiliza los mismos nombres: el "negro" pasa a ser el
+   fondo de página (#f6f6f3), el "grafito" la superficie de las tarjetas
+   (blanco) y el "blanco" el color del texto (#1a1a1a). Las superficies
+   amarillas y rojas no cambian: el texto que va encima se escribe siempre
+   en negro casi puro.
+
+   Solo el área cliente sigue el tema; el panel de administración reacciona
+   a data-bs-theme (Bootstrap) y tiene su bloque propio al final de la hoja. */
+
+/* 1. El sistema prefiere claro y la persona no ha elegido oscuro. */
+@media (prefers-color-scheme: light) {
+  html:has(body:not(.pf-admin)):not([data-tema="oscuro"]) {
+    --pf-negro: #f6f6f3;
+    --pf-grafito: #ffffff;
+    --pf-carbon: #e9e9e6;
+    --pf-linea: #8a8a8a;
+    --pf-borde-control: #767676;
+    --pf-blanco: #1a1a1a;
+    --pf-gris: #565656;
+    --pf-gris-oscuro: #6f6f6f;
+    --pf-rojo-claro: #b3121a;
+    --pf-amarillo-texto: #7a5c00;
+    --pf-error-texto: #b30f18;
+    --pf-error-aviso: #b30f18;
+    --pf-texto-2: #3a3a3a;
+    --pf-texto-3: #525252;
+    --pf-fondo-encabezado-fijo: rgba(246, 246, 243, 0.96);
+    --pf-sombra: 0 1px 2px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.12);
+    --pf-sombra-alta: 0 10px 40px rgba(0, 0, 0, 0.18);
+  }
+}
+
+/* 2. La persona eligió claro con el botón, tenga el sistema el esquema que
+   tenga. Es el mismo bloque: un atributo no puede "apagar" una media query,
+   así que el selector de arriba excluye data-tema="oscuro" y este lo impone. */
+html[data-tema="claro"]:has(body:not(.pf-admin)) {
+  --pf-negro: #f6f6f3;
+  --pf-grafito: #ffffff;
+  --pf-carbon: #e9e9e6;
+  --pf-linea: #8a8a8a;
+  --pf-borde-control: #767676;
+  --pf-blanco: #1a1a1a;
+  --pf-gris: #565656;
+  --pf-gris-oscuro: #6f6f6f;
+  --pf-rojo-claro: #b3121a;
+  --pf-amarillo-texto: #7a5c00;
+  --pf-error-texto: #b30f18;
+  --pf-error-aviso: #b30f18;
+  --pf-texto-2: #3a3a3a;
+  --pf-texto-3: #525252;
+  --pf-fondo-encabezado-fijo: rgba(246, 246, 243, 0.96);
+  --pf-sombra: 0 1px 2px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.12);
+  --pf-sombra-alta: 0 10px 40px rgba(0, 0, 0, 0.18);
+}
+
+/* ---------- Utilidades de Tailwind que deben seguir el tema ---------- */
+
+/* El CDN de Tailwind genera estas clases con colores literales (text-white es
+   siempre #fff, text-neutral-400 siempre #a3a3a3...). En modo claro ese texto
+   desaparecería sobre el fondo claro, así que se re-declaran apuntando a las
+   variables del tema. El prefijo `html` les da un punto más de especificidad
+   que a las del CDN, que pierden sin importar el orden de carga. Los colores
+   pf-* (bg-pf-negro, border-pf-linea...) ya giran solos porque su definición
+   en assets/js/identidad.js usa las mismas variables. */
+html .text-white {
+  color: var(--pf-blanco);
+}
+
+html .text-neutral-200,
+html .text-neutral-300 {
+  color: var(--pf-texto-2);
+}
+
+html .text-neutral-400 {
+  color: var(--pf-texto-3);
+}
+
+html .text-pf-amarillo {
+  color: var(--pf-amarillo-texto);
+}
+
+html .hover\:text-pf-amarillo:hover {
+  color: var(--pf-amarillo-texto);
+}
+
+/* Va sobre una superficie amarilla (bg-pf-amarillo), que no cambia con el
+   tema: el texto es negro casi puro en ambos modos. */
+html .text-pf-negro {
+  color: #0a0a0a;
+}
+
+html .decoration-pf-amarillo {
+  text-decoration-color: var(--pf-amarillo-texto);
+}
+
+/* ---------- Logo legible en modo claro ---------- */
+
+/* logo-planeta.png lleva letras blancas: sobre el fondo claro del encabezado
+   y del pie desaparecerían. En modo claro entra la variante logo-oscuro.svg
+   (mismo tamaño, letras oscuras); el PNG queda para el modo oscuro. */
+.pf-logo-modo-claro {
+  display: none;
+}
+
+@media (prefers-color-scheme: light) {
+  html:has(body:not(.pf-admin)):not([data-tema="oscuro"]) .pf-logo-modo-oscuro {
+    display: none;
+  }
+
+  html:has(body:not(.pf-admin)):not([data-tema="oscuro"]) .pf-logo-modo-claro {
+    display: inline;
+  }
+}
+
+html[data-tema="claro"]:has(body:not(.pf-admin)) .pf-logo-modo-oscuro {
+  display: none;
+}
+
+html[data-tema="claro"]:has(body:not(.pf-admin)) .pf-logo-modo-claro {
+  display: inline;
+}
+
+/* ---------- Hero: cartel siempre oscuro ---------- */
+
+/* La foto del hero con sus letras blancas es la portada del sitio: se
+   presenta igual en ambos temas (foto oscura + texto blanco), como un
+   cartel, en lugar de lavar la foto sobre el fondo claro. Por eso estas
+   reglas usan colores fijos, fuera de las variables del tema. */
+.pf-hero {
+  background-color: #0a0a0a;
+}
+
+.pf-hero .text-white {
+  color: #ffffff;
+}
+
+.pf-hero .text-pf-amarillo {
+  color: #ffd000;
+}
+
+.pf-hero .text-neutral-300 {
+  color: #d4d4d4;
+}
+
+.pf-hero .text-neutral-400 {
+  color: #a3a3a3;
+}
+
+/* El botón secundario del hero va sobre la foto oscura: blanco. */
+.pf-hero .pf-boton-secundario {
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+.pf-hero .pf-boton-secundario:hover {
+  background-color: #ffffff;
+  color: #0a0a0a;
 }
 
 /* ---------- Base ---------- */
@@ -51,7 +230,7 @@
 
 /* Al bajar, el encabezado gana fondo sólido, borde y una sombra discreta. */
 .pf-encabezado[data-fijo="true"] {
-  background-color: rgba(10, 10, 10, 0.96);
+  background-color: var(--pf-fondo-encabezado-fijo);
   border-color: var(--pf-linea);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
 }
@@ -110,7 +289,7 @@
 /* Sección actual: amarillo, algo más de peso e indicador inferior. */
 .pf-enlace-activo {
   position: relative;
-  color: var(--pf-amarillo);
+  color: var(--pf-amarillo-texto);
   font-weight: 700;
 }
 
@@ -122,7 +301,7 @@
   bottom: 0.15rem;
   height: 2px;
   border-radius: 2px;
-  background-color: var(--pf-amarillo);
+  background-color: var(--pf-amarillo-texto);
 }
 
 /* Acciones que acompañan a la navegación (Inscríbete / sesión). */
@@ -145,7 +324,7 @@
 }
 
 .pf-usuario-nombre {
-  color: var(--pf-amarillo);
+  color: var(--pf-amarillo-texto);
   font-weight: 700;
 }
 
@@ -157,7 +336,7 @@
     padding-right: 0.5rem;
   }
 
-  .pf-nav:has([data-sesion="activa"]:not([hidden])) .pf-menu-acciones .pf-boton {
+  .pf-nav:has([data-sesion="activa"]:not([hidden])) .pf-menu-acciones .pf-boton:not(.pf-boton-tema) {
     padding-left: 0.9rem;
     padding-right: 0.9rem;
   }
@@ -169,7 +348,7 @@
     padding-right: 0.7rem;
   }
 
-  .pf-nav:has([data-sesion="activa"]:not([hidden])) .pf-menu-acciones .pf-boton {
+  .pf-nav:has([data-sesion="activa"]:not([hidden])) .pf-menu-acciones .pf-boton:not(.pf-boton-tema) {
     padding-left: 1.1rem;
     padding-right: 1.1rem;
   }
@@ -194,8 +373,8 @@
   height: 1.4rem;
   padding: 0 0.35rem;
   border-radius: 9999px;
-  background-color: var(--pf-negro);
-  color: var(--pf-amarillo);
+  background-color: #0a0a0a;
+  color: #ffd000;
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -281,7 +460,7 @@
     margin-top: 0;
   }
 
-  .pf-menu-acciones .pf-boton {
+  .pf-menu-acciones .pf-boton:not(.pf-boton-tema) {
     padding-left: 1.3rem;
     padding-right: 1.3rem;
   }
@@ -324,7 +503,7 @@
     gap: 0.75rem;
   }
 
-  .pf-menu-acciones .pf-boton {
+  .pf-menu-acciones .pf-boton:not(.pf-boton-tema) {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
@@ -392,14 +571,16 @@ body {
    un fogonazo del inicio antes de bajar a la sección. `visibility: hidden`
    esconde el contenido sin sacarlo de la maqueta, de modo que la barra de
    desplazamiento conserva su ancho y la primera imagen pintada es ya la sección
-   pedida. La clase la pone el script de `index.html` y la quita `js/app.js`. */
+   pedida. La clase la pone `js/app.js` (cargado en el encabezado con
+   `blocking="render"` para que ningún fotograma se pinte antes) y él mismo la
+   quita cuando la sección queda bajo el encabezado. */
 html.pf-posicion-pendiente body {
   visibility: hidden;
 }
 
 /* El tema oscuro (negro + texto blanco) es el del área cliente, la que usa
-   Tailwind. El panel de administración usa Bootstrap sobre fondo claro y tiene
-   su propio bloque de color al final de esta hoja (`.pf-admin`). */
+   Tailwind. El panel de administración usa Bootstrap y tiene su propio bloque
+   de color al final de esta hoja (`.pf-admin`). */
 html:has(body:not(.pf-admin)) {
   background-color: var(--pf-negro);
 }
@@ -416,20 +597,20 @@ img {
 
 ::selection {
   background-color: var(--pf-amarillo);
-  color: var(--pf-negro);
+  color: #0a0a0a;
 }
 
 /* ---------- Foco visible (teclado) ---------- */
 
 :focus-visible {
-  outline: 3px solid var(--pf-amarillo);
+  outline: 3px solid var(--pf-amarillo-texto);
   outline-offset: 3px;
   border-radius: 0.25rem;
 }
 
 /* En superficies amarillas el contorno debe ser oscuro */
 .pf-foco-claro:focus-visible {
-  outline-color: var(--pf-negro);
+  outline-color: #0a0a0a;
 }
 
 /* ---------- Enlace de salto al contenido ---------- */
@@ -440,7 +621,7 @@ img {
   top: -100%;
   z-index: 104;
   background-color: var(--pf-amarillo);
-  color: var(--pf-negro);
+  color: #0a0a0a;
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   font-weight: 700;
@@ -506,7 +687,7 @@ img {
   padding: 0.25rem 0.6rem;
   border-radius: 9999px;
   background-color: rgba(255, 208, 0, 0.14);
-  color: var(--pf-amarillo);
+  color: var(--pf-amarillo-texto);
   border: 1px solid rgba(255, 208, 0, 0.4);
 }
 
@@ -532,17 +713,18 @@ img {
   transform: translateY(1px);
 }
 
-/* Acción principal: amarillo sobre negro */
+/* Acción principal: amarillo sobre negro. El amarillo de marca no cambia
+   con el tema, así que el texto va siempre en negro casi puro. */
 .pf-boton-primario {
   background-color: var(--pf-amarillo);
-  color: var(--pf-negro);
+  color: #0a0a0a;
   border: 2px solid var(--pf-amarillo);
 }
 
 .pf-boton-primario:hover {
   background-color: #ffe033;
   border-color: #ffe033;
-  color: var(--pf-negro);
+  color: #0a0a0a;
 }
 
 /* Acción secundaria: fondo transparente con borde claro */
@@ -557,6 +739,35 @@ img {
   color: var(--pf-negro);
 }
 
+/* Botón de tema: cuadrado compacto de solo icono, del mismo alto que sus
+   vecinos del encabezado (2.75 rem). */
+.pf-boton-tema {
+  width: 2.75rem;
+  padding-left: 0;
+  padding-right: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* En el panel móvil del menú las acciones van en columna y los botones se
+   estiran a lo ancho: el cuadrado se queda pegado a la izquierda. */
+body:not(.pf-admin) .pf-boton-tema {
+  align-self: flex-start;
+}
+
+/* En el panel de administración acompaña a los btn-sm de Bootstrap: mismo
+   alto, ancho compacto y centrado. */
+.pf-admin .pf-boton-tema {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+}
+
 /* Botón de enlace: sin borde, para la navegación del encabezado */
 .pf-boton-enlace {
   background-color: transparent;
@@ -568,7 +779,7 @@ img {
 }
 
 .pf-boton-enlace:hover {
-  color: var(--pf-amarillo);
+  color: var(--pf-amarillo-texto);
   border-color: transparent;
 }
 
@@ -652,7 +863,7 @@ img {
 
 .pf-clase-hora {
   font-weight: 700;
-  color: var(--pf-amarillo);
+  color: var(--pf-amarillo-texto);
   white-space: nowrap;
 }
 
@@ -764,7 +975,7 @@ select option {
 .pf-mensaje[data-tipo="error"] {
   border-left-color: var(--pf-rojo);
   background-color: rgba(226, 27, 35, 0.16);
-  color: #ffd9db;
+  color: var(--pf-error-aviso);
 }
 
 .pf-mensaje[data-tipo="exito"] {
@@ -773,7 +984,7 @@ select option {
      (incluida una fotografía del hero), así que no puede depender de un fondo
      semitransparente para que su texto se lea. */
   background-color: var(--pf-carbon);
-  color: var(--pf-amarillo);
+  color: var(--pf-amarillo-texto);
 }
 
 /* Errores de formulario: nunca dependen solo del color */
@@ -781,7 +992,7 @@ select option {
   display: flex;
   align-items: flex-start;
   gap: 0.35rem;
-  color: #ff8b91;
+  color: var(--pf-error-texto);
   font-size: 0.875rem;
   font-weight: 600;
   margin-top: 0.35rem;
@@ -908,7 +1119,7 @@ select option {
 .pf-panel-cerrar:hover {
   background-color: var(--pf-amarillo);
   border-color: var(--pf-amarillo);
-  color: var(--pf-negro);
+  color: #0a0a0a;
 }
 
 .pf-panel-cuerpo {
@@ -954,7 +1165,7 @@ select option {
   border-radius: 0.5rem;
   border: 2px solid var(--pf-amarillo);
   background-color: var(--pf-carbon);
-  color: var(--pf-amarillo);
+  color: var(--pf-amarillo-texto);
   font-weight: 800;
   font-size: 1.25rem;
 }
@@ -973,7 +1184,7 @@ select option {
 }
 
 .pf-precio {
-  color: var(--pf-amarillo);
+  color: var(--pf-amarillo-texto);
   font-weight: 800;
 }
 
@@ -1001,7 +1212,7 @@ select option {
 
 .pf-cantidad button:hover {
   background-color: var(--pf-amarillo);
-  color: var(--pf-negro);
+  color: #0a0a0a;
 }
 
 .pf-cantidad output {
@@ -1050,7 +1261,7 @@ select option {
 }
 
 .pf-total-final dd {
-  color: var(--pf-amarillo);
+  color: var(--pf-amarillo-texto);
   font-size: 1.35rem;
 }
 
@@ -1174,15 +1385,16 @@ select option {
 }
 
 /* =========================================================
-   Área administrativa (Bootstrap): fondo claro, texto oscuro
+   Área administrativa (Bootstrap): claro u oscuro
    ========================================================= */
 
-/* Las páginas del panel llevan la clase `pf-admin` en <body>. Bootstrap se
-   carga antes que esta hoja, de modo que el color de texto de la sección
-   "Base" (blanco, pensado para el área cliente) ganaba por orden de cascada
-   y dejaba los títulos blancos sobre el fondo claro de Bootstrap. Aquí se
-   restituye un color de texto legible y se mantiene la marca: negro en los
-   títulos, grafito en el texto, amarillo y rojo solo como acentos. */
+/* Las páginas del panel llevan la clase `pf-admin` en <body> y arrancan con
+   Bootstrap en claro. La barra superior es bg-dark en los dos modos (la
+   utilidad no gira con data-bs-theme), así que sus botones claros no
+   cambian. El resto de la página sí gira: assets/js/tema.js copia el tema a
+   data-bs-theme y Bootstrap repinta fondos, tarjetas y tablas. Aquí abajo
+   solo se corrige lo que esta hoja pinta con la paleta del área cliente
+   (variables que en el panel valen siempre los tonos oscuros). */
 .pf-admin {
   color: var(--pf-carbon);
 }
@@ -1191,6 +1403,18 @@ select option {
 .pf-admin h2,
 .pf-admin h3 {
   color: var(--pf-negro);
+}
+
+/* Errores de formulario en el panel: el tono del área cliente (#ff8b91,
+   pensado para fondos oscuros) no se lee sobre el fondo claro de Bootstrap,
+   así que aquí bajan a un rojo oscuro y vuelven al claro cuando el panel
+   está en oscuro. */
+.pf-admin .pf-error {
+  color: #b30f18;
+}
+
+html[data-bs-theme="dark"] .pf-admin .pf-error {
+  color: #ff8b91;
 }
 
 /* Los mensajes del panel se leen sobre fondo claro, así que aquí el amarillo
@@ -1205,6 +1429,21 @@ select option {
   background-color: #fde8e9;
   color: #8a1119;
   border-left-color: var(--pf-rojo);
+}
+
+/* Panel en oscuro: Bootstrap ya giró fondos, tarjetas y tablas, pero el texto
+   general y los títulos de esta hoja siguen siendo tonos oscuros (en el panel
+   las variables del área cliente no cambian de valor), así que se re-declaran
+   con tonos claros. Los .pf-mensaje de arriba no hacen falta retocarlos:
+   sus fondos y textos son literales y se leen en ambos modos. */
+html[data-bs-theme="dark"] .pf-admin {
+  color: #dee2e6;
+}
+
+html[data-bs-theme="dark"] .pf-admin h1,
+html[data-bs-theme="dark"] .pf-admin h2,
+html[data-bs-theme="dark"] .pf-admin h3 {
+  color: #ffffff;
 }
 
 /* ---------- Respeta a quien prefiere reducir el movimiento ---------- */

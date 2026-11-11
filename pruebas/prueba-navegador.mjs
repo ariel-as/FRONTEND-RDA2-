@@ -86,7 +86,9 @@ const abrirPanel = async (selector = 'header [data-abrir-carrito]') => {
 };
 
 const navegador = await chromium.launch();
-const contexto = await navegador.newContext({ viewport: { width: 1280, height: 900 } });
+/* El contexto principal simula un sistema oscuro (el tema por defecto de la
+   marca), así la suite no depende del esquema de la máquina que la ejecuta. */
+const contexto = await navegador.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: 'dark' });
 const pagina = await contexto.newPage();
 
 const errores = [];
@@ -496,19 +498,40 @@ await pagina.evaluate(
 
 /* ---------- 5. Validación de formularios ---------- */
 await pagina.goto(`${BASE}/cliente/nutricion.html`, { waitUntil: 'networkidle' });
+
+// Bloqueo secuencial: con la cédula mal escrita el foco no pasa al campo
+// siguiente; vuelve al que falló con su mensaje visible.
 await pagina.fill('#cedula', '123');
+await pagina.locator('#telefono').click();
+comprobar(
+  'El campo mal escrito no deja avanzar al siguiente',
+  (await pagina.evaluate(() => document.activeElement?.id)) === 'cedula'
+);
+comprobar('El bloqueo muestra el error del campo que falló', await pagina.locator('#err-cedula').isVisible());
+
+// Corregido el campo, el avance vuelve a ser libre.
+await pagina.fill('#cedula', '1712345678');
+await pagina.locator('#telefono').click();
+comprobar(
+  'Corregido el campo se puede avanzar al siguiente',
+  (await pagina.evaluate(() => document.activeElement?.id)) === 'telefono'
+);
+
+// El envío también valida: la fecha es pasada y la hora quedó pendiente.
 await pagina.fill('#nombre', 'Ana Pérez');
 await pagina.fill('#telefono', '0991234567');
 await pagina.fill('#correo', 'ana@correo.com');
 await pagina.selectOption('#motivo', 'Evaluación');
 await pagina.fill('#fecha', '2020-01-01');
+// El error de la fecha se muestra antes de enviar: el formulario no se
+// desplaza en mitad del clic del botón.
+await pagina.locator('h1').click();
 await pagina.click('#formulario-nutricion button[type="submit"]');
 await pagina.waitForTimeout(300);
-comprobar('La cédula inválida se marca con aria-invalid', (await pagina.getAttribute('#cedula', 'aria-invalid')) === 'true');
 comprobar('La fecha pasada se marca con aria-invalid', (await pagina.getAttribute('#fecha', 'aria-invalid')) === 'true');
-comprobar('Existe un mensaje de error visible', await pagina.locator('#err-cedula').isVisible());
+comprobar('La hora pendiente se marca con aria-invalid', (await pagina.getAttribute('#hora', 'aria-invalid')) === 'true');
+comprobar('Existe un mensaje de error visible', await pagina.locator('#err-fecha').isVisible());
 
-await pagina.fill('#cedula', '1712345678');
 const manana = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 await pagina.fill('#fecha', manana);
 await pagina.fill('#hora', '10:00');
@@ -635,6 +658,38 @@ await pagina.goto(`${BASE}/cliente/checkout.html`, { waitUntil: 'networkidle' })
 await pagina.waitForTimeout(600);
 comprobar('El checkout sin sesión devuelve al login', pagina.url().includes('login.html'));
 
+/* ---------- 6 ter. Borradores: lo escrito sobrevive a una recarga ---------- */
+await pagina.goto(`${BASE}/cliente/login.html`, { waitUntil: 'networkidle' });
+await pagina.fill('#nombre-registro', 'Borrador Prueba');
+await pagina.fill('#correo-registro', 'borrador@correo.com');
+await pagina.selectOption('#nivel', 'Intermedio');
+await pagina.fill('#contrasena-registro', 'secreta123');
+await pagina.reload({ waitUntil: 'networkidle' });
+comprobar(
+  'El registro recupera el nombre tras recargar',
+  (await pagina.inputValue('#nombre-registro')) === 'Borrador Prueba'
+);
+comprobar(
+  'El registro recupera el correo y el nivel tras recargar',
+  (await pagina.inputValue('#correo-registro')) === 'borrador@correo.com' &&
+    (await pagina.inputValue('#nivel')) === 'Intermedio'
+);
+comprobar(
+  'La contraseña nunca queda en el borrador',
+  (await pagina.inputValue('#contrasena-registro')) === '' &&
+    !(await pagina.evaluate(() => sessionStorage.getItem('pf_borrador_formulario:/cliente/login.html:formulario-registro')))?.includes('secreta123')
+);
+
+await pagina.goto(`${BASE}/index.html#contacto`, { waitUntil: 'networkidle' });
+await pagina.fill('#formulario-contacto [name="nombre"]', 'Contacto Borrador');
+await pagina.fill('#formulario-contacto [name="telefono"]', '0991234567');
+await pagina.reload({ waitUntil: 'networkidle' });
+comprobar(
+  'El formulario de contacto recupera lo escrito tras recargar',
+  (await pagina.inputValue('#formulario-contacto [name="nombre"]')) === 'Contacto Borrador' &&
+    (await pagina.inputValue('#formulario-contacto [name="telefono"]')) === '0991234567'
+);
+
 /* ---------- 7. Cookies y aviso ---------- */
 comprobar('Existe la cookie de última actualización', await pagina.evaluate(() => document.cookie.includes('ultimaActualizacion')));
 
@@ -753,6 +808,49 @@ await pagina.click('#formulario-producto button[type="submit"]');
 await esperarTextoEn('[data-tabla-productos] tr:first-child', '48.00');
 comprobar('El producto editado muestra el precio nuevo', (await pagina.locator('[data-tabla-productos] tr:first-child').innerText()).includes('48.00'));
 
+/* ---------- 8 ter. Borradores del panel: editar sin perder el hilo ---------- */
+// Elegir un producto para editar y recargar: el formulario vuelve al mismo
+// registro y al mismo modo, no crea un duplicado por accidente.
+await pagina.click('[data-tabla-productos] tr:first-child [data-editar]');
+const idEditar = await pagina.inputValue('#id-producto');
+const nombreEditar = await pagina.inputValue('#nombre');
+await pagina.reload({ waitUntil: 'networkidle' });
+await esperarCantidad('[data-tabla-productos] tr', 10);
+comprobar(
+  'El formulario de edición recupera el registro tras recargar',
+  (await pagina.inputValue('#id-producto')) === idEditar &&
+    (await pagina.inputValue('#nombre')) === nombreEditar &&
+    (await pagina.getAttribute('#formulario-producto', 'data-modo')) === 'editar',
+  `id=${await pagina.inputValue('#id-producto')} modo=${await pagina.getAttribute('#formulario-producto', 'data-modo')}`
+);
+// El borrador no estorba al dar de alta un producto nuevo.
+await pagina.click('[data-nuevo-producto]');
+comprobar('El botón de nuevo producto limpia el borrador', (await pagina.inputValue('#id-producto')) === '');
+
+// Los formularios dinámicos (clases y entrenadores) también conservan lo escrito.
+await pagina.goto(`${BASE}/admin/clases.html`, { waitUntil: 'networkidle' });
+await pagina.waitForSelector('.formulario-clase input[data-campo="horaInicio"]');
+const horaClase = pagina.locator('.formulario-clase input[data-campo="horaInicio"]').first();
+await horaClase.fill('06:30');
+await pagina.reload({ waitUntil: 'networkidle' });
+await pagina.waitForSelector('.formulario-clase input[data-campo="horaInicio"]');
+comprobar(
+  'Los horarios de una clase recuperan lo escrito tras recargar',
+  (await pagina.locator('.formulario-clase input[data-campo="horaInicio"]').first().inputValue()) === '06:30'
+);
+
+await pagina.goto(`${BASE}/admin/entrenadores.html`, { waitUntil: 'networkidle' });
+await pagina.waitForSelector('[data-entrenadores-admin] input[name="especialidad"]');
+const especialidad = pagina.locator('[data-entrenadores-admin] input[name="especialidad"]').first();
+await especialidad.fill('Especialidad Borrador');
+await pagina.reload({ waitUntil: 'networkidle' });
+await pagina.waitForSelector('[data-entrenadores-admin] input[name="especialidad"]');
+comprobar(
+  'La especialidad del entrenador recupera lo escrito tras recargar',
+  (await pagina.locator('[data-entrenadores-admin] input[name="especialidad"]').first().inputValue()) ===
+    'Especialidad Borrador'
+);
+
 await pagina.goto(`${BASE}/index.html#tienda`, { waitUntil: 'networkidle' });
 await esperarTextoEn('[data-catalogo]', '$48.00');
 comprobar('El sitio público ve el cambio del administrador', (await pagina.locator('[data-catalogo]').innerText()).includes('$48.00'));
@@ -841,6 +939,54 @@ comprobar('Sin desbordamiento horizontal en móvil', await pagina.evaluate(() =>
 await pagina.setViewportSize({ width: 768, height: 900 });
 await pagina.goto(`${BASE}/index.html#tienda`, { waitUntil: 'networkidle' });
 comprobar('Sin desbordamiento horizontal en tablet', await pagina.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
+
+/* ---------- 11. Tema claro/oscuro ---------- */
+/* El contexto principal está fijado a un sistema oscuro: sin cookie, el sitio
+   arranca en oscuro y el botón ofrece pasar a claro. */
+await pagina.setViewportSize({ width: 1280, height: 900 });
+await pagina.goto(`${BASE}/index.html`, { waitUntil: 'networkidle' });
+comprobar('Con sistema oscuro el fondo del sitio es oscuro', (await pagina.evaluate(() => getComputedStyle(document.body).backgroundColor)) === 'rgb(10, 10, 10)');
+comprobar('El botón de tema ofrece pasar a claro', (await pagina.getAttribute('[data-boton-tema]', 'aria-label')) === 'Cambiar al modo claro');
+
+/* Con un sistema claro el sitio arranca claro y el botón alterna, guarda la
+   cookie pf_tema y la elección sobrevive una recarga. */
+{
+  const contextoTema = await navegador.newContext({ colorScheme: 'light' });
+  const paginaTema = await contextoTema.newPage();
+
+  await paginaTema.goto(`${BASE}/index.html`, { waitUntil: 'networkidle' });
+  comprobar('Con sistema claro el fondo del sitio es claro', (await paginaTema.evaluate(() => getComputedStyle(document.body).backgroundColor)) === 'rgb(246, 246, 243)');
+  comprobar('El arranque fija data-bs-theme claro', (await paginaTema.evaluate(() => document.documentElement.dataset.bsTheme)) === 'light');
+  comprobar('Sin cookie el HTML no lleva data-tema', (await paginaTema.evaluate(() => document.documentElement.hasAttribute('data-tema'))) === false);
+  comprobar('El botón de tema ofrece pasar a oscuro', (await paginaTema.getAttribute('[data-boton-tema]', 'aria-label')) === 'Cambiar al modo oscuro');
+
+  await paginaTema.click('[data-boton-tema]');
+  comprobar('Al pulsar el botón el fondo pasa a oscuro', (await paginaTema.evaluate(() => getComputedStyle(document.body).backgroundColor)) === 'rgb(10, 10, 10)');
+  comprobar('La elección se guarda en la cookie pf_tema', ((await contextoTema.cookies(BASE)).find((c) => c.name === 'pf_tema') || {}).value === 'oscuro');
+
+  await paginaTema.reload({ waitUntil: 'networkidle' });
+  comprobar('La elección sobrevive una recarga', (await paginaTema.evaluate(() => getComputedStyle(document.body).backgroundColor)) === 'rgb(10, 10, 10)');
+  comprobar('Con cookie el HTML lleva data-tema', (await paginaTema.getAttribute('html', 'data-tema')) === 'oscuro');
+
+  await paginaTema.click('[data-boton-tema]');
+  comprobar('El botón vuelve al modo claro', (await paginaTema.evaluate(() => getComputedStyle(document.body).backgroundColor)) === 'rgb(246, 246, 243)');
+  comprobar('La cookie se actualiza a claro', ((await contextoTema.cookies(BASE)).find((c) => c.name === 'pf_tema') || {}).value === 'claro');
+
+  await contextoTema.close();
+}
+
+/* El panel de administración reacciona igual: con sistema oscuro arranca en
+   oscuro (Bootstrap) y ya no usa el fondo claro fijo de bg-light. */
+{
+  const contextoAdmin = await navegador.newContext({ colorScheme: 'dark' });
+  const paginaAdmin = await contextoAdmin.newPage();
+
+  await paginaAdmin.goto(`${BASE}/admin/login.html`, { waitUntil: 'networkidle' });
+  comprobar('El admin arranca en oscuro con sistema oscuro', (await paginaAdmin.evaluate(() => document.documentElement.dataset.bsTheme)) === 'dark');
+  comprobar('El fondo del admin sigue el tema', (await paginaAdmin.evaluate(() => getComputedStyle(document.body).backgroundColor)) === 'rgb(43, 48, 53)');
+
+  await contextoAdmin.close();
+}
 
 const ignorables = errores.filter((e) => !e.includes('favicon'));
 comprobar('Sin errores de JavaScript en la consola', ignorables.length === 0, ignorables.join(' | '));

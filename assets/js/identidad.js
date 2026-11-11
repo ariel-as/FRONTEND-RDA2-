@@ -7,20 +7,25 @@
  * públicas junto con las clases estándar de Tailwind.
  *
  * Es un script clásico (no módulo) porque debe ejecutarse de forma síncrona.
+ *
+ * Los tonos de superficie apuntan a las variables CSS de styles.css, así que
+ * giran con el tema: bg-pf-negro es la página, text-pf-blanco el texto...
+ * Solo el amarillo y el rojo de marca quedan fijos (son colores de superficie
+ * sobre los que el texto va siempre en negro casi puro).
  */
 tailwind.config = {
   theme: {
     extend: {
       colors: {
         pf: {
-          negro: '#0A0A0A',
-          grafito: '#151515',
-          carbon: '#1F1F1F',
-          linea: '#2E2E2E',
+          negro: 'var(--pf-negro)',
+          grafito: 'var(--pf-grafito)',
+          carbon: 'var(--pf-carbon)',
+          linea: 'var(--pf-linea)',
           amarillo: '#FFD000',
           rojo: '#E21B23',
-          blanco: '#FFFFFF',
-          gris: '#A0A0A0'
+          blanco: 'var(--pf-blanco)',
+          gris: 'var(--pf-gris)'
         }
       }
     }

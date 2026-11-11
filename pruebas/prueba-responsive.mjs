@@ -129,14 +129,17 @@ for (const pantalla of PANTALLAS) {
    3. Contraste real, ARIA en ejecución y foco visible
    ========================================================= */
 {
-  const contexto = await navegador.newContext({ viewport: { width: 1280, height: 900 } });
+  /* Fijado a un sistema oscuro (el tema por defecto de la marca) para que la
+     medición no dependa del esquema de la máquina; el modo claro se recorre
+     al final con su propio contexto. */
+  const contexto = await navegador.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: 'dark' });
   const pagina = await contexto.newPage();
   const errores = [];
   pagina.on('pageerror', (e) => errores.push(String(e)));
 
   /** Recorre los textos visibles y calcula el contraste con su fondo real. */
-  const medirContraste = () =>
-    pagina.evaluate(() => {
+  const medirContraste = (pg) =>
+    pg.evaluate(() => {
       const aRgb = (valor) => {
         const m = (valor || '').match(/rgba?\(([^)]+)\)/);
         if (!m) return null;
@@ -214,7 +217,7 @@ for (const pantalla of PANTALLAS) {
 
   for (const ruta of ['index.html', 'cliente/nutricion.html', 'cliente/login.html', 'cliente/checkout.html', 'admin/login.html']) {
     await pagina.goto(`${BASE}/${ruta}`, { waitUntil: 'networkidle' });
-    const bajos = await medirContraste();
+    const bajos = await medirContraste(pagina);
     comprobar(
       `${ruta}: contraste del texto >= 4.5:1 (3:1 en texto grande)`,
       bajos.length === 0,
@@ -222,6 +225,22 @@ for (const pantalla of PANTALLAS) {
         'todos los textos cumplen'
     );
   }
+
+  /* --- Mismo recorrido en modo claro: la paleta clara debe cumplir igual --- */
+  const contextoClaro = await navegador.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: 'light' });
+  const paginaClara = await contextoClaro.newPage();
+  paginaClara.on('pageerror', (e) => errores.push(String(e)));
+  for (const ruta of ['index.html', 'cliente/nutricion.html', 'cliente/login.html', 'cliente/checkout.html', 'admin/login.html']) {
+    await paginaClara.goto(`${BASE}/${ruta}`, { waitUntil: 'networkidle' });
+    const bajos = await medirContraste(paginaClara);
+    comprobar(
+      `${ruta} en modo claro: contraste del texto >= 4.5:1 (3:1 en texto grande)`,
+      bajos.length === 0,
+      bajos.slice(0, 5).map((b) => `${b.etiqueta} "${b.texto}" ${b.ratio}:1 (min ${b.minimo}) ${b.color} sobre ${b.fondo}`).join(' | ') ||
+        'todos los textos cumplen'
+    );
+  }
+  await contextoClaro.close();
 
   /* --- ARIA en ejecución --- */
   await pagina.goto(`${BASE}/index.html`, { waitUntil: 'networkidle' });

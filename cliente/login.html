@@ -6,6 +6,11 @@
   <title>Inscríbete o inicia sesión | Planeta Fitness</title>
   <meta name="description" content="Inicio de sesión y registro de clientes de Planeta Fitness. Acceso académico sin servidor.">
   <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+
+  <!-- Fija el tema (cookie pf_tema o el esquema del sistema) en <html> antes
+       de que se pinte nada, para que no haya destello de color equivocado.
+       Debe ir antes de la hoja de estilos. -->
+  <script src="../assets/js/tema.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="../assets/js/identidad.js"></script>
   <link rel="stylesheet" href="../assets/css/styles.css">
@@ -16,7 +21,8 @@
   <header class="pf-encabezado border-b border-pf-linea bg-pf-negro">
     <nav class="pf-nav mx-auto max-w-6xl px-4" aria-label="Navegación principal">
       <a href="../index.html" class="pf-logo" aria-label="Planeta Fitness, ir al inicio">
-        <img src="../assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="112" height="101">
+        <img src="../assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="112" height="101" class="pf-logo-modo-oscuro">
+        <img src="../assets/img/logo/logo-oscuro.svg" alt="" aria-hidden="true" width="112" height="101" class="pf-logo-modo-claro">
       </a>
 
       <div id="menu-principal" data-menu class="pf-menu">
@@ -31,6 +37,15 @@
         </ul>
 
         <div class="pf-menu-acciones">
+          <!-- Cuadrado compacto para alternar el tema; js/tema.js pinta el
+               icono (sol/luna) y el aria-label según el tema activo. -->
+          <button
+            type="button"
+            class="pf-boton pf-boton-secundario pf-boton-tema"
+            data-boton-tema
+            aria-label="Cambiar el modo de color">
+            <span aria-hidden="true" data-icono-tema>&#9790;</span>
+          </button>
           <div data-sesion="inactiva" class="contents">
             <a href="login.html" class="pf-boton pf-boton-secundario">Inscríbete</a>
           </div>
@@ -199,7 +214,8 @@
 
   <footer class="mt-12 border-t border-pf-linea bg-pf-negro py-10">
     <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-6 px-4">
-        <img src="../assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="112" height="101" class="h-24 w-auto">
+        <img src="../assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="112" height="101" class="h-24 w-auto pf-logo-modo-oscuro">
+        <img src="../assets/img/logo/logo-oscuro.svg" alt="" aria-hidden="true" width="112" height="101" class="h-24 w-auto pf-logo-modo-claro">
       <nav aria-label="Pie de página">
         <ul class="flex flex-wrap gap-4 text-sm">
           <li><a href="../index.html" class="underline hover:text-pf-amarillo">Inicio</a></li>

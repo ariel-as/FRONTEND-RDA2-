@@ -473,7 +473,7 @@ export function iniciarPanelCarrito() {
           region.textContent = resultado.mensaje;
           region.dataset.tipo = 'error';
           region.hidden = false;
-          return;
+          return false;
         }
 
         region.textContent = `${resultado.mensaje} Abriendo el checkout...`;

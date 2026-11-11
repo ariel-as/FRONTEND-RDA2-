@@ -211,7 +211,7 @@ Se utiliza persistencia en el navegador sin backend remoto:
 | **localStorage** | Carrito de compras, cambios realizados desde el área administrativa, citas de nutrición, **pedidos confirmados**, registros de clientes y mensajes de contacto. |
 | **sessionStorage** | Sesión del usuario (nombre, correo, rol, nivel) y paso pendiente del checkout. |
 | **IndexedDB** | Copia local del catálogo (`productos`, `planes`, `clases`, `entrenadores`) y registros (`citas`, `pedidos`). Base de datos: **`PlanetaFitnessDB`** (versión 2), con almacén `pedidos`. |
-| **Cookies** | Preferencia del aviso de cookies y marca de la última actualización del catálogo. |
+| **Cookies** | Preferencia del aviso de cookies, marca de la última actualización del catálogo y **tema claro/oscuro** (`pf_tema`). |
 
 **Experiencia progresiva:** al cargar, se intenta obtener los JSON con **Fetch API**. Si la respuesta es correcta, se guarda el catálogo en **IndexedDB**. Si Fetch falla (servidor no disponible), se lee la copia guardada en **IndexedDB** para mostrar el catálogo, informando el origen con `aria-live`.
 
@@ -243,6 +243,18 @@ El pie de página muestra «Catálogo actualizado: …» con la fecha en formato
 
 ---
 
+## Tema claro/oscuro
+
+El sitio arranca con el esquema del sistema (`prefers-color-scheme`) y, a falta de señal, en **oscuro**, que es el tema de la marca. Un botón cuadrado de solo icono (sol/luna) del encabezado, presente en las diez páginas y situado a la izquierda del botón **Inscríbete** en el área cliente, permite alternar entre claro y oscuro; la elección se guarda en la cookie `pf_tema` durante 180 días.
+
+- **`assets/js/tema.js`** (script clásico en el `<head>`, antes de la hoja de estilos) resuelve el tema antes del primer pintado y lo escribe en `<html>`: `data-bs-theme` (para Bootstrap, en el panel de administración) y `data-tema` (solo cuando existe la cookie). Así no hay destello de color equivocado mientras carga el resto.
+- **`js/tema.js`** (módulo) gestiona el botón: pinta el icono (sol/luna) y su `aria-label` según el tema activo, alterna al pulsarlo y, sin cookie, sigue los cambios del sistema en vivo.
+- El **área cliente** cambia redefiniendo las variables CSS de `styles.css` (`--pf-negro`, `--pf-grafito`, `--pf-amarillo-texto`, …); el amarillo y el rojo de marca no cambian, porque sobre ellos el texto va siempre en negro casi puro.
+- El **panel de administración** usa el `data-bs-theme` de Bootstrap 5.3 (fondo `bg-body-tertiary`, tarjetas y tablas), con ajustes propios en `styles.css` para los textos que esta hoja pinta.
+- Dos piezas se quedan **siempre oscuras** para conservar la portada de la marca: el **hero** de `index.html` (foto con letras blancas, clase `pf-hero`) y el logo del encabezado y del pie, que en modo claro cambia a la variante de letras oscuras `assets/img/logo/logo-oscuro.svg`.
+
+---
+
 ## Validaciones
 
 ### Formularios, validaciones y expresiones regulares
@@ -264,6 +276,8 @@ Reglas aplicadas (con expresiones regulares):
 - **Campos obligatorios y mensajes de ayuda:** cada campo cuenta con su `<label>`, mensaje de ayuda vinculado con `aria-describedby` y mensajes de error con `role="alert"`.
 
 La validación se ejecuta tanto en `blur/input` como al enviar el formulario. Tras corregir un error, el mensaje se actualiza correctamente.
+
+Además, los formularios aplican un **bloqueo secuencial**: un campo obligatorio o con formato mal escrito no deja pasar al siguiente; al intentar entrar en un campo posterior, el foco vuelve al primero que falla y se muestra su mensaje. Un campo que todavía no se ha tocado no bloquea el avance (lo pendiente se avisa al enviar). Los botones, los enlaces y los diálogos (como el modal de acceso del carrito) nunca se bloquean, para que siempre se pueda salir del formulario o enviarlo y recibir ahí el resumen de errores.
 
 ## Accesibilidad web (WCAG), ARIA y navegación por teclado
 
@@ -432,6 +446,8 @@ El repositorio incluye un archivo de workflow en `.github/workflows/` con el obj
 - [x] El cambio hecho en el dashboard se refleja en el catálogo público.
 - [x] Cita de nutrición visible en el dashboard.
 - [x] Aviso de cookies y marca de última actualización.
+- [x] Tema claro/oscuro en las diez páginas: arranque según el sistema, botón de alternancia,
+      cookie `pf_tema`, sin destello de color y contraste verificado en ambos modos.
 - [x] Copia del catálogo efectivo guardada en IndexedDB.
 - [x] Encabezado fijo (`sticky`) con sombra al bajar y **navegación activa** que marca la sección
       visible (`.pf-enlace-activo` + `aria-current="location"`).

@@ -102,21 +102,21 @@ jobs:
           exit $codigo
 
       - name: Recorrido completo en navegador
-
-      - name: Hash y posicion pendiente
-        run: |
-          codigo=0
-          node pruebas/prueba-hash.mjs > /tmp/salida.txt 2>&1 || codigo=True
-          cat /tmp/salida.txt
-          grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
-          exit $codigo
-
         run: |
           codigo=0
           node pruebas/prueba-navegador.mjs > /tmp/salida.txt 2>&1 || codigo=$?
           cat /tmp/salida.txt
           grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
           exit $codigo
+
+      - name: Hash y posicion pendiente
+        run: |
+          codigo=0
+          node pruebas/prueba-hash.mjs > /tmp/salida.txt 2>&1 || codigo=$?
+          cat /tmp/salida.txt
+          grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
+          exit $codigo
+
 
       - name: DiseÃ±o responsive y accesibilidad medida
         run: |

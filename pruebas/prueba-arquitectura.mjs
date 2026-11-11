@@ -214,6 +214,10 @@ comprobar('El mensaje de error se inserta como role="alert"', /setAttribute\('ro
 comprobar('La validación nativa se refuerza con setCustomValidity', /setCustomValidity/.test(validacion));
 comprobar('El envío se intercepta con preventDefault', /evento\.preventDefault\(\)/.test(validacion));
 comprobar('Al fallar, el foco salta al primer campo inválido', /primero\.focus\(\)/.test(validacion));
+comprobar(
+  'Un campo anterior mal escrito no deja avanzar al siguiente (bloqueo secuencial)',
+  /addEventListener\(\s*'focusin'/.test(validacion) && /bloqueador\.focus\(\)/.test(validacion)
+);
 comprobar('Los avisos dinámicos se anuncian en una región aria-live', /mostrarMensaje[\s\S]*aria-live/.test(validacion) || /region\.dataset\.tipo/.test(validacion));
 
 /* =========================================================

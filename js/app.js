@@ -11,6 +11,7 @@ import { obtenerProductos, obtenerPlanes, obtenerClases, obtenerEntrenadores, ob
 import { guardarRegistro, ALMACENES } from './indexeddb.js';
 import { carrito, formatearPrecio } from './cart.js';
 import { iniciarPanelCarrito, panelCarrito } from './carrito-panel.js';
+import { iniciarTema } from './tema.js';
 import {
   actualizarContadorCarrito,
   actualizarEstadoSesion,
@@ -458,6 +459,8 @@ function iniciarComunes() {
   iniciarCierreSesion();
   iniciarAnioActual();
   iniciarMarcaActualizacion();
+  // El botón claro/oscuro del encabezado funciona en todas las páginas.
+  iniciarTema();
   // El carrito es un panel lateral disponible en todas las páginas.
   iniciarPanelCarrito();
   actualizarContadorCarrito();
@@ -560,12 +563,15 @@ async function iniciarPaginaInicio() {
   // salto nativo del navegador, que es el que devolvía otra sección.
   const navegacion = iniciarNavegacionSecciones();
 
+  // El formulario se conecta antes de cargar el catálogo: así la validación
+  // existe desde el primer instante aunque los datos tarden en llegar.
+  iniciarFormularioContacto();
+
   try {
     await pintarDatosGimnasio();
     await pintarPlanes(region);
     await pintarCatalogoProductos(region);
     await pintarClases(region);
-    iniciarFormularioContacto();
   } finally {
     // El catálogo ya ocupa su alto real: el destino del ancla es el bueno.
     navegacion?.alinearConHash();
@@ -995,7 +1001,7 @@ function iniciarPaginaLogin() {
 
         if (!resultado.ok) {
           mostrarMensaje(region, resultado.mensaje, 'error');
-          return;
+          return false;
         }
 
         mostrarMensaje(region, resultado.mensaje, 'exito');
@@ -1036,7 +1042,7 @@ function iniciarPaginaLogin() {
             'Ya existe un registro local con ese correo. Intenta iniciar sesión.',
             'error'
           );
-          return;
+          return false;
         }
 
         await registrarCliente({

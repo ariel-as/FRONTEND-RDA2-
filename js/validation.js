@@ -13,6 +13,8 @@
  *   - no depende únicamente del color (usa el símbolo de advertencia).
  */
 
+import { CLAVES, escribirSesion, leerSesion, borrarSesion } from './storage.js';
+
 /** Expresiones regulares usadas en el proyecto. */
 export const REGEX = {
   cedula: /^\d{10}$/,
@@ -21,6 +23,103 @@ export const REGEX = {
   contrasena: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%*_.-]{8,32}$/,
   codigoPlan: /^PF-\d{4}$/
 };
+
+/* =========================================================
+   Borradores de formulario (sessionStorage)
+   ========================================================= */
+
+/** Controles que no se guardan: contraseñas y campos sin datos de la persona. */
+const TIPOS_SIN_BORRADOR = new Set([
+  'password',
+  'file',
+  'submit',
+  'button',
+  'reset',
+  'image'
+]);
+
+/**
+ * Clave propia de cada formulario, para no mezclar borradores entre páginas.
+ * Los formularios dinámicos (clases y entrenadores) no tienen id, así que se
+ * usa su identificador de dato o su posición estable dentro del documento.
+ */
+function claveBorrador(formulario) {
+  const propio =
+    formulario.id ||
+    formulario.getAttribute('name') ||
+    Object.entries(formulario.dataset).find(([clave]) => /Id$/.test(clave))?.[1] ||
+    `form${[...(globalThis.document?.forms || [])].indexOf(formulario)}`;
+
+  return `${CLAVES.borradorFormulario}:${location.pathname}:${propio}`;
+}
+
+/** Campos cuyo valor conviene recordar mientras se escribe. */
+function camposConBorrador(formulario) {
+  return [...formulario.querySelectorAll('input, select, textarea')].filter(
+    (campo) => campo.name && !campo.disabled && !TIPOS_SIN_BORRADOR.has(campo.type)
+  );
+}
+
+/**
+ * Guarda en sessionStorage lo escrito para recuperarlo si la página se recarga.
+ * Las contraseñas nunca se guardan.
+ */
+export function guardarBorrador(formulario) {
+  const datos = {};
+
+  camposConBorrador(formulario).forEach((campo) => {
+    if (campo.type === 'checkbox') {
+      if (campo.checked) datos[campo.name] = true;
+      return;
+    }
+    if (campo.type === 'radio') {
+      if (campo.checked) datos[campo.name] = campo.value;
+      return;
+    }
+    if (campo.value !== '') datos[campo.name] = campo.value;
+  });
+
+  if (Object.keys(datos).length === 0) borrarSesion(claveBorrador(formulario));
+  else escribirSesion(claveBorrador(formulario), datos);
+}
+
+/** Devuelve a los campos lo que se había escrito antes de recargar la página. */
+export function restaurarBorrador(formulario) {
+  const datos = leerSesion(claveBorrador(formulario), null);
+  if (!datos || typeof datos !== 'object') return;
+
+  camposConBorrador(formulario).forEach((campo) => {
+    if (!(campo.name in datos)) return;
+
+    if (campo.type === 'checkbox') campo.checked = Boolean(datos[campo.name]);
+    else if (campo.type === 'radio') campo.checked = campo.value === String(datos[campo.name]);
+    else campo.value = datos[campo.name];
+  });
+}
+
+/** Olvida el borrador; se usa después de un envío correcto o de un reset. */
+export function borrarBorrador(formulario) {
+  borrarSesion(claveBorrador(formulario));
+}
+
+/**
+ * Restaura el borrador y guarda lo que se escriba. Se ofrece por separado para
+ * los formularios que no usan `construirValidador` (los dinámicos del panel).
+ */
+export function activarBorrador(formulario) {
+  if (!formulario || formulario.dataset.borradorActivo === 'true') return;
+
+  formulario.dataset.borradorActivo = 'true';
+  restaurarBorrador(formulario);
+
+  formulario.addEventListener('input', () => guardarBorrador(formulario));
+  formulario.addEventListener('change', () => guardarBorrador(formulario));
+
+  // Un reset (envío correcto o "Nuevo producto") descarta el borrador.
+  formulario.addEventListener('reset', () => {
+    window.setTimeout(() => borrarBorrador(formulario), 0);
+  });
+}
 
 /* =========================================================
    Mensajes y estado visual de los campos
@@ -199,6 +298,14 @@ export function validarFechaFutura(campo) {
 export function construirValidador(formulario, opciones = {}) {
   const reglas = opciones.reglas || {};
 
+  // Marca el formulario como protegido por este validador: la red de
+  // seguridad de más abajo deja de interceptarlo.
+  formulario.dataset.validador = 'activo';
+
+  // Lo escrito antes de recargar la página vuelve a los campos, y cada cambio
+  // se guarda. Las contraseñas quedan fuera del borrador por seguridad.
+  activarBorrador(formulario);
+
   /** Aplica la validación nativa y las reglas de un campo suelto. */
   function validarCampo(campo) {
     if (!campo.willValidate && campo.type !== 'submit') return true;
@@ -227,27 +334,96 @@ export function construirValidador(formulario, opciones = {}) {
     return resultados.every(Boolean);
   }
 
-  // Mensaje de error al salir del campo, no mientras se escribe.
+  const esCampo = (nodo) => Boolean(nodo?.matches?.('input, select, textarea'));
+
+  // Se recuerdan los campos que la persona ya visitó: el primer aviso aparece
+  // al salir del campo y, desde ahí, se actualiza en cada cambio.
+  const tocados = new WeakSet();
+
+  // Marca el re-enfoque que provoca el bloqueo secuencial (más abajo): el
+  // campo que se intentaba visitar no debe contarse como visitado.
+  let bloqueando = false;
+
+  const validarSiCorresponde = (campo) => {
+    if (!esCampo(campo)) return;
+    if (tocados.has(campo) || campo.getAttribute('aria-invalid') === 'true') validarCampo(campo);
+  };
+
   formulario.addEventListener(
     'blur',
     (evento) => {
-      if (evento.target.matches('input, select, textarea')) validarCampo(evento.target);
+      if (!esCampo(evento.target) || bloqueando) return;
+      tocados.add(evento.target);
+      validarCampo(evento.target);
     },
     true
   );
 
+  // El borrador ya se guarda con `activarBorrador`: aquí solo se valida lo
+  // escrito mientras se corrige.
   formulario.addEventListener('input', (evento) => {
-    if (evento.target.getAttribute('aria-invalid') === 'true') validarCampo(evento.target);
+    validarSiCorresponde(evento.target);
+  });
+
+  formulario.addEventListener('change', (evento) => {
+    validarSiCorresponde(evento.target);
+  });
+
+  /* Bloqueo secuencial: un campo obligatorio o con formato mal escrito no
+     deja avanzar. Al entrar en un campo posterior se comprueban los
+     anteriores del mismo formulario: si alguno falla, el foco vuelve al
+     primero que está mal, con su mensaje visible. Un campo que todavía no se
+     ha tocado no bloquea (al enviarlo ya se avisa de lo pendiente).
+     Botones, enlaces y diálogos (como el modal de acceso del carrito)
+     quedan fuera del bloqueo, así que la persona puede salir del formulario
+     o enviarlo cuando quiera y recibir ahí el resumen de errores. */
+  formulario.addEventListener('focusin', (evento) => {
+    const destino = evento.target;
+    if (bloqueando || !esCampo(destino)) return;
+    if (destino.closest('[role="dialog"], dialog, [data-modal-acceso]')) return;
+
+    const campos = [...formulario.querySelectorAll('input, select, textarea')];
+    const indice = campos.indexOf(destino);
+    if (indice < 1) return;
+
+    const bloqueador = campos.slice(0, indice).find((campo) => {
+      if (!campo.willValidate || campo.disabled || campo.getClientRects().length === 0) return false;
+      // Vacío y sin visitar: aún no está "mal llenado", no bloquea el avance.
+      if (campo.value.trim() === '' && !tocados.has(campo)) return false;
+      return !validarCampo(campo);
+    });
+
+    if (bloqueador) {
+      bloqueando = true;
+      bloqueador.focus();
+      bloqueando = false;
+    }
   });
 
   formulario.addEventListener('submit', async (evento) => {
     evento.preventDefault();
+
+    // A partir del envío todos los campos se consideran visitados, así que
+    // cualquier error queda visible y el formulario no avanza.
+    [...formulario.querySelectorAll('input, select, textarea')].forEach((campo) =>
+      tocados.add(campo)
+    );
+
     if (!validarTodo()) {
       const primero = formulario.querySelector('[aria-invalid="true"]');
       if (primero) primero.focus();
+
+      const region = formulario.querySelector('.pf-mensaje[aria-live]');
+      mostrarMensaje(region, 'Revisa los campos marcados antes de continuar.', 'error');
       return;
     }
-    if (typeof opciones.alEnviar === 'function') await opciones.alEnviar(formulario);
+
+    if (typeof opciones.alEnviar === 'function') {
+      const resultado = await opciones.alEnviar(formulario);
+      // Un `false` significa que el intento falló (por ejemplo, credenciales
+      // incorrectas): el borrador se conserva para corregir y reintentar.
+      if (resultado !== false) borrarBorrador(formulario);
+    }
   });
 
   return { validarCampo, validarTodo };
@@ -276,3 +452,28 @@ export function mostrarMensaje(region, mensaje, tipo = 'info') {
     region.classList.remove('pf-aparece');
   }, 600);
 }
+
+/* =========================================================
+   Red de seguridad del envío
+   ========================================================= */
+
+/**
+ * Ningún formulario con `novalidate` puede recargar la página mientras su
+ * validador todavía no esté conectado (por ejemplo, si el catálogo tarda en
+ * cargar). Así nunca se "avanza" con campos incompletos ni se pierde lo
+ * escrito. En Node no existe `document`, por eso se consulta con `globalThis`.
+ */
+globalThis.document?.addEventListener?.(
+  'submit',
+  (evento) => {
+    const formulario = evento.target;
+    if (
+      formulario instanceof HTMLFormElement &&
+      formulario.hasAttribute('novalidate') &&
+      formulario.dataset.validador !== 'activo'
+    ) {
+      evento.preventDefault();
+    }
+  },
+  true
+);

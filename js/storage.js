@@ -17,6 +17,8 @@ export const CLAVES = {
   ultimaActualizacion: 'ultimaActualizacion',
   sesionUsuario: 'usuario',
   sesionPendiente: 'sesionPendiente',
+  borradorFormulario: 'pf_borrador_formulario',
+  tema: 'pf_tema',
   citasNutricion: 'citasNutricion',
   catalogoLocal: 'catalogoLocal',
   registrosClientes: 'registrosClientes',

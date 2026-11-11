@@ -24,7 +24,8 @@ import {
 } from './repo.js';
 import { CLAVES, leerLocal, leerActualizacion, formatearFecha } from './storage.js';
 import { usuarioActual, cerrarSesion, iniciarSesion, esAdministrador } from './auth.js';
-import { construirValidador, mostrarMensaje } from './validation.js';
+import { activarBorrador, borrarBorrador, construirValidador, guardarBorrador, mostrarMensaje } from './validation.js';
+import { iniciarTema } from './tema.js';
 import { escapar } from './view.js';
 
 const select = (selector) => document.querySelector(selector);
@@ -101,7 +102,7 @@ function iniciarLoginAdmin() {
 
       if (!resultado.ok) {
         mostrarMensaje(region, resultado.mensaje, 'error');
-        return;
+        return false;
       }
 
       mostrarMensaje(region, resultado.mensaje, 'exito');
@@ -226,6 +227,9 @@ async function pintarProductosAdmin() {
     botonNuevo.dataset.escuchado = 'true';
     botonNuevo.addEventListener('click', () => {
       formulario.reset();
+      // Tras una recarga el navegador devuelve al id oculto su valor restaurado,
+      // así que se limpia a mano para que "nuevo" no herede la edición previa.
+      formulario.querySelector('#id-producto').value = '';
       formulario.dataset.modo = 'crear';
       select('#titulo-producto').textContent = 'Agregar producto';
       formulario.querySelector('[data-guardar-producto]').textContent = 'Agregar al catálogo';
@@ -265,6 +269,9 @@ async function pintarProductosAdmin() {
         formulario.querySelector('#precio').value = producto.precio;
         formulario.querySelector('#descripcion').value = producto.descripcion;
         formulario.querySelector('#destacado').checked = Boolean(producto.destacado);
+        // El borrador se refresca con el registro elegido: si la página se
+        // recarga, la edición (y su id) sigue donde iba.
+        guardarBorrador(formulario);
         formulario.querySelector('#nombre').focus();
         return;
       }
@@ -311,6 +318,15 @@ async function pintarProductosAdmin() {
         pintarProductosAdmin();
       }
     });
+
+    // El borrador restaurado puede traer el id de una edición: el formulario
+    // vuelve a ese modo para que guardar no cree un duplicado.
+    const idRestaurado = Number(formulario.querySelector('#id-producto').value);
+    if (idRestaurado && estadoAdmin.productos.some((item) => item.id === idRestaurado)) {
+      formulario.dataset.modo = 'editar';
+      select('#titulo-producto').textContent = `Editar ${formulario.querySelector('#nombre').value}`;
+      formulario.querySelector('[data-guardar-producto]').textContent = 'Guardar cambios';
+    }
   }
 }
 
@@ -359,6 +375,8 @@ async function pintarPlanesAdmin() {
       formulario.querySelector('#precio-plan').value = plan.precio;
       formulario.querySelector('#descripcion-plan').value = plan.descripcion;
       select('#titulo-editar-plan').textContent = `Editar ${plan.nombre}`;
+      // Igual que en productos: la edición elegida queda como borrador.
+      guardarBorrador(formulario);
       formulario.querySelector('#nombre-plan').focus();
     });
   }
@@ -379,6 +397,12 @@ async function pintarPlanesAdmin() {
         pintarPlanesAdmin();
       }
     });
+
+    // El borrador restaurado devuelve el plan que se estaba editando.
+    const idPlan = Number(formulario.querySelector('#id-plan').value);
+    if (idPlan && estadoAdmin.planes.some((item) => item.id === idPlan)) {
+      select('#titulo-editar-plan').textContent = `Editar ${formulario.querySelector('#nombre-plan').value}`;
+    }
   }
 }
 
@@ -471,6 +495,9 @@ async function pintarClasesAdmin() {
     )
     .join('');
 
+  // Cada formulario pintado recupera su borrador y guarda lo que se escriba.
+  contenedor.querySelectorAll('form').forEach(activarBorrador);
+
   if (!contenedor.dataset.escuchado) {
     contenedor.dataset.escuchado = 'true';
     contenedor.addEventListener('submit', async (evento) => {
@@ -503,6 +530,9 @@ async function pintarClasesAdmin() {
       const entrenadorId = Number(formulario.querySelector('[name="entrenadorId"]').value);
       await actualizarClase(id, { horarios, entrenadorId });
 
+      // Guardado correcto: el borrador ya no hace falta y el repintado parte
+      // de los datos frescos.
+      borrarBorrador(formulario);
       mostrarMensaje(region, 'Horarios actualizados correctamente.', 'exito');
       pintarClasesAdmin();
     });
@@ -554,6 +584,9 @@ async function pintarEntrenadoresAdmin() {
     )
     .join('');
 
+  // Cada formulario pintado recupera su borrador y guarda lo que se escriba.
+  contenedor.querySelectorAll('form').forEach(activarBorrador);
+
   if (!contenedor.dataset.escuchado) {
     contenedor.dataset.escuchado = 'true';
     contenedor.addEventListener('submit', async (evento) => {
@@ -567,6 +600,7 @@ async function pintarEntrenadoresAdmin() {
         descripcion: datos.descripcion
       });
 
+      borrarBorrador(formulario);
       mostrarMensaje(region, `Información de ${datos.especialidad} actualizada.`, 'exito');
       pintarEntrenadoresAdmin();
     });
@@ -593,6 +627,9 @@ document.addEventListener('DOMContentLoaded', () => {
   selectTodos('[data-anio]').forEach((nodo) => {
     nodo.textContent = new Date().getFullYear();
   });
+
+  // Botón claro/oscuro de la barra del panel.
+  iniciarTema();
 
   if (document.body.dataset.pagina !== 'login') pintarSesionAdmin();
 

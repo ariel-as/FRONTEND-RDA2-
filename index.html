@@ -7,9 +7,18 @@
   <meta name="description" content="Planeta Fitness: gimnasio en Quito con planes de $35, $60 y $85 al mes, clases de boxeo y bailoterapia, nutrición y venta de productos deportivos.">
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
 
+  <!-- Fija el tema (cookie pf_tema o el esquema del sistema) en <html> antes
+       de que se pinte nada, para que no haya destello de color equivocado.
+       Debe ir antes de la hoja de estilos. -->
+  <script src="assets/js/tema.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="assets/js/identidad.js"></script>
   <link rel="stylesheet" href="assets/css/styles.css">
+  <!-- `blocking="render"` evita el fogonazo del inicio: el navegador no pinta
+       nada hasta que js/app.js ha puesto la clase de posición pendiente, la
+       misma labor que antes hacía el script inline del encabezado. Solo un
+       script dentro de <head> puede bloquear el render. -->
+  <script type="module" src="js/app.js" blocking="render"></script>
 </head>
 <body class="bg-pf-negro text-neutral-200" data-pagina="inicio">
   <a class="pf-saltar" href="#contenido">Ir al contenido principal</a>
@@ -18,7 +27,8 @@
   <header class="pf-encabezado border-b border-pf-linea bg-pf-negro">
     <nav class="pf-nav mx-auto max-w-6xl px-4" aria-label="Navegación principal">
       <a href="#inicio" class="pf-logo" aria-label="Planeta Fitness, ir al inicio">
-        <img src="assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="112" height="101">
+        <img src="assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="112" height="101" class="pf-logo-modo-oscuro">
+        <img src="assets/img/logo/logo-oscuro.svg" alt="" aria-hidden="true" width="112" height="101" class="pf-logo-modo-claro">
       </a>
 
       <div id="menu-principal" data-menu class="pf-menu">
@@ -33,6 +43,15 @@
         </ul>
 
         <div class="pf-menu-acciones">
+          <!-- Cuadrado compacto para alternar el tema; js/tema.js pinta el
+               icono (sol/luna) y el aria-label según el tema activo. -->
+          <button
+            type="button"
+            class="pf-boton pf-boton-secundario pf-boton-tema"
+            data-boton-tema
+            aria-label="Cambiar el modo de color">
+            <span aria-hidden="true" data-icono-tema>&#9790;</span>
+          </button>
           <div data-sesion="inactiva" class="contents">
             <a href="cliente/login.html" class="pf-boton pf-boton-secundario">Inscríbete</a>
           </div>
@@ -72,7 +91,7 @@
 
   <main id="contenido">
     <!-- ================= Hero / Inicio ================= -->
-    <section id="inicio" class="relative isolate scroll-mt-24 overflow-hidden bg-pf-negro" aria-labelledby="titulo-hero">
+    <section id="inicio" class="pf-hero relative isolate scroll-mt-24 overflow-hidden" aria-labelledby="titulo-hero">
       <img
         src="assets/img/gimnasio/hero-gimnasio.jpg"
         alt=""
@@ -326,7 +345,8 @@
   <footer class="border-t border-pf-linea bg-pf-negro py-10">
     <div class="mx-auto grid max-w-6xl gap-8 px-4 sm:grid-cols-2 lg:grid-cols-4">
       <div>
-        <img src="assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="112" height="101" class="h-24 w-auto">
+        <img src="assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="112" height="101" class="h-24 w-auto pf-logo-modo-oscuro">
+        <img src="assets/img/logo/logo-oscuro.svg" alt="" aria-hidden="true" width="112" height="101" class="h-24 w-auto pf-logo-modo-claro">
         <p class="mt-3 text-sm text-neutral-400">Gimnasio en Quito, Ecuador. Entrena. Supera. Evoluciona.</p>
       </div>
       <nav aria-label="Secciones del sitio">
@@ -380,7 +400,5 @@
 
   <!-- Aviso flotante para las interacciones del sitio -->
   <div class="pf-aviso pf-mensaje" data-aviso role="status" aria-live="polite" hidden></div>
-
-  <script type="module" src="js/app.js"></script>
 </body>
 </html>
