@@ -145,31 +145,23 @@ html .decoration-pf-amarillo {
   text-decoration-color: var(--pf-amarillo-texto);
 }
 
-/* ---------- Logo legible en modo claro ---------- */
-
-/* logo-planeta.png lleva letras blancas: sobre el fondo claro del encabezado
-   y del pie desaparecerían. En modo claro entra la variante logo-oscuro.svg
-   (mismo tamaño, letras oscuras); el PNG queda para el modo oscuro. */
-.pf-logo-modo-claro {
-  display: none;
+/* El logo oficial conserva sus trazos blancos sobre el respaldo oscuro en
+   ambos temas. Así todas las páginas usan el mismo archivo de identidad. */
+.pf-logo img,
+footer img[src*="logo-planeta.png"] {
+  background-color: #0a0a0a;
+  border-radius: 0.25rem;
+  object-fit: contain;
+  padding: 2px;
 }
 
-@media (prefers-color-scheme: light) {
-  html:has(body:not(.pf-admin)):not([data-tema="oscuro"]) .pf-logo-modo-oscuro {
-    display: none;
-  }
-
-  html:has(body:not(.pf-admin)):not([data-tema="oscuro"]) .pf-logo-modo-claro {
-    display: inline;
-  }
-}
-
-html[data-tema="claro"]:has(body:not(.pf-admin)) .pf-logo-modo-oscuro {
-  display: none;
-}
-
-html[data-tema="claro"]:has(body:not(.pf-admin)) .pf-logo-modo-claro {
-  display: inline;
+.pf-admin-logo {
+  width: 2.75rem;
+  height: 2.5rem;
+  border-radius: 0.25rem;
+  object-fit: contain;
+  background-color: #0a0a0a;
+  padding: 2px;
 }
 
 /* ---------- Hero: cartel siempre oscuro ---------- */
