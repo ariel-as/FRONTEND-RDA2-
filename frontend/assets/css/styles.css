@@ -24,12 +24,12 @@
   --pf-gris-oscuro: #6b6b6b;
 
   /* Colores que cambian con el tema pero no tienen nombre de marca:
-     el amarillo como texto de acento (sobre oscuro el de marca sirve, sobre
-     claro hace falta un dorado oscuro que llegue a 4.5:1), los tonos de error
+     el amarillo como texto de acento, los precios, los tonos de error
      de los formularios y de los avisos, los dos grises con los que Tailwind
      escribe los párrafos (neutral-200/300 y neutral-400) y el fondo sólido
      del encabezado al hacer scroll. */
   --pf-amarillo-texto: #ffd000;
+  --pf-precio-texto: #ffd000;
   --pf-error-texto: #ff8b91;
   --pf-error-aviso: #ffd9db;
   --pf-texto-2: #d4d4d4;
@@ -71,7 +71,8 @@
     --pf-gris: #565656;
     --pf-gris-oscuro: #6f6f6f;
     --pf-rojo-claro: #b3121a;
-    --pf-amarillo-texto: #664d00;
+    --pf-amarillo-texto: #1a1a1a;
+    --pf-precio-texto: #1a1a1a;
     --pf-error-texto: #b30f18;
     --pf-error-aviso: #b30f18;
     --pf-texto-2: #3a3a3a;
@@ -95,7 +96,8 @@ html[data-tema="claro"]:has(body:not(.pf-admin)) {
   --pf-gris: #565656;
   --pf-gris-oscuro: #6f6f6f;
   --pf-rojo-claro: #b3121a;
-  --pf-amarillo-texto: #664d00;
+  --pf-amarillo-texto: #1a1a1a;
+  --pf-precio-texto: #1a1a1a;
   --pf-error-texto: #b30f18;
   --pf-error-aviso: #b30f18;
   --pf-texto-2: #3a3a3a;
@@ -108,7 +110,8 @@ html[data-tema="claro"]:has(body:not(.pf-admin)) {
 /* Bootstrap mantiene su paleta propia en el panel; el texto de marca también
    debe cambiar allí al activar su tema claro. */
 html[data-bs-theme="light"] {
-  --pf-amarillo-texto: #664d00;
+  --pf-amarillo-texto: #1a1a1a;
+  --pf-precio-texto: #1a1a1a;
 }
 
 /* ---------- Utilidades de Tailwind que deben seguir el tema ---------- */
@@ -201,7 +204,11 @@ footer img[src*="logo-planeta.png"] {
 }
 
 .pf-hero .text-pf-amarillo {
-  color: #ffd000;
+  color: #ffffff;
+  text-decoration: underline;
+  text-decoration-color: var(--pf-amarillo);
+  text-decoration-thickness: 0.15em;
+  text-underline-offset: 0.1em;
 }
 
 .pf-hero .text-neutral-300 {
@@ -315,7 +322,7 @@ footer img[src*="logo-planeta.png"] {
   bottom: 0.15rem;
   height: 2px;
   border-radius: 2px;
-  background-color: var(--pf-amarillo-texto);
+  background-color: var(--pf-amarillo);
 }
 
 /* Acciones que acompañan a la navegación (Inscríbete / sesión). */
@@ -713,7 +720,7 @@ img {
   text-transform: uppercase;
   padding: 0.25rem 0.6rem;
   border-radius: 9999px;
-  background-color: rgba(255, 208, 0, 0.14);
+  background-color: rgba(255, 208, 0, 0.2);
   color: var(--pf-amarillo-texto);
   border: 1px solid rgba(255, 208, 0, 0.4);
 }
@@ -1217,7 +1224,27 @@ select option {
 .pf-tarjeta .pf-precio,
 .pf-panel .pf-precio,
 .pf-precio {
-  color: var(--pf-amarillo-texto);
+  color: var(--pf-precio-texto);
+  font-weight: 900;
+}
+
+html[data-tema="claro"] .pf-precio,
+html[data-bs-theme="light"] .pf-precio {
+  display: inline-block;
+  border-bottom: 4px solid var(--pf-amarillo);
+}
+
+html[data-tema="claro"] [aria-labelledby="titulo-como-contratar"] .pf-tarjeta > p:first-child {
+  padding-left: 0.5rem;
+  border-left: 4px solid var(--pf-amarillo);
+}
+
+html[data-tema="claro"] .pf-tarjeta h4.text-pf-amarillo {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background-color: var(--pf-amarillo);
+  color: #111111;
   font-weight: 800;
 }
 
@@ -1294,7 +1321,7 @@ select option {
 }
 
 .pf-total-final dd {
-  color: var(--pf-amarillo-texto);
+  color: var(--pf-precio-texto);
   font-size: 1.35rem;
 }
 
