@@ -1,4 +1,4 @@
-﻿import { aplicarTema } from '../views/tema.view.js';
+import { aplicarTema } from '../views/tema.view.js';
 import { actualizarContadorCarrito, actualizarEstadoSesion } from '../views/componentes.view.js';
 import { carrito } from '../models/carrito.model.js';
 import { usuarioActual, cerrarSesion, tienePendencia } from '../models/sesion.model.js';
@@ -13,7 +13,7 @@ function temaPreferido() {
   return window.matchMedia('(prefers-color-scheme: light)').matches ? 'claro' : 'oscuro';
 }
 
-function iniciarTema() {
+export function iniciarTema() {
   aplicarTema(temaPreferido());
   selectTodos('[data-boton-tema]').forEach((boton) => boton.addEventListener('click', () => {
     const actual = document.documentElement.classList.contains('pf-modo-claro') ? 'claro' : 'oscuro';

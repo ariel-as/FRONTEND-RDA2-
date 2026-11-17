@@ -30,6 +30,7 @@
      del encabezado al hacer scroll. */
   --pf-amarillo-texto: #ffd000;
   --pf-precio-texto: #ffd000;
+  --pf-foco-anillo: #ffd000;
   --pf-error-texto: #ff8b91;
   --pf-error-aviso: #ffd9db;
   --pf-texto-2: #d4d4d4;
@@ -73,6 +74,7 @@
     --pf-rojo-claro: #b3121a;
     --pf-amarillo-texto: #1a1a1a;
     --pf-precio-texto: #1a1a1a;
+    --pf-foco-anillo: #111111;
     --pf-error-texto: #b30f18;
     --pf-error-aviso: #b30f18;
     --pf-texto-2: #3a3a3a;
@@ -98,6 +100,7 @@ html[data-tema="claro"]:has(body:not(.pf-admin)) {
   --pf-rojo-claro: #b3121a;
   --pf-amarillo-texto: #1a1a1a;
   --pf-precio-texto: #1a1a1a;
+  --pf-foco-anillo: #111111;
   --pf-error-texto: #b30f18;
   --pf-error-aviso: #b30f18;
   --pf-texto-2: #3a3a3a;
@@ -112,6 +115,7 @@ html[data-tema="claro"]:has(body:not(.pf-admin)) {
 html[data-bs-theme="light"] {
   --pf-amarillo-texto: #1a1a1a;
   --pf-precio-texto: #1a1a1a;
+  --pf-foco-anillo: #111111;
 }
 
 /* ---------- Utilidades de Tailwind que deben seguir el tema ---------- */
@@ -637,14 +641,22 @@ img {
 /* ---------- Foco visible (teclado) ---------- */
 
 :focus-visible {
-  outline: 3px solid var(--pf-amarillo-texto);
-  outline-offset: 3px;
+  outline: 3px solid var(--pf-foco-anillo);
+  outline-offset: 2px;
   border-radius: 0.25rem;
 }
 
 /* En superficies amarillas el contorno debe ser oscuro */
 .pf-foco-claro:focus-visible {
   outline-color: #0a0a0a;
+}
+
+.breadcrumb a,
+.pagination .page-link,
+footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
 }
 
 /* ---------- Enlace de salto al contenido ---------- */

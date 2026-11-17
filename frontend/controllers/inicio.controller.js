@@ -1,9 +1,52 @@
 ﻿import { obtenerProductos, obtenerPlanes, obtenerClases, obtenerEntrenadores, obtenerGimnasio, enviarContacto } from '../models/catalogo.model.js';
 import { carrito } from '../models/carrito.model.js';
-import { mostrarAviso, renderizar, vacio, tarjetaProducto, tarjetaPlan, tarjetaClase, tarjetaEntrenador, tarjetaServicio, seccionCategoriaTienda } from '../views/componentes.view.js';
+import { escapar, mostrarAviso, renderizar, vacio, tarjetaProducto, tarjetaPlan, tarjetaClase, tarjetaEntrenador, tarjetaServicio, seccionCategoriaTienda } from '../views/componentes.view.js';
 import { construirValidador, mostrarMensaje, mostrarErroresServidor } from './validacion.controller.js';
 
 function select(s){ return document.querySelector(s); }
+let productosActuales = [];
+let planesActuales = [];
+let eventosCatalogoIniciados = false;
+let eventoReintentoIniciado = false;
+let contactoIniciado = false;
+
+function mostrarErrorCatalogo(contenedor, mensaje) {
+  contenedor.innerHTML = `<div class="pf-mensaje" data-tipo="error" role="alert"><p>${escapar(mensaje || 'No se pudo cargar el catálogo.')}</p><button class="pf-boton pf-boton-secundario" type="button" data-reintentar-catalogo>Reintentar carga</button></div>`;
+}
+
+function iniciarEventosCatalogo() {
+  if (eventosCatalogoIniciados) return;
+  eventosCatalogoIniciados = true;
+  const tienda = select('[data-catalogo]');
+  tienda?.addEventListener('click', (e)=>{
+    const boton = e.target.closest('[data-accion="agregar"]');
+    if (!boton) return;
+    const producto = productosActuales.find((p)=> String(p.id) === String(boton.dataset.id));
+    if (!producto || producto.disponible === false || Number(producto.stock || 0) <= 0) { mostrarAviso('Este producto no está disponible.', 'error'); return; }
+    carrito.agregar({ ...producto, tipo: 'producto' }, 1);
+    mostrarAviso(`${producto.nombre} se agregó al carrito.`, 'exito');
+  });
+  const planes = select('[data-planes]');
+  planes?.addEventListener('click', (e)=>{
+    const boton = e.target.closest('[data-accion="elegir-plan"]');
+    if (!boton) return;
+    const plan = planesActuales.find((p)=> String(p.id) === String(boton.dataset.planId));
+    if (!plan) return;
+    carrito.agregar({ id: plan.id, nombre: plan.nombre, precio: plan.precio, imagen: plan.imagen, tipo: 'plan', membresiaId: plan.id }, 1);
+    mostrarAviso(`${plan.nombre} se agregó al carrito.`, 'exito');
+  });
+}
+
+function iniciarEventoReintento() {
+  if (eventoReintentoIniciado) return;
+  eventoReintentoIniciado = true;
+  document.addEventListener('click', (evento)=>{
+    if (!evento.target.closest('[data-reintentar-catalogo]')) return;
+    select('[data-catalogo]')?.setAttribute('aria-busy', 'true');
+    select('[data-planes]')?.setAttribute('aria-busy', 'true');
+    iniciarInicio();
+  });
+}
 
 function alinearConHash(){
   const id = window.location.hash.slice(1);
@@ -15,23 +58,28 @@ function alinearConHash(){
 }
 
 export async function iniciarInicio(){
+  iniciarEventosCatalogo();
+  iniciarEventoReintento();
   try {
     const [productos, planes, clases, entrenadores, gimnasio] = await Promise.all([
       obtenerProductos(), obtenerPlanes(), obtenerClases(), obtenerEntrenadores(), obtenerGimnasio()
     ]);
+    productosActuales = productos.datos || [];
+    planesActuales = planes.datos || [];
     pintarProductos(productos);
     pintarPlanes(planes);
     pintarClases(clases, entrenadores.datos || []);
     pintarEntrenadores(entrenadores);
     pintarServicios(gimnasio);
     anunciarOrigenDatos([productos, planes, clases, entrenadores, gimnasio]);
-    iniciarEventosTienda(productos);
-    iniciarEventosPlanes(planes);
-    iniciarContacto();
+    if (!contactoIniciado) { iniciarContacto(); contactoIniciado = true; }
   } catch (e) {
     console.error(e);
+    [select('[data-catalogo]'), select('[data-planes]')].filter(Boolean).forEach((contenedor)=>mostrarErrorCatalogo(contenedor, 'Ocurrió un error al cargar el catálogo.'));
     mostrarAviso('Ocurrió un error al cargar la página.', 'error');
   } finally {
+    select('[data-catalogo]')?.setAttribute('aria-busy', 'false');
+    select('[data-planes]')?.setAttribute('aria-busy', 'false');
     if (location.hash) {
       requestAnimationFrame(() => {
         alinearConHash();
@@ -51,6 +99,7 @@ function anunciarOrigenDatos(resultados) {
 function pintarProductos(resultado){
   const cont = select('[data-catalogo]'); if(!cont) return;
   cont.setAttribute('aria-busy','false');
+  if (resultado.origen === 'error') { mostrarErrorCatalogo(cont, resultado.mensaje); return; }
   const msg = select('#mensaje-catalogo');
   if (resultado.origen === 'indexeddb' && msg){ msg.textContent = resultado.mensaje; msg.hidden = false; }
   if (!resultado.datos.length){ cont.innerHTML = vacio('No hay productos disponibles por ahora.'); return; }
@@ -62,6 +111,7 @@ function pintarProductos(resultado){
 function pintarPlanes(resultado){
   const cont = select('[data-planes]'); if(!cont) return;
   cont.setAttribute('aria-busy','false');
+  if (resultado.origen === 'error') { mostrarErrorCatalogo(cont, resultado.mensaje); return; }
   if (!resultado.datos.length){ cont.innerHTML = vacio('No hay planes disponibles por ahora.'); return; }
   renderizar(cont, resultado.datos.map(tarjetaPlan));
 }
@@ -82,31 +132,6 @@ function pintarEntrenadores(resultado){
 function pintarServicios(gimnasio){
   const cont = select('[data-servicios]'); if(!cont || !gimnasio?.servicios?.length) return;
   renderizar(cont, gimnasio.servicios.map(tarjetaServicio));
-}
-
-function iniciarEventosTienda(resultadoProductos){
-  const cont = select('[data-catalogo]'); if(!cont) return;
-  cont.addEventListener('click', (e)=>{
-    const boton = e.target.closest('[data-accion="agregar"]');
-    if (!boton) return;
-    const id = String(boton.dataset.id);
-    const producto = (resultadoProductos.datos||[]).find(p=> String(p.id)===id);
-    if (!producto || producto.disponible === false || Number(producto.stock||0)<=0){ mostrarAviso('Este producto no está disponible.', 'error'); return; }
-    carrito.agregar({ ...producto, tipo:'producto' }, 1);
-    mostrarAviso(`${producto.nombre} se agregó al carrito.`, 'exito');
-  });
-}
-function iniciarEventosPlanes(resultadoPlanes){
-  const cont = select('[data-planes]'); if(!cont) return;
-  cont.addEventListener('click', (e)=>{
-    const boton = e.target.closest('[data-accion="elegir-plan"]');
-    if (!boton) return;
-    const id = String(boton.dataset.planId);
-    const plan = (resultadoPlanes.datos||[]).find(p=> String(p.id)===id);
-    if (!plan) return;
-    carrito.agregar({ id: plan.id, nombre: plan.nombre, precio: plan.precio, imagen: plan.imagen, tipo:'plan', membresiaId: plan.id }, 1);
-    mostrarAviso(`${plan.nombre} se agregó al carrito.`, 'exito');
-  });
 }
 
 function iniciarContacto(){
