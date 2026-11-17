@@ -171,6 +171,7 @@ nav[aria-label="Ruta de navegación"] a {
   color: var(--pf-amarillo-texto);
   display: inline-flex;
   align-items: center;
+  min-width: 24px;
   min-height: 24px;
 }
 
@@ -656,6 +657,7 @@ img {
 footer a {
   display: inline-flex;
   align-items: center;
+  min-width: 24px;
   min-height: 24px;
 }
 
