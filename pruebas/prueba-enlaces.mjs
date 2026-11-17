@@ -19,7 +19,7 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { dirname, join, resolve, relative, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const raiz = resolve(process.argv[2] || join(dirname(fileURLToPath(import.meta.url)), '..'));
+const raiz = resolve(process.argv[2] || join(dirname(fileURLToPath(import.meta.url)), '../frontend'));
 
 let fallos = 0;
 function comprobar(descripcion, condicion, extra = '') {
