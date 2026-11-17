@@ -71,7 +71,7 @@
     --pf-gris: #565656;
     --pf-gris-oscuro: #6f6f6f;
     --pf-rojo-claro: #b3121a;
-    --pf-amarillo-texto: #7a5c00;
+    --pf-amarillo-texto: #664d00;
     --pf-error-texto: #b30f18;
     --pf-error-aviso: #b30f18;
     --pf-texto-2: #3a3a3a;
@@ -95,7 +95,7 @@ html[data-tema="claro"]:has(body:not(.pf-admin)) {
   --pf-gris: #565656;
   --pf-gris-oscuro: #6f6f6f;
   --pf-rojo-claro: #b3121a;
-  --pf-amarillo-texto: #7a5c00;
+  --pf-amarillo-texto: #664d00;
   --pf-error-texto: #b30f18;
   --pf-error-aviso: #b30f18;
   --pf-texto-2: #3a3a3a;
@@ -103,6 +103,12 @@ html[data-tema="claro"]:has(body:not(.pf-admin)) {
   --pf-fondo-encabezado-fijo: rgba(246, 246, 243, 0.96);
   --pf-sombra: 0 1px 2px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.12);
   --pf-sombra-alta: 0 10px 40px rgba(0, 0, 0, 0.18);
+}
+
+/* Bootstrap mantiene su paleta propia en el panel; el texto de marca también
+   debe cambiar allí al activar su tema claro. */
+html[data-bs-theme="light"] {
+  --pf-amarillo-texto: #664d00;
 }
 
 /* ---------- Utilidades de Tailwind que deben seguir el tema ---------- */
@@ -143,6 +149,11 @@ html .text-pf-negro {
 
 html .decoration-pf-amarillo {
   text-decoration-color: var(--pf-amarillo-texto);
+}
+
+footer a,
+nav[aria-label="Ruta de navegación"] a {
+  color: var(--pf-amarillo-texto);
 }
 
 /* El logo oficial conserva sus trazos blancos sobre el respaldo oscuro en
@@ -669,7 +680,7 @@ img {
 .pf-tarjeta:hover,
 .pf-tarjeta:focus-within {
   transform: translateY(-4px);
-  border-color: var(--pf-amarillo);
+  border-color: var(--pf-amarillo-texto);
   box-shadow: var(--pf-sombra-alta);
 }
 
@@ -723,7 +734,7 @@ img {
 .pf-boton-primario {
   background-color: var(--pf-amarillo);
   color: #0a0a0a;
-  border: 2px solid var(--pf-amarillo);
+  border: 2px solid var(--pf-amarillo-texto);
 }
 
 .pf-boton-primario:hover {
