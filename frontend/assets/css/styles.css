@@ -137,7 +137,15 @@ html .text-pf-amarillo {
   color: var(--pf-amarillo-texto);
 }
 
+html[data-bs-theme="dark"] .text-pf-amarillo {
+  color: var(--pf-amarillo-texto);
+}
+
 html .hover\:text-pf-amarillo:hover {
+  color: var(--pf-amarillo-texto);
+}
+
+html[data-bs-theme="dark"] .hover\:text-pf-amarillo:hover {
   color: var(--pf-amarillo-texto);
 }
 
@@ -154,6 +162,9 @@ html .decoration-pf-amarillo {
 footer a,
 nav[aria-label="Ruta de navegación"] a {
   color: var(--pf-amarillo-texto);
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
 }
 
 /* El logo oficial conserva sus trazos blancos sobre el respaldo oscuro en
@@ -1085,6 +1096,10 @@ select option {
   transition: transform var(--pf-transicion-lenta), visibility var(--pf-transicion-lenta);
 }
 
+.pf-panel[hidden] {
+  display: none;
+}
+
 .pf-panel[data-visible="true"] {
   transform: translateX(0);
   visibility: visible;
@@ -1199,6 +1214,8 @@ select option {
   gap: 0.75rem;
 }
 
+.pf-tarjeta .pf-precio,
+.pf-panel .pf-precio,
 .pf-precio {
   color: var(--pf-amarillo-texto);
   font-weight: 800;

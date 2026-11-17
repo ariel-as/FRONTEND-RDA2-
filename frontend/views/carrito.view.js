@@ -3,17 +3,19 @@ import { raizSitio } from '../models/storage.model.js';
 import { escapar, rutaArchivo, actualizarContadorCarrito } from './componentes.view.js';
 
 export function inyectarEstructuraPanel() {
-  if (document.querySelector('[data-panel-carrito]')) return;
+  if (document.querySelector('[data-modal-acceso]')) return;
   const tienda = new URL('index.html#tienda', raizSitio()).href;
   const registro = new URL('cliente/login.html#registro', raizSitio()).href;
   const accesoAdmin = new URL('admin/login.html', raizSitio()).href;
+  const panel = document.querySelector('[data-panel-carrito]');
+  const contenido = panel?.querySelector('[data-panel-contenido]');
+  if (!panel || !contenido) return;
+  contenido.innerHTML = `
+    <div class="pf-panel-cuerpo"><div data-panel-vacio-state hidden><p class="m-0 font-bold text-white">Tu carrito está vacío</p><p class="mt-2 text-sm text-neutral-300">Agrega productos desde la tienda: puedes hacerlo sin iniciar sesión.</p><a href="${escapar(tienda)}" class="pf-boton pf-boton-primario mt-4 w-full">Ver productos</a></div><ul class="m-0 list-none p-0" data-panel-lineas></ul></div>
+    <div class="pf-panel-pie"><dl class="m-0"><div class="pf-total-bloque"><dt>Subtotal</dt><dd data-panel-subtotal>$0.00</dd></div><div class="pf-total-bloque pf-total-final"><dt>Total estimado (IVA incluido)</dt><dd data-panel-total>$0.00</dd></div></dl><p class="mt-2 text-xs text-neutral-400">Retiro en el gimnasio. El pedido se confirma en el checkout.</p><button type="button" class="pf-boton pf-boton-secundario mt-4 w-full" data-panel-vaciar>Vaciar carrito</button><button type="button" class="pf-boton pf-boton-primario mt-3 w-full" data-panel-finalizar>Finalizar compra</button><button type="button" class="pf-boton pf-boton-enlace mt-2 w-full" data-panel-continuar>Continuar comprando</button></div>`;
+  panel.hidden = false;
   document.body.insertAdjacentHTML('beforeend', `
     <div class="pf-capa" data-capa-carrito data-visible="false"></div>
-    <aside class="pf-panel" id="panel-carrito" data-panel-carrito data-visible="false" role="dialog" aria-modal="true" aria-labelledby="titulo-panel-carrito">
-      <div class="pf-panel-cabecera"><h2 id="titulo-panel-carrito">Carrito <span class="text-pf-amarillo" data-panel-articulos>(0)</span></h2><button type="button" class="pf-panel-cerrar" data-cerrar-carrito aria-label="Cerrar el carrito"><span aria-hidden="true">&times;</span></button></div>
-      <div class="pf-panel-cuerpo"><div data-panel-vacio-state hidden><p class="m-0 font-bold text-white">Tu carrito está vacío</p><p class="mt-2 text-sm text-neutral-300">Agrega productos desde la tienda: puedes hacerlo sin iniciar sesión.</p><a href="${escapar(tienda)}" class="pf-boton pf-boton-primario mt-4 w-full">Ver productos</a></div><ul class="m-0 list-none p-0" data-panel-lineas></ul></div>
-      <div class="pf-panel-pie"><dl class="m-0"><div class="pf-total-bloque"><dt>Subtotal</dt><dd data-panel-subtotal>$0.00</dd></div><div class="pf-total-bloque pf-total-final"><dt>Total estimado (IVA incluido)</dt><dd data-panel-total>$0.00</dd></div></dl><p class="mt-2 text-xs text-neutral-400">Retiro en el gimnasio. El pedido se confirma en el checkout.</p><button type="button" class="pf-boton pf-boton-secundario mt-4 w-full" data-panel-vaciar>Vaciar carrito</button><button type="button" class="pf-boton pf-boton-primario mt-3 w-full" data-panel-finalizar>Finalizar compra</button><button type="button" class="pf-boton pf-boton-enlace mt-2 w-full" data-panel-continuar>Continuar comprando</button></div>
-    </aside>
     <div class="pf-capa" data-capa-acceso data-visible="false"></div>
     <div class="pf-modal" id="modal-acceso" data-modal-acceso data-visible="false" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-acceso">
       <div class="pf-modal-cabecera"><h2 id="titulo-modal-acceso">Inicia sesión</h2><button type="button" class="pf-panel-cerrar" data-cerrar-acceso aria-label="Cerrar el inicio de sesión"><span aria-hidden="true">&times;</span></button></div>

@@ -13,7 +13,8 @@
  * Los colores de superficie y de texto amarillo son variables distintas para
  * conservar la marca y cumplir contraste en los dos temas.
  */
-tailwind.config = {
+window.tailwind = window.tailwind || {};
+window.tailwind.config = {
   theme: {
     extend: {
       colors: {

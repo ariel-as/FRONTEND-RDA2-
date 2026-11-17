@@ -1,10 +1,32 @@
-﻿import { iniciarTema } from '../views/tema.view.js';
+﻿import { aplicarTema } from '../views/tema.view.js';
 import { actualizarContadorCarrito, actualizarEstadoSesion } from '../views/componentes.view.js';
 import { carrito } from '../models/carrito.model.js';
 import { usuarioActual, cerrarSesion, tienePendencia } from '../models/sesion.model.js';
 import { CLAVES, leerCookie, escribirCookie, raizSitio } from '../models/storage.model.js';
 
 const select = (s) => document.querySelector(s);
+const COOKIE_TEMA_DIAS = 365;
+
+function temaPreferido() {
+  const guardado = leerCookie(CLAVES.tema);
+  if (guardado === 'claro' || guardado === 'oscuro') return guardado;
+  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'claro' : 'oscuro';
+}
+
+function iniciarTema() {
+  aplicarTema(temaPreferido());
+  selectTodos('[data-boton-tema]').forEach((boton) => boton.addEventListener('click', () => {
+    const actual = document.documentElement.classList.contains('pf-modo-claro') ? 'claro' : 'oscuro';
+    const siguiente = actual === 'claro' ? 'oscuro' : 'claro';
+    aplicarTema(siguiente);
+    escribirCookie(CLAVES.tema, siguiente, COOKIE_TEMA_DIAS);
+  }));
+  const media = window.matchMedia('(prefers-color-scheme: light)');
+  const alCambiar = () => { if (!leerCookie(CLAVES.tema)) aplicarTema(temaPreferido()); };
+  if (typeof media.addEventListener === 'function') media.addEventListener('change', alCambiar);
+  else if (typeof media.addListener === 'function') media.addListener(alCambiar);
+}
+
 
 export function iniciarAvisoCookies() {
   const aviso = select('[data-aviso-cookies]');
