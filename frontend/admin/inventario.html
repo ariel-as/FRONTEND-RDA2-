@@ -28,18 +28,26 @@
 </div></nav></header>
 <main id="contenido" class="container py-4">
   <h1 class="h3">Lotes y kárdex</h1>
-  <p class="text-body-secondary">Control de inventario por lotes.</p>
-  <div class="alert alert-info pf-disponible-pronto" role="note" data-disponible-pronto>
-    <p class="fw-bold mb-1">Disponible pronto</p>
-    <p class="mb-0">Esta pantalla se activará cuando el servidor publique sus servicios. Por ahora no realiza ninguna consulta.</p>
-  </div>
-  <section class="card shadow-sm" aria-labelledby="titulo-funciones"><div class="card-body">
-    <h2 id="titulo-funciones" class="h5">Qué podrás hacer aquí</h2>
-    <ul class="mb-0"><li>Lotes con filtros por producto, estado y por caducar; baja por caducidad y bloqueo.</li><li>Kárdex de un producto con saldos de cantidad, costo promedio y valor.</li><li>Recibir mercadería con costo y caducidad.</li><li>Ajustes positivos o negativos con observación obligatoria.</li></ul>
+  <p class="text-body-secondary">Saldos de cantidad, costo promedio y valor calculados por el servidor.</p>
+  <p data-mensaje class="pf-mensaje" role="status" aria-live="polite" hidden></p>
+  <div class="d-flex flex-wrap gap-2 mb-3"><button type="button" class="btn btn-primary" data-recibir hidden>Recibir mercadería</button><button type="button" class="btn btn-outline-primary" data-ajustar hidden>Registrar ajuste</button></div>
+  <section class="card shadow-sm mb-4" id="pantalla-lotes" aria-labelledby="titulo-lotes"><div class="card-body">
+    <h2 id="titulo-lotes" class="h5">Lotes</h2>
+    <form id="filtros-lotes" class="d-flex flex-wrap gap-2 align-items-end mb-2">
+      <div><label class="form-label" for="lotes-producto">Producto</label><select class="form-select" id="lotes-producto" name="productoId" data-productos><option value="">Todos</option></select></div>
+      <div><label class="form-label" for="lotes-estado">Estado</label><select class="form-select" id="lotes-estado" name="estado"><option value="">Todos</option><option value="D">Disponible</option><option value="I">Bloqueado</option><option value="C">Caducado o dado de baja</option></select></div>
+      <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="lotes-caducar" name="porCaducar" value="S"><label class="form-check-label" for="lotes-caducar">Solo por caducar</label></div>
+    </form>
+    <div data-lista aria-busy="false"></div>
+  </div></section>
+  <section class="card shadow-sm" id="pantalla-kardex" aria-labelledby="titulo-kardex"><div class="card-body">
+    <h2 id="titulo-kardex" class="h5">Kárdex</h2>
+    <form id="filtros-kardex" class="d-flex flex-wrap gap-2 align-items-end mb-2"><div><label class="form-label" for="kardex-producto">Producto</label><select class="form-select" id="kardex-producto" name="productoId" data-productos required><option value="">Selecciona un producto</option></select></div></form>
+    <div data-lista aria-busy="false"><p class="text-body-secondary">Elige un producto para ver su kárdex.</p></div>
   </div></section>
 </main>
 <footer class="border-top py-4 mt-5"><p class="container text-center text-body-secondary mb-0">© <span data-anio>2026</span> Planeta Fitness</p></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script type="module" src="../controllers/admin.controller.js"></script>
+<script type="module" src="../controllers/admin-inventario.controller.js"></script>
 </body>
 </html>
