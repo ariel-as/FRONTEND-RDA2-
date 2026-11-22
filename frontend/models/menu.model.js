@@ -19,6 +19,7 @@ export const MENU_ADMIN = [
   { texto: 'Clases', pagina: 'clases.html', grupo: 'Gimnasio', permiso: 'clases' },
   { texto: 'Personal', pagina: 'personal.html', grupo: 'Gimnasio', permiso: ['empleados', 'asistencia'] },
   { texto: 'Usuarios', pagina: 'usuarios.html', grupo: 'Administración', permiso: 'usuarios' },
+  { texto: 'Datos del gimnasio', pagina: 'gimnasio.html', grupo: 'Administración', permiso: 'gimnasio' },
   { texto: 'Otras tablas', pagina: 'tablas.html', grupo: 'Administración', permiso: 'tablas' }
 ];
 
