@@ -1836,6 +1836,65 @@ html[data-bs-theme="dark"] .pf-admin h3 {
   border-left: 0.35rem solid currentColor;
 }
 
+/* ---------- Fase 2: diálogo propio y componente de pagos ---------- */
+
+.pf-dialogo {
+  width: min(560px, calc(100% - 2rem));
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  background: var(--bs-body-bg, #111827);
+  color: var(--bs-body-color, #f3f4f6);
+  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.45);
+}
+
+body:not(.pf-admin) .pf-dialogo {
+  background: #111111;
+  color: #f5f5f5;
+  border: 1px solid #3f3f46 !important;
+}
+
+.pf-dialogo::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.pf-dialogo-error {
+  margin: 0.75rem 0 0;
+  padding: 0.6rem 0.75rem;
+  border-left: 0.3rem solid #dc3545;
+  background: rgba(220, 53, 69, 0.12);
+  font-weight: 600;
+}
+
+body:not(.pf-admin) .pf-dialogo .form-control,
+body:not(.pf-admin) .pf-dialogo .form-select {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #52525b;
+  background: #18181b;
+  color: #f5f5f5;
+}
+
+body:not(.pf-admin) .pf-dialogo-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.pf-pagos [data-pagos-estado][data-tipo="error"]::before {
+  content: "Atención: ";
+}
+
+.pf-pagos [data-pagos-estado][data-tipo="exito"]::before {
+  content: "Listo: ";
+}
+
+.pf-pagos .form-check-input {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
 /* ---------- Respeta a quien prefiere reducir el movimiento ---------- */
 
 @media (prefers-reduced-motion: reduce) {

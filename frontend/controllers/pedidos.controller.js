@@ -3,6 +3,7 @@ import { misPedidos, misInscripciones, cancelarPedido } from '../models/pedido.m
 import { tarjetaPedido, tarjetaInscripcion, paginacion } from '../views/pedidos.view.js';
 import { raizSitio } from '../models/storage.model.js';
 import { mostrarAviso } from '../views/componentes.view.js';
+import { confirmarAccion } from './dialogo.controller.js';
 
 function mostrarErrorCarga(contenedor, mensaje) {
   const aviso = document.createElement('p');
@@ -22,7 +23,7 @@ export async function iniciarMisPedidos(){
     const btnCancel = e.target.closest('[data-cancelar-pedido]');
     if (btnCancel){
       const id = btnCancel.dataset.cancelarPedido;
-      if (!confirm(`¿Cancelar el pedido #${id}?`)) return;
+      if (!await confirmarAccion({ titulo: 'Cancelar pedido', mensaje: `¿Cancelar el pedido #${id}? Esta acción no se puede deshacer.`, textoConfirmar: 'Cancelar pedido' })) return;
       try { await cancelarPedido(id); mostrarAviso('Pedido cancelado.', 'exito'); await cargarPedidos(); }
       catch(err){ mostrarAviso(err.mensaje || 'No se pudo cancelar el pedido.', 'error'); }
     }

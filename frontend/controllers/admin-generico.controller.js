@@ -1,6 +1,7 @@
 ﻿import { adminModel } from '../models/admin.model.js';
 import { esAdm as esAdmSesion, puede } from '../models/permisos.model.js';
 import { construirValidador, mostrarMensaje, mostrarErroresServidor } from './validacion.controller.js';
+import { confirmarAccion } from './dialogo.controller.js';
 import { escapar } from '../views/componentes.view.js';
 import {
   tablaAdmin, paginacionAdmin, valorTexto, valorConEtiqueta, fechaLocal,
@@ -236,11 +237,11 @@ async function eliminarRegistro(inst, clave, boton) {
     const datos = fila?.data || fila || {};
     const accion = inst.config.accionEliminar?.(datos);
     if (accion) {
-      if (!window.confirm(accion.confirmar || `¿${accion.etiqueta} el registro ${etiquetaRegistro(inst, datos)}?`)) return;
+      if (!await confirmarAccion({ titulo: `${accion.etiqueta} registro`, mensaje: accion.confirmar || `¿${accion.etiqueta} el registro ${etiquetaRegistro(inst, datos)}?`, textoConfirmar: accion.etiqueta })) return;
       await accion.ejecutar(datos);
       mostrarMensaje(region(inst), accion.mensajeExito || 'Registro actualizado.', 'exito');
     } else {
-      if (!window.confirm(`¿Eliminar el registro ${etiquetaRegistro(inst, datos)}?`)) return;
+      if (!await confirmarAccion({ titulo: 'Eliminar registro', mensaje: `¿Eliminar el registro ${etiquetaRegistro(inst, datos)}? Esta acción no se puede deshacer.`, textoConfirmar: 'Eliminar' })) return;
       await adminModel.tablaEliminar(inst.tabla, clave);
       mostrarMensaje(region(inst), 'Registro eliminado.', 'exito');
     }
@@ -277,7 +278,7 @@ function asegurarModal(inst) {
   inst.formulario = modal.querySelector('[data-form-tabla]');
   modal.querySelector('[data-cerrar-modal]').addEventListener('click', () => cerrarModal(inst));
   modal.addEventListener('close', () => { if (inst.focoAnterior instanceof HTMLElement) inst.focoAnterior.focus(); });
-  construirValidador(inst.formulario, { borrador: false, alEnviar: () => guardar(inst) });
+  construirValidador(inst.formulario, { borrador: false, reglas: inst.config.reglas || {}, alEnviar: () => guardar(inst) });
 }
 
 function abrirFormulario(inst, clave, modo = clave ? 'editar' : 'crear') {

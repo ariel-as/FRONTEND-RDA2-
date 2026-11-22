@@ -5,6 +5,7 @@ import { fechaLocal } from '../views/admin.view.js';
 import {
   construirValidador, mostrarMensaje, mostrarErroresServidor, validarContrasena, validarCoincidencia
 } from './validacion.controller.js';
+import { confirmarAccion } from './dialogo.controller.js';
 
 const mensaje = document.querySelector('#mensaje-pantalla');
 const tbody = document.querySelector('[data-usuarios-body]');
@@ -150,7 +151,7 @@ tbody.addEventListener('click', async (evento) => {
   const toggle = evento.target.closest('[data-toggle-usuario]');
   if (!toggle) return;
   const nuevo = toggle.dataset.estado === 'A' ? 'I' : 'A';
-  if (!window.confirm(`¿${nuevo === 'A' ? 'Activar' : 'Desactivar'} esta cuenta?`)) return;
+  if (!await confirmarAccion({ titulo: nuevo === 'A' ? 'Activar cuenta' : 'Desactivar cuenta', mensaje: `¿${nuevo === 'A' ? 'Activar' : 'Desactivar'} esta cuenta?`, textoConfirmar: nuevo === 'A' ? 'Activar' : 'Desactivar', tono: nuevo === 'A' ? 'primario' : 'peligro' })) return;
   try {
     await adminModel.estadoUsuario(toggle.dataset.toggleUsuario, { estado: nuevo });
     mostrarMensaje(mensaje, 'Estado de la cuenta actualizado.', 'exito');

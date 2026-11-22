@@ -1,5 +1,6 @@
 ﻿import { adminModel } from '../models/admin.model.js';
 import { mostrarMensaje } from './validacion.controller.js';
+import { confirmarAccion } from './dialogo.controller.js';
 import { escapar } from '../views/componentes.view.js';
 import { paginacionAdmin } from '../views/admin.view.js';
 
@@ -99,7 +100,7 @@ async function onTablaClick(e){
     }catch(err){ mostrarMensaje(s('#mensaje-productos'), err.mensaje||'No se pudo cargar el producto.', 'error'); }
   }
   if(btnD){
-    const id = btnD.dataset.desactivar; if(!confirm(`¿Desactivar el producto ${id}?`)) return;
+    const id = btnD.dataset.desactivar; if(!await confirmarAccion({ titulo: 'Desactivar producto', mensaje: `¿Desactivar el producto ${id}? Dejará de mostrarse en la tienda.`, textoConfirmar: 'Desactivar' })) return;
     try{ await adminModel.desactivarProducto(id); mostrarMensaje(s('#mensaje-productos'),'Producto desactivado.','exito'); await listar(); }
     catch(err){ mostrarMensaje(s('#mensaje-productos'), err.mensaje||'No se pudo desactivar.', 'error'); }
   }
