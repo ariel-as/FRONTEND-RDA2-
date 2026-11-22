@@ -1,4 +1,4 @@
-﻿name: CI/CD Planeta Fitness
+name: CI/CD Planeta Fitness
 
 # Ciclo completo: validación de código, seguridad, librerías, API y navegador.
 # Solo si todo pasa se publica en GitHub Pages y se comprueba el sitio publicado.
@@ -151,7 +151,7 @@ jobs:
 
       - name: Revisión de dependencias nuevas
         if: github.event_name == 'pull_request'
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
 
