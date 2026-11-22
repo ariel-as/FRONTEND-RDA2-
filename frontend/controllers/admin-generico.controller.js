@@ -1,5 +1,5 @@
 ﻿import { adminModel } from '../models/admin.model.js';
-import { usuarioActual, codigosRol } from '../models/sesion.model.js';
+import { esAdm as esAdmSesion, puede } from '../models/permisos.model.js';
 import { construirValidador, mostrarMensaje, mostrarErroresServidor } from './validacion.controller.js';
 import { escapar } from '../views/componentes.view.js';
 import {
@@ -12,10 +12,7 @@ const CAMPOS_CALCULADOS = new Set(['fechaRegistro','fechaCreacion','ultimoAcceso
 let contador = 0;
 
 export function esAdm() {
-  const usuario = usuarioActual();
-  if (!usuario) return false;
-  const codigos = codigosRol(usuario);
-  return codigos.includes('ADM') || (!codigos.length && usuario.rol === 'admin');
+  return esAdmSesion();
 }
 
 export function iniciarPantalla(config = {}) {
@@ -113,7 +110,9 @@ function configurarBotones(inst) {
 }
 
 function puedeEscribir(inst) {
-  if (!esAdm() || inst.config.soloLectura) return false;
+  if (inst.config.soloLectura) return false;
+  if (inst.config.permisoEscritura) return puede(inst.config.permisoEscritura);
+  if (!esAdm()) return false;
   if (inst.meta?.soloLectura === true) return false;
   const modo = String(inst.meta?.modo || inst.meta?.mode || '').toLowerCase();
   return !modo || modo === 'crud';

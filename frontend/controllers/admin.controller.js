@@ -1,9 +1,14 @@
 import { iniciarTema } from './comunes.controller.js';
-import { usuarioActual, codigosRol, esAdministrador, iniciarSesion, cerrarSesion } from '../models/sesion.model.js';
+import { usuarioActual, codigosRol, esAdministrador, iniciarSesion, cerrarSesion, refrescarPerfil } from '../models/sesion.model.js';
 import { adminModel } from '../models/admin.model.js';
-import { CLAVES, leerCookie, escribirCookie } from '../models/storage.model.js';
+import { api } from '../models/api.model.js';
+import { CLAVES, leerCookie, escribirCookie, leerSesion, escribirSesion } from '../models/storage.model.js';
+import { esAdm, puede } from '../models/permisos.model.js';
+import { INICIO_PANEL, entradaDePagina, menuVisible } from '../models/menu.model.js';
 import { construirValidador, mostrarMensaje } from './validacion.controller.js';
 import { escapar, mostrarAviso } from '../views/componentes.view.js';
+import { pintarMenuAdmin, pintarSinAcceso } from '../views/menu.view.js';
+import { iniciarAvisoServidor } from '../views/servidor.view.js';
 import { formatearPrecio } from '../models/carrito.model.js';
 
 function select(s){ return document.querySelector(s); }
@@ -16,18 +21,40 @@ export function protegerAdmin() {
   return true;
 }
 
+export function paginaActual() {
+  const archivo = window.location.pathname.split('/').pop() || 'index.html';
+  return { archivo, ancla: window.location.hash.replace(/^#/, '') };
+}
+
+// La página se puede usar si el usuario tiene el permiso de su entrada en el menú.
+export function accesoPagina() {
+  const entrada = entradaDePagina(paginaActual().archivo);
+  return !entrada || puede(entrada.permiso);
+}
+
+export function pintarMenu() {
+  pintarMenuAdmin(select('[data-menu-admin]'), { inicio: INICIO_PANEL, grupos: menuVisible((permiso) => puede(permiso)), actual: paginaActual() });
+}
+
+// Bloquea la pantalla sin llamar a la API. Devuelve true si el usuario puede seguir.
+export function verificarAccesoPagina() {
+  if (accesoPagina()) return true;
+  api.bloquear();
+  document.body.dataset.sinAcceso = 'true';
+  pintarSinAcceso(select('main'));
+  return false;
+}
+
 export function iniciarSesionAdminUI(){
   const u = usuarioActual();
   const codigos = codigosRol(u);
-  const rolAdm = codigos.includes('ADM') || (!codigos.length && u?.rol === 'admin');
+  const rolAdm = esAdm(u);
   const TIPOS = { ADM: 'Administrador general', REC: 'Recepcionista', ENT: 'Entrenador', CON: 'Contador' };
   const tipo = codigos.map((c)=>TIPOS[c]).find(Boolean) || (u?.rol === 'admin' ? 'Administrador general' : 'Administrador');
   selectAll('[data-admin-tipo]').forEach(n=> { n.textContent = tipo; });
   document.querySelector('.pf-admin-usuario')?.setAttribute('aria-label', `Opciones de ${tipo}`);
   selectAll('[data-solo-adm]').forEach(n=> { n.hidden = !rolAdm; });
-  if (!rolAdm && document.body.dataset.pagina === 'usuarios-admin') {
-    window.location.replace(new URL('index.html', document.baseURI).href);
-  }
+  selectAll('[data-permiso]').forEach(n=> { n.hidden = !puede(n.dataset.permiso.split(',').map((p) => p.trim())); });
   selectAll('[data-cerrar-sesion]').forEach(b=> b.addEventListener('click', ()=>{ cerrarSesion(); window.location.replace(new URL('login.html', document.baseURI).href); }));
 }
 
@@ -44,6 +71,12 @@ function inyectarAvisosAdmin(){
   });
 }
 
+// Trae /auth/me para guardar los permisos con la sesión.
+async function actualizarPermisos() {
+  try { await refrescarPerfil(); } catch { /* sin permisos del servidor se mantiene el acceso solo para ADM */ }
+  escribirSesion(CLAVES.perfilRevisado, true);
+}
+
 export function iniciarLoginAdmin(){
   if (esAdministrador()) { window.location.replace(new URL('index.html', document.baseURI).href); return; }
   const form = select('#formulario-login-admin'); if(!form) return;
@@ -55,6 +88,7 @@ export function iniciarLoginAdmin(){
       try {
         const res = await iniciarSesion(form.querySelector('#correo').value.trim(), form.querySelector('#contrasena').value, 'admin');
         if (!res.ok) { mostrarMensaje(region, res.mensaje || 'No se pudo iniciar sesión.', 'error'); return false; }
+        await actualizarPermisos();
         mostrarMensaje(region, 'Sesión iniciada.', 'exito');
         window.setTimeout(()=> window.location.href = new URL('index.html', document.baseURI).href, 500);
         return true;
@@ -66,6 +100,12 @@ export function iniciarLoginAdmin(){
 }
 
 export async function iniciarDashboard(){
+  if (!esAdm()) {
+    // /admin/resumen solo responde a ADM; los demás roles no lo consultan.
+    selectAll('[data-indicadores-adm]').forEach((n) => { n.hidden = true; });
+    mostrarMensaje(select('#mensaje-admin'), 'Usa el menú para entrar a las pantallas de tu rol.', 'info');
+    return;
+  }
   try {
     const [resumen, pedidos] = await Promise.all([adminModel.resumen(), adminModel.pedidos({limit:5})]);
     const map = {
@@ -89,14 +129,29 @@ export function estadoTexto(valor, mapa){
 
 window.addEventListener('pf:sesion-expirada', ()=>{ window.location.href = new URL('login.html', document.baseURI).href; });
 
+let iniciado = false;
 export async function mainAdmin(){
+  if (iniciado) return;
+  iniciado = true;
   iniciarTema();
+  iniciarAvisoServidor();
   const pagina = document.body.dataset.pagina;
   if (pagina === 'login-admin'){ inyectarAvisosAdmin(); iniciarLoginAdmin(); return; }
   if (!protegerAdmin()) return;
+  // Todo lo siguiente hasta el primer await es síncrono: así la pantalla queda
+  // bloqueada antes de que su propio módulo intente consultar la API.
+  pintarMenu();
+  const permitido = verificarAccesoPagina();
   iniciarSesionAdminUI();
   inyectarAvisosAdmin();
   selectAll('[data-anio]').forEach((nodo) => { nodo.textContent = new Date().getFullYear(); });
+  if (!permitido) return;
+  if (!leerSesion(CLAVES.perfilRevisado, false)) {
+    actualizarPermisos().then(() => {
+      pintarMenu();
+      selectAll('[data-permiso]').forEach(n=> { n.hidden = !puede(n.dataset.permiso.split(',').map((p) => p.trim())); });
+    });
+  }
   if (pagina === 'dashboard') await iniciarDashboard();
   // pantallas específicas se auto-inician por su propio módulo importado en HTML
 }

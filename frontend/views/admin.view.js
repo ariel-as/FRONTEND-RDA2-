@@ -1,23 +1,5 @@
 ﻿import { escapar } from './componentes.view.js';
 
-export function navAdmin(activa = '') {
-  const items = [
-    ['index.html','Dashboard','dashboard'],
-    ['productos.html','Productos','productos'],
-    ['pedidos.html','Pedidos','pedidos'],
-    ['clientes.html','Clientes','clientes'],
-    ['membresias.html','Membresías','membresias'],
-    ['inscripciones.html','Inscripciones','inscripciones'],
-    ['clases.html','Clases','clases'],
-    ['personal.html','Personal','personal'],
-    ['usuarios.html','Usuarios','usuarios'],
-    ['tablas.html','Otras tablas','tablas']
-  ];
-  return `<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-    ${items.map(([href,label,key])=>`<li class="nav-item"><a class="nav-link ${activa===key?'active':''}" href="${href}" ${activa===key?'aria-current="page"':''}>${label}</a></li>`).join('')}
-  </ul>`;
-}
-
 export function tablaGenerica({ caption, columnas, filas, accionesHtml }) {
   return `<div class="table-responsive"><table class="table table-hover align-middle">
     <caption class="visually-hidden">${escapar(caption||'')}</caption>

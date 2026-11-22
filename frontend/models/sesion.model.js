@@ -76,7 +76,10 @@ export async function registrarCliente(datos) {
 
 export async function refrescarPerfil() {
   const data = await api.get('/auth/me', { requiereSesion: true });
-  const usuario = data?.usuario || data;
+  const usuario = { ...(data?.usuario || data) };
+  // La fase 2 agrega `permisos` (lista `grupo:accion`); se guarda junto con la sesión.
+  const permisos = data?.permisos ?? usuario.permisos;
+  if (Array.isArray(permisos)) usuario.permisos = permisos; else delete usuario.permisos;
   const token = leerToken();
   if (token) guardarTokenYUsuario(token, usuario);
   return usuario;

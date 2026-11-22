@@ -1,4 +1,5 @@
 import { aplicarTema } from '../views/tema.view.js';
+import { iniciarAvisoServidor } from '../views/servidor.view.js';
 import { actualizarContadorCarrito, actualizarEstadoSesion } from '../views/componentes.view.js';
 import { carrito } from '../models/carrito.model.js';
 import { usuarioActual, cerrarSesion, tienePendencia } from '../models/sesion.model.js';
@@ -111,6 +112,7 @@ function selectTodos(s){ return [...document.querySelectorAll(s)]; }
 
 export function iniciarComunes() {
   iniciarTema();
+  iniciarAvisoServidor();
   iniciarAvisoCookies();
   iniciarMenuMovil();
   iniciarEncabezadoFijo();

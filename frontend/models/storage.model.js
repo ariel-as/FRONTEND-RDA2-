@@ -7,7 +7,9 @@
   sesionToken: 'pf_token',
   sesionPendiente: 'sesionPendiente',
   borradorFormulario: 'pf_borrador_formulario',
-  tema: 'pf_tema'
+  tema: 'pf_tema',
+  servidorListo: 'pf_servidor_listo',
+  perfilRevisado: 'pf_perfil_revisado'
 };
 
 export function raizSitio() {
