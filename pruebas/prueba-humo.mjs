@@ -25,9 +25,9 @@ const SITIO = `http://127.0.0.1:${PUERTO}/`;
 
 const USUARIOS = {
   ADM: { id: 1, login: 'adm@pf.ec', rol: 'admin', roles: ['ADM'] },
-  REC: { id: 2, login: 'rec@pf.ec', rol: 'admin', roles: ['REC'], permisos: ['pedidos:verificar', 'pedidos:cancelar', 'clientes:crear', 'clientes:editar', 'inscripciones:crear', 'caja:abrir', 'entradas:registrar', 'gimnasio:leer', 'planes:leer', 'clases:leer', 'inventario:leer', 'rutinas:leer', 'empleados:leer', 'asistencia:marcar', 'ventas:vender', 'facturacion:generar', 'mensajes:responder', 'reportes:clientes', 'aliados:cobrar'] },
-  REC_SIN_PERMISOS: { id: 3, login: 'rec2@pf.ec', rol: 'admin', roles: ['REC'] },
-  CON: { id: 4, login: 'con@pf.ec', rol: 'admin', roles: ['CON'], permisos: ['facturacion:sri', 'caja:cierre', 'reportes:todos', 'tablas:leer', 'pedidos:leer', 'inventario:leer', 'compras:leer'] },
+  REC: { id: 2, login: 'rec@pf.ec', rol: 'staff', roles: ['REC'], permisos: ['resumen:ver', 'gimnasio:leer', 'catalogos:leer', 'empleados:leer', 'asistencia:marcar', 'clientes:leer', 'clientes:editar', 'planes:leer', 'inscripciones:leer', 'inscripciones:gestionar', 'entradas:gestionar', 'aforo:ver', 'clases:leer', 'rutinas:leer', 'aliados:leer', 'aliados:cobrar', 'inventario:leer', 'pedidos:leer', 'pedidos:gestionar', 'ventas:leer', 'ventas:crear', 'facturas:leer', 'facturas:generar', 'caja:operar', 'caja:leer', 'mensajes:gestionar', 'reportes:clientes', 'reportes:entradas'] },
+  REC_SIN_PERMISOS: { id: 3, login: 'rec2@pf.ec', rol: 'staff', roles: ['REC'] },
+  CON: { id: 4, login: 'con@pf.ec', rol: 'staff', roles: ['CON'], permisos: ['resumen:ver', 'gimnasio:leer', 'catalogos:leer', 'empleados:leer', 'asistencia:reporte', 'clientes:leer', 'planes:leer', 'inscripciones:leer', 'aliados:leer', 'aliados:cobrar', 'inventario:leer', 'compras:leer', 'pedidos:leer', 'ventas:leer', 'facturas:leer', 'facturas:generar', 'facturas:sri', 'caja:leer', 'caja:cierre', 'reportes:clientes', 'reportes:entradas', 'reportes:todos', 'tablas:leer'] },
   CLI: { id: 9, login: 'cli@pf.ec', rol: 'user', roles: ['CLI'], nombre: 'Ana', cedula: '1710034065', correo: 'cli@pf.ec' }
 };
 const PEDIDOS = [

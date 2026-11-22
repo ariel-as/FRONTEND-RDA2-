@@ -106,7 +106,7 @@ const INDICADORES_ROL = {
   REC: [
     { titulo: 'Aforo actual', pronto: true },
     { titulo: 'Caja abierta', pronto: true },
-    { titulo: 'Pedidos por verificar', clave: 'pedidosPorVerificar', permiso: 'pedidos', enlace: 'pedidos.html' },
+    { titulo: 'Pedidos por verificar', clave: 'pedidosPorVerificar', permiso: 'pedidos:leer', enlace: 'pedidos.html' },
     { titulo: 'Inscripciones web pendientes', pronto: true }
   ],
   CON: [
@@ -148,13 +148,15 @@ export async function iniciarDashboard(){
   const accesos = select('[data-accesos-directos]');
   if (accesos) accesos.innerHTML = accesosDirectosHtml(menuVisible((permiso) => puede(permiso)));
   await pintarIndicadoresRol();
-  if (!esAdm()) {
-    // /admin/resumen solo responde a ADM; los demás roles no lo consultan.
+  if (!puede('resumen:ver')) {
+    // Sin resumen:ver (por ejemplo, sesión sin permisos del servidor) no se consulta /admin/resumen.
     selectAll('[data-indicadores-adm]').forEach((n) => { n.hidden = true; });
     return;
   }
+  const verPedidos = puede('pedidos:leer');
+  if (!verPedidos) select('[data-tabla-pedidos-recientes]')?.closest('section')?.setAttribute('hidden', '');
   try {
-    const [resumen, pedidos] = await Promise.all([adminModel.resumen(), adminModel.pedidos({limit:5})]);
+    const [resumen, pedidos] = await Promise.all([adminModel.resumen(), verPedidos ? adminModel.pedidos({limit:5}) : Promise.resolve([])]);
     const map = {
       '[data-total-productos]': resumen.productosActivos ?? resumen.productos ?? 0,
       '[data-total-bajo-stock]': resumen.bajoStock ?? 0,

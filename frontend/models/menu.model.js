@@ -1,7 +1,8 @@
 /*
  * Único lugar donde se define el menú del panel administrativo.
  * Cada entrada: texto visible, página dentro de admin/, grupo del menú y
- * permiso necesario (grupo de la matriz de permisos; ver permisos.model.js).
+ * permiso necesario: grupo de server/config/permisos.js del backend (por ejemplo `caja`
+ * se cumple con caja:operar o caja:leer) o un permiso concreto como `caja:cierre`.
  * La vista menu.view.js lo pinta en todas las páginas de admin/ y cada página
  * revisa aquí su permiso al cargar.
  */
@@ -11,7 +12,7 @@ export const GRUPOS_MENU = ['Recepción', 'Inventario', 'Gimnasio', 'Administrac
 export const INICIO_PANEL = { texto: 'Dashboard', pagina: 'index.html', permiso: null };
 
 export const MENU_ADMIN = [
-  { texto: 'Entradas y aforo', pagina: 'entradas.html', grupo: 'Recepción', permiso: 'entradas' },
+  { texto: 'Entradas y aforo', pagina: 'entradas.html', grupo: 'Recepción', permiso: ['entradas', 'aforo'] },
   { texto: 'Inscripciones', pagina: 'inscripciones.html', grupo: 'Recepción', permiso: 'inscripciones' },
   { texto: 'Clientes', pagina: 'clientes.html', grupo: 'Recepción', permiso: 'clientes' },
   { texto: 'Pedidos web', pagina: 'pedidos.html', grupo: 'Recepción', permiso: 'pedidos' },
@@ -28,8 +29,8 @@ export const MENU_ADMIN = [
   { texto: 'Usuarios', pagina: 'usuarios.html', grupo: 'Administración', permiso: 'usuarios' },
   { texto: 'Datos del gimnasio', pagina: 'gimnasio.html', grupo: 'Administración', permiso: 'gimnasio' },
   { texto: 'Otras tablas', pagina: 'tablas.html', grupo: 'Administración', permiso: 'tablas' },
-  { texto: 'Cierres de caja', pagina: 'caja.html#cierres', grupo: 'Contabilidad', permiso: 'caja' },
-  { texto: 'Facturas', pagina: 'facturas.html', grupo: 'Contabilidad', permiso: 'facturacion' },
+  { texto: 'Cierres de caja', pagina: 'caja.html#cierres', grupo: 'Contabilidad', permiso: 'caja:cierre' },
+  { texto: 'Facturas', pagina: 'facturas.html', grupo: 'Contabilidad', permiso: 'facturas' },
   { texto: 'Reportes', pagina: 'reportes.html', grupo: 'Contabilidad', permiso: 'reportes' },
   { texto: 'Mensajes de contacto', pagina: 'mensajes.html', grupo: 'Comunicación', permiso: 'mensajes' },
   { texto: 'Notificaciones', pagina: 'notificaciones.html', grupo: 'Comunicación', permiso: null }

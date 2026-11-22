@@ -48,11 +48,11 @@ function acciones(p) {
   const id = escapar(p.id);
   const lista = [];
   const conversion = funcionDisponible('pedidosConversion');
-  if (p.estado === 'P' && puede('pedidos:verificar')) lista.push(`<button type="button" class="btn btn-sm btn-outline-primary" data-reportar="${id}" aria-label="Reportar pago del pedido número ${id}">Reportar pago</button>`);
-  if (p.estado === 'P' && conversion && puede('pedidos:convertir')) lista.push(`<button type="button" class="btn btn-sm btn-primary" data-convertir="${id}" aria-label="Cobrar en efectivo y convertir en venta el pedido número ${id}">Cobrar y convertir en venta</button>`);
-  if (p.estado === 'R' && conversion && puede('pedidos:convertir')) lista.push(`<button type="button" class="btn btn-sm btn-primary" data-convertir="${id}" aria-label="Ver comprobante, verificar y convertir en venta el pedido número ${id}">Verificar y convertir en venta</button>`);
-  if (p.estado === 'C' && conversion && puede('pedidos:entregar')) lista.push(`<button type="button" class="btn btn-sm btn-success" data-entregar="${id}" aria-label="Marcar entregado el pedido número ${id}">Marcar entregado</button>`);
-  if ((p.estado === 'P' || p.estado === 'R') && puede('pedidos:cancelar')) lista.push(`<button type="button" class="btn btn-sm btn-outline-danger" data-cancelar="${id}" aria-label="Cancelar el pedido número ${id}">Cancelar</button>`);
+  if (p.estado === 'P' && puede('pedidos:gestionar')) lista.push(`<button type="button" class="btn btn-sm btn-outline-primary" data-reportar="${id}" aria-label="Reportar pago del pedido número ${id}">Reportar pago</button>`);
+  if (p.estado === 'P' && conversion && puede('pedidos:gestionar')) lista.push(`<button type="button" class="btn btn-sm btn-primary" data-convertir="${id}" aria-label="Cobrar en efectivo y convertir en venta el pedido número ${id}">Cobrar y convertir en venta</button>`);
+  if (p.estado === 'R' && conversion && puede('pedidos:gestionar')) lista.push(`<button type="button" class="btn btn-sm btn-primary" data-convertir="${id}" aria-label="Ver comprobante, verificar y convertir en venta el pedido número ${id}">Verificar y convertir en venta</button>`);
+  if (p.estado === 'C' && conversion && puede('pedidos:gestionar')) lista.push(`<button type="button" class="btn btn-sm btn-success" data-entregar="${id}" aria-label="Marcar entregado el pedido número ${id}">Marcar entregado</button>`);
+  if ((p.estado === 'P' || p.estado === 'R') && puede('pedidos:gestionar')) lista.push(`<button type="button" class="btn btn-sm btn-outline-danger" data-cancelar="${id}" aria-label="Cancelar el pedido número ${id}">Cancelar</button>`);
   return lista.join(' ') || '<span class="text-body-secondary">Sin acciones</span>';
 }
 

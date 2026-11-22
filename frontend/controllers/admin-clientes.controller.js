@@ -11,7 +11,7 @@ iniciarPantalla({
   etiquetasValor: { estado: true },
   // Misma regla de cédula ecuatoriana que el registro web.
   reglas: { id: validarCedula },
-  permisoEscritura: ['clientes:crear', 'clientes:editar'],
+  permisoEscritura: 'clientes:editar',
   soloLecturaCampos: ['fechaRegistro'],
   defaults: { estado: 'A', esEstudiante: 'N' },
   opcionesFijas: {

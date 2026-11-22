@@ -1,7 +1,9 @@
 ﻿import { api } from './api.model.js';
 import { guardarTokenYUsuario, leerUsuarioGuardado, leerToken, borrarSesion, leerSesion, escribirSesion, CLAVES } from './storage.model.js';
 
-export const ROLES = { cliente: 'user', admin: 'admin' };
+// `staff` es el personal del panel sin ADM (REC, ENT o CON).
+export const ROLES = { cliente: 'user', admin: 'admin', personal: 'staff' };
+const ROLES_PANEL = ['admin', 'staff'];
 
 export function usuarioActual() {
   return leerUsuarioGuardado();
@@ -23,7 +25,7 @@ export function tieneRol(rol) {
   const codigos = codigosRol(u);
   if (rol === ROLES.cliente || rol === 'cliente') return u.rol === 'user' || codigos.includes('CLI');
   if (rol === ROLES.admin || rol === 'admin') {
-    return u.rol === 'admin' || codigos.some((codigo) => ['ADM', 'REC', 'ENT', 'CON'].includes(codigo));
+    return ROLES_PANEL.includes(u.rol) || codigos.some((codigo) => ['ADM', 'REC', 'ENT', 'CON'].includes(codigo));
   }
   return u.rol === rol || codigos.includes(String(rol).toUpperCase());
 }
@@ -39,7 +41,7 @@ export async function iniciarSesion(correo, contrasena, rolEsperado = ROLES.clie
     const esperado = rolEsperado === 'cliente' ? 'user' : rolEsperado;
     const codigos = codigosRol(usuario);
     const esTipoEsperado = esperado === 'admin'
-      ? usuario?.rol === 'admin' || codigos.some((codigo) => ['ADM', 'REC', 'ENT', 'CON'].includes(codigo))
+      ? ROLES_PANEL.includes(usuario?.rol) || codigos.some((codigo) => ['ADM', 'REC', 'ENT', 'CON'].includes(codigo))
       : usuario?.rol === 'user' || codigos.includes('CLI');
     if (!esTipoEsperado) {
       const mensaje = esperado === 'admin'
