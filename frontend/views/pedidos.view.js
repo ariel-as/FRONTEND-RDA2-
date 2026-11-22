@@ -27,10 +27,22 @@ export function tarjetaPedido(pedido, onCancelar) {
   </article>`;
 }
 
+const ESTADOS_INSCRIPCION = { P: 'Pendiente de pago (paga en recepción)', A: 'Activa', V: 'Vencida', S: 'Suspendida', X: 'Anulada' };
+function fechaCorta(valor) {
+  if (!valor) return '-';
+  const fecha = new Date(valor);
+  return Number.isNaN(fecha.getTime()) ? String(valor) : fecha.toLocaleDateString('es-EC', { timeZone: 'UTC' });
+}
+
 export function tarjetaInscripcion(ins) {
   const plan = ins.plan || ins.membresia?.nombre || ins.membresiaId || 'Plan';
-  const estado = ins.estadoNombre || ins.estado || '';
-  return `<article class="pf-tarjeta p-5"><h3 class="m-0 text-lg font-bold text-white">${escapar(plan)}</h3><p class="text-sm text-neutral-300">Inicio: ${escapar(ins.fechaInicio || '-')} · Fin: ${escapar(ins.fechaFin || '-')}</p><p class="text-sm">Estado: <span class="font-semibold">${escapar(estado)}</span></p><p class="font-bold pf-precio">Valor: ${formatearPrecio(ins.totalCobrar ?? ins.valor ?? 0)}</p></article>`;
+  const estado = ESTADOS_INSCRIPCION[ins.estado] || ins.estadoNombre || ins.estado || '';
+  // El servidor solo informa el total de ingresos; "ingresos que quedan" llegará con la fase 2.
+  const restantes = ins.ingresosRestantes ?? ins.ingresosDisponibles;
+  const ingresos = restantes !== undefined && restantes !== null
+    ? `<p class="text-sm text-neutral-300">Ingresos que te quedan: <strong>${escapar(restantes)}</strong></p>`
+    : (ins.ingresosTotal ? `<p class="text-sm text-neutral-300">Ingresos del plan: ${escapar(ins.ingresosTotal)}</p>` : '');
+  return `<article class="pf-tarjeta p-5"><h3 class="m-0 text-lg font-bold text-white">${escapar(plan)}</h3><p class="text-sm text-neutral-300">Inicio: ${escapar(fechaCorta(ins.fechaInicio))} · Fin: ${escapar(fechaCorta(ins.fechaFin))}</p>${ingresos}<p class="text-sm">Estado: <span class="font-semibold">${escapar(estado)}</span></p><p class="font-bold pf-precio">Valor: ${formatearPrecio(ins.totalCobrar ?? ins.valor ?? 0)}</p></article>`;
 }
 
 export function paginacion({ page, totalPages }, baseAttr) {

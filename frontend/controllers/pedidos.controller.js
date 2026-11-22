@@ -32,6 +32,12 @@ export async function iniciarMisPedidos(){
 
 async function cargar(){ await Promise.all([cargarPedidos(), cargarInscripciones()]); }
 
+// Mi cuenta: inscripciones con fecha de fin o ingresos. Rutina y notificaciones esperan sus servicios (Disponible pronto).
+export async function iniciarMiCuenta(){
+  if (!haySesion()){ window.location.href = new URL('cliente/login.html?origen=mi-cuenta', raizSitio()).href; return; }
+  await cargarInscripciones();
+}
+
 async function cargarPedidos(){
   const cont = select('[data-mis-pedidos]'); const pag = select('[data-paginacion-pedidos]'); if(!cont) return;
   try {

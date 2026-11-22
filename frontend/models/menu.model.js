@@ -19,15 +19,19 @@ export const MENU_ADMIN = [
   { texto: 'Caja', pagina: 'caja.html', grupo: 'Recepción', permiso: 'caja' },
   { texto: 'Productos', pagina: 'productos.html', grupo: 'Inventario', permiso: 'inventario' },
   { texto: 'Lotes y kárdex', pagina: 'inventario.html', grupo: 'Inventario', permiso: 'inventario' },
+  { texto: 'Compras', pagina: 'compras.html', grupo: 'Inventario', permiso: 'compras' },
   { texto: 'Planes y promociones', pagina: 'membresias.html', grupo: 'Gimnasio', permiso: 'planes' },
   { texto: 'Clases', pagina: 'clases.html', grupo: 'Gimnasio', permiso: 'clases' },
+  { texto: 'Rutinas', pagina: 'rutinas.html', grupo: 'Gimnasio', permiso: 'rutinas' },
   { texto: 'Personal', pagina: 'personal.html', grupo: 'Gimnasio', permiso: ['empleados', 'asistencia'] },
+  { texto: 'Aliados y comisiones', pagina: 'aliados.html', grupo: 'Gimnasio', permiso: 'aliados' },
   { texto: 'Usuarios', pagina: 'usuarios.html', grupo: 'Administración', permiso: 'usuarios' },
   { texto: 'Datos del gimnasio', pagina: 'gimnasio.html', grupo: 'Administración', permiso: 'gimnasio' },
   { texto: 'Otras tablas', pagina: 'tablas.html', grupo: 'Administración', permiso: 'tablas' },
   { texto: 'Cierres de caja', pagina: 'caja.html#cierres', grupo: 'Contabilidad', permiso: 'caja' },
   { texto: 'Facturas', pagina: 'facturas.html', grupo: 'Contabilidad', permiso: 'facturacion' },
   { texto: 'Reportes', pagina: 'reportes.html', grupo: 'Contabilidad', permiso: 'reportes' },
+  { texto: 'Mensajes de contacto', pagina: 'mensajes.html', grupo: 'Comunicación', permiso: 'mensajes' },
   { texto: 'Notificaciones', pagina: 'notificaciones.html', grupo: 'Comunicación', permiso: null }
 ];
 

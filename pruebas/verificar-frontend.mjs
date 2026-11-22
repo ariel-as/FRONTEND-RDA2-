@@ -62,7 +62,21 @@ const PAGINAS_ESPERADAS = [
   'admin/clases.html',
   'admin/personal.html',
   'admin/usuarios.html',
-  'admin/tablas.html'
+  'admin/tablas.html',
+  // Fase 2: pantallas nuevas del panel y de la web del cliente.
+  'cliente/mi-cuenta.html',
+  'admin/entradas.html',
+  'admin/ventas.html',
+  'admin/caja.html',
+  'admin/facturas.html',
+  'admin/inventario.html',
+  'admin/compras.html',
+  'admin/rutinas.html',
+  'admin/aliados.html',
+  'admin/mensajes.html',
+  'admin/notificaciones.html',
+  'admin/gimnasio.html',
+  'admin/reportes.html'
 ];
 const relativas = paginas.map((ruta) => relative(raiz, ruta).replace(/\\/g, '/'));
 for (const pagina of PAGINAS_ESPERADAS) {

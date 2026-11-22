@@ -88,6 +88,7 @@ export function tarjetaPlan(plan) {
         <p class="text-sm text-neutral-300">${escapar(plan.descripcion || '')}</p>
         <p class="text-3xl font-extrabold pf-precio">${formatearPrecio(plan.precio)} <span class="text-sm font-semibold text-neutral-300">/ mes</span></p>
         <p class="text-xs text-neutral-400">${etiquetaIva(plan.porcentajeIva)}</p>
+        ${Number(plan.personas) > 1 ? `<p class="text-sm text-neutral-300"><strong>Plan para ${escapar(plan.personas)} personas:</strong> lo contratas tú como titular; tus acompañantes se registran en recepción con su cédula.</p>` : ''}
         <h4 class="text-sm font-bold uppercase tracking-wide text-pf-amarillo">Incluye</h4>
         <ul class="space-y-1 flex-1">${beneficios}</ul>
         <button type="button" class="pf-boton pf-boton-primario w-full" data-accion="elegir-plan" data-plan-id="${escapar(plan.id)}" data-plan-nombre="${escapar(plan.nombre)}" data-plan-precio="${escapar(plan.precio)}" aria-label="Elegir plan: ${escapar(plan.nombre)}, ${formatearPrecio(plan.precio)} al mes">Elegir plan</button>

@@ -11,6 +11,7 @@ function destinoPostLogin() {
   const origen = params.get('origen');
   if (tienePendencia('checkout') || origen === 'carrito' || origen === 'checkout') return new URL('cliente/checkout.html', raizSitio()).href;
   if (origen === 'mis-pedidos') return new URL('cliente/mis-pedidos.html', raizSitio()).href;
+  if (origen === 'mi-cuenta') return new URL('cliente/mi-cuenta.html', raizSitio()).href;
   return new URL('index.html', raizSitio()).href;
 }
 

@@ -33,7 +33,7 @@ function iniciarEventosCatalogo() {
     const plan = planesActuales.find((p)=> String(p.id) === String(boton.dataset.planId));
     if (!plan) return;
     carrito.agregar({ id: plan.id, nombre: plan.nombre, precio: plan.precio, imagen: plan.imagen, tipo: 'plan', membresiaId: plan.id }, 1);
-    mostrarAviso(`${plan.nombre} se agregó al carrito.`, 'exito');
+    mostrarAviso(Number(plan.personas) > 1 ? `${plan.nombre} se agregó al carrito. Tus acompañantes se registran en recepción.` : `${plan.nombre} se agregó al carrito.`, 'exito');
   });
 }
 
