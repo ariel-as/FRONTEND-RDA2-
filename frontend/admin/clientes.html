@@ -1,13 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex, nofollow">
-  <title>Clientes | Administración Planeta Fitness</title>
-  <link rel="icon" href="../assets/img/logo/logo-planeta.png" type="image/png">
-  <script src="../assets/js/tema.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <link rel="stylesheet" href="../assets/css/styles.css">
-</head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex, nofollow"><title>Clientes | Administración Planeta Fitness</title>
+<link rel="icon" href="../assets/img/logo/logo-planeta.png" type="image/png"><script src="../assets/js/tema.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"><link rel="stylesheet" href="../assets/css/styles.css"></head>
 <body class="bg-body-tertiary pf-admin" data-pagina="clientes-admin">
 <a class="pf-saltar" href="#contenido">Ir al contenido principal</a>
 <header class="bg-dark"><nav class="navbar navbar-expand-lg navbar-dark" aria-label="Navegación administrativa"><div class="container-fluid">
@@ -33,29 +28,21 @@
 </div></nav></header>
 <main id="contenido" class="container py-4">
   <h1 class="h3">Clientes</h1>
-  <p class="text-body-secondary">El cliente CONSUMIDOR FINAL (9999999999) se muestra protegido. Los clientes no se eliminan: se pasan a inactivos para conservar el historial.</p>
-  <div class="alert alert-info pf-disponible-pronto" role="note">
-    <p class="fw-bold mb-1">Disponible pronto</p>
-    <p class="mb-0">Búsqueda por nombre o apellido e historial del cliente (inscripciones, entradas, compras, pedidos, pagos y facturas). Se activarán cuando el servidor publique esos servicios.</p>
-  </div>
-  <section id="pantalla-clientes" data-tabla="cliente" aria-labelledby="titulo-clientes">
+  <p class="text-body-secondary">El cliente CONSUMIDOR FINAL (9999999999) no se edita. Los clientes no se eliminan: se pasan a inactivos para conservar el historial.</p>
+  <p data-mensaje class="pf-mensaje" role="status" aria-live="polite" hidden></p>
+  <section id="pantalla-clientes" aria-labelledby="titulo-clientes">
     <h2 id="titulo-clientes" class="visually-hidden">Listado de clientes</h2>
-    <p data-mensaje class="pf-mensaje" role="status" aria-live="polite" hidden></p>
-    <div class="d-flex flex-wrap gap-2 align-items-end justify-content-between mb-3">
-      <div><label class="form-label" for="buscar-cliente-cedula">Buscar por cédula</label><input id="buscar-cliente-cedula" class="form-control" type="search" inputmode="numeric" maxlength="10" data-filtro data-campo="id" aria-describedby="ayuda-buscar-cedula"><p id="ayuda-buscar-cedula" class="form-text mb-0">Escribe los 10 dígitos y pulsa Enter.</p></div>
-      <div><label class="form-label" for="filtro-cliente-estado">Estado</label><select id="filtro-cliente-estado" class="form-select w-auto" data-filtro data-campo="estado"><option value="">Todos</option><option value="A">Activos</option><option value="I">Inactivos</option></select></div>
-      <button type="button" class="btn btn-primary" data-nuevo hidden>Nuevo cliente</button>
-    </div>
-    <div class="card shadow-sm"><div class="card-body"><div class="table-responsive"><table class="table table-hover align-middle"><caption class="visually-hidden">Clientes registrados</caption><thead data-tabla-head></thead><tbody data-tabla-body></tbody></table></div><div data-paginacion></div></div></div>
+    <form id="filtros-clientes" class="d-flex flex-wrap gap-2 align-items-end mb-3" role="search">
+      <div><label class="form-label" for="buscar-cliente">Buscar por cédula, nombre o apellido</label><input id="buscar-cliente" class="form-control" type="search" name="buscar" maxlength="60"></div>
+      <div><label class="form-label" for="filtro-cliente-estado">Estado</label><select id="filtro-cliente-estado" class="form-select w-auto" name="estado"><option value="">Todos</option><option value="A">Activos</option><option value="I">Inactivos</option></select></div>
+      <button type="submit" class="btn btn-outline-primary">Buscar</button>
+      <button type="button" class="btn btn-primary ms-auto" data-nuevo-cliente hidden>Nuevo cliente</button>
+    </form>
+    <div class="card shadow-sm"><div class="card-body"><div data-lista aria-busy="false"></div></div></div>
   </section>
 </main>
 <footer class="border-top py-4 mt-5"><p class="container text-center text-body-secondary mb-0">© <span data-anio>2026</span> Planeta Fitness</p></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script type="module" src="../controllers/admin-clientes.controller.js"></script>
-  <aside class="pf-aviso pf-foco-claro border border-pf-linea p-4 text-sm text-white" data-aviso-cookies aria-label="Aviso de cookies" hidden>
-    <p>Este sitio utiliza cookies para mejorar tu experiencia.</p>
-    <button type="button" class="btn btn-warning btn-sm mt-2" data-aceptar-cookies>Entendido</button>
-  </aside>
-  <div class="pf-aviso pf-mensaje" data-aviso role="status" aria-live="polite" hidden></div>
 </body>
 </html>

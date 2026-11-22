@@ -117,4 +117,6 @@ export const reportesModel = {
   // El CSV se descarga con el token, por eso pasa por el cliente HTTP y no por un enlace directo.
   csv: (tipo, p) => api.get(`/admin/reportes/${e(tipo)}${consulta({ ...p, formato: 'csv' })}`, { ...S, headers: { Accept: 'text/csv' } })
 };
+// Planes públicos (para elegir plan y mostrar un total estimado; el total real lo calcula el servidor).
+export const planesModel = { listar: () => api.get('/membresias') };
 export const lista = (respuesta) => (Array.isArray(respuesta) ? respuesta : (respuesta?.data ?? []));

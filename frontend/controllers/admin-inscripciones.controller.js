@@ -1,72 +1,116 @@
 import './admin.controller.js';
-import { adminModel } from '../models/admin.model.js';
-import { iniciarPantalla } from './admin-generico.controller.js';
+import { inscripcionesModel, facturasModel, planesModel, lista as extraer } from '../models/fase2.model.js';
+import { formatearPrecio } from '../models/carrito.model.js';
 import { escapar } from '../views/componentes.view.js';
+import { txt, dinero, fecha, estado } from '../views/lista-api.view.js';
+import { validarCedula } from './validacion.controller.js';
+import { confirmarAccion } from './dialogo.controller.js';
+import { crearPagos } from './pagos.controller.js';
+import { crearLista, formulario, verDetalle, enlazarBoton } from './lista-api.controller.js';
 
-let planes = new Map();
-let clientes = new Map();
+export const ESTADOS_INSCRIPCION = { P: 'Pendiente de pago', A: 'Activa', V: 'Vencida o sin ingresos', S: 'Suspendida', X: 'Anulada' };
+const CEDULA = '[0-9]{10}';
+let planes = [];
+const cargarPlanes = async () => { if (!planes.length) { try { planes = extraer(await planesModel.listar()); } catch { planes = []; } } return planes; };
+const precioPlan = (id) => Number(planes.find((p) => String(p.id) === String(id))?.precioConIva ?? planes.find((p) => String(p.id) === String(id))?.precio ?? 0);
 
-async function cargarCatalogos() {
-  const [respuestaPlanes, respuestaClientes] = await Promise.all([
-    adminModel.tablaOpciones('membresia').catch(() => []),
-    adminModel.tablaOpciones('cliente').catch(() => [])
-  ]);
-  planes = new Map((respuestaPlanes || []).map((o) => [String(o.valor ?? o.id), o.texto ?? o.descripcion]));
-  clientes = new Map((respuestaClientes || []).map((o) => [String(o.valor ?? o.id), o.texto ?? o.descripcion]));
+// Campos de plan + pagos con total estimado; el servidor responde 400 con el total correcto si no cuadra.
+async function dialogoConPagos({ titulo, mensaje, campos, totalInicial, idPagos, alConfirmar, exito, conPlan }) {
+  await cargarPlanes();
+  let pagos = null;
+  return formulario({
+    titulo, mensaje, campos, textoConfirmar: 'Confirmar y cobrar',
+    contenido: '<p class="small mb-2" data-total-estimado></p><div data-contenedor-pagos></div>',
+    alPreparar: (f) => {
+      pagos = crearPagos(f.querySelector('[data-contenedor-pagos]'), { total: totalInicial, id: idPagos });
+      const plan = f.querySelector('[name="membresiaId"]');
+      const aviso = f.querySelector('[data-total-estimado]');
+      const actualizar = () => { if (!conPlan) return; const t = precioPlan(plan?.value); pagos.actualizarTotal(t); aviso.textContent = t ? `Total estimado según el plan: ${formatearPrecio(t)}. Si hay promoción o cambio de IVA, el servidor indicará el total exacto.` : ''; };
+      plan?.addEventListener('change', actualizar);
+      actualizar();
+    },
+    validarExtra: () => (pagos && !pagos.validar() ? 'Revisa la forma de pago: los montos deben sumar el total.' : null),
+    alConfirmar: (v) => alConfirmar(v, pagos.obtener()),
+    exito
+  });
 }
+const opcionesPlanes = () => [{ valor: '', texto: 'Selecciona el plan' }, ...planes.map((p) => ({ valor: p.id, texto: `${p.nombre} (${formatearPrecio(p.precioConIva ?? p.precio)})` }))];
 
-cargarCatalogos();
+const tabla = crearLista({
+  raiz: '#pantalla-inscripciones',
+  filtros: '#filtros-inscripciones',
+  caption: 'Inscripciones',
+  cargar: (p) => inscripcionesModel.listar(p),
+  columnas: [['N.º', (i) => txt(i.id)], ['Plan', (i) => txt(i.plan || i.membresiaId)], ['Titular', (i) => txt(i.titular?.nombre || i.titular?.clienteId)], ['Inicio', (i) => fecha(i.fechaInicio)], ['Fin', (i) => fecha(i.fechaFin)], ['Ingresos', (i) => txt(i.ingresosTotal ?? 'Ilimitados')],
+    ['Canal', (i) => txt(i.canal === 'W' ? 'Web' : 'Local')], ['Total', (i) => dinero(i.total)], ['Estado', (i) => estado(ESTADOS_INSCRIPCION, i.estado) + (i.canal === 'W' && i.estado === 'P' ? '<br><span class="small">Cobrar en recepción</span>' : '')]],
+  acciones: (i) => [
+    { texto: 'Detalle', permiso: 'inscripciones:leer', etiqueta: `Detalle de la inscripción ${i.id}`, ejecutar: () => verDetalle(`Inscripción ${i.id}`, () => inscripcionesModel.detalle(i.id)) },
+    i.estado === 'P' && { texto: 'Cobrar', permiso: 'inscripciones:gestionar', tono: 'btn-primary', etiqueta: `Cobrar la inscripción ${i.id}`, ejecutar: () => dialogoConPagos({
+      titulo: `Cobrar la inscripción ${i.id}`, mensaje: `${i.plan || ''} · Titular: ${i.titular?.nombre || ''}`, campos: [], totalInicial: i.total, idPagos: `pagos-ins-${i.id}`,
+      alConfirmar: (_, pagos) => inscripcionesModel.cobrar(i.id, pagos), exito: 'Inscripción cobrada.' }) },
+    ['A', 'P'].includes(i.estado) && { texto: 'Agregar acompañante', permiso: 'inscripciones:gestionar', etiqueta: `Agregar acompañante a la inscripción ${i.id}`, ejecutar: () => formulario({
+      titulo: 'Agregar acompañante', campos: [{ nombre: 'clienteId', etiqueta: 'Cédula del acompañante', requerido: true, maxlength: 10 }], reglas: { clienteId: validarCedula },
+      alConfirmar: (v) => inscripcionesModel.agregarIntegrante(i.id, v.clienteId.trim()), exito: 'Acompañante agregado.' }) },
+    ['A', 'P'].includes(i.estado) && { texto: 'Quitar acompañante', permiso: 'inscripciones:gestionar', etiqueta: `Quitar acompañante de la inscripción ${i.id}`, ejecutar: () => formulario({
+      titulo: 'Quitar acompañante', mensaje: 'Solo se puede quitar a un acompañante que todavía no tenga entradas.', tono: 'peligro', textoConfirmar: 'Quitar',
+      campos: [{ nombre: 'cedula', etiqueta: 'Cédula del acompañante', requerido: true, maxlength: 10, patron: CEDULA, mensajePatron: 'La cédula tiene 10 dígitos.' }],
+      alConfirmar: (v) => inscripcionesModel.quitarIntegrante(i.id, v.cedula.trim()), exito: 'Acompañante quitado.' }) },
+    ['A', 'V'].includes(i.estado) && { texto: 'Renovar', permiso: 'inscripciones:gestionar', etiqueta: `Renovar la inscripción ${i.id}`, ejecutar: async () => { await cargarPlanes(); return dialogoConPagos({
+      titulo: `Renovar la inscripción ${i.id}`, conPlan: true, totalInicial: precioPlan(i.membresiaId), idPagos: `pagos-renovar-${i.id}`,
+      campos: [{ nombre: 'membresiaId', etiqueta: 'Plan', tipo: 'select', requerido: true, opciones: opcionesPlanes(), valor: i.membresiaId }, { nombre: 'promocionId', etiqueta: 'Número de promoción (opcional)', tipo: 'number', paso: '1', min: 1 }, { nombre: 'empAutorizaId', etiqueta: 'Cédula del ADM que autoriza (si la promoción lo pide)', maxlength: 10, patron: CEDULA, mensajePatron: 'La cédula tiene 10 dígitos.' }],
+      alConfirmar: (v, pagos) => inscripcionesModel.renovar(i.id, { membresiaId: v.membresiaId, ...(v.promocionId ? { promocionId: Number(v.promocionId) } : {}), ...(v.empAutorizaId ? { empAutorizaId: v.empAutorizaId } : {}), pagos }), exito: 'Inscripción renovada.' }); } },
+    i.estado === 'A' && { texto: 'Suspender', permiso: 'inscripciones:gestionar', etiqueta: `Suspender la inscripción ${i.id}`, ejecutar: () => formulario({
+      titulo: `Suspender la inscripción ${i.id}`, mensaje: 'Suspensión por motivo médico. Los días suspendidos se recuperan al final del plan.', textoConfirmar: 'Suspender',
+      campos: [{ nombre: 'fechaInicio', etiqueta: 'Desde', tipo: 'date', requerido: true }, { nombre: 'fechaFin', etiqueta: 'Hasta', tipo: 'date', requerido: true }, { nombre: 'motivo', etiqueta: 'Motivo', tipo: 'textarea', requerido: true, maxlength: 200 }, { nombre: 'certificado', etiqueta: 'Número o detalle del certificado médico', requerido: true, maxlength: 100 }],
+      validarExtra: (_, v) => (v.fechaInicio > v.fechaFin ? 'La fecha inicial debe ser anterior a la final.' : null),
+      alConfirmar: (v) => inscripcionesModel.suspender(i.id, { fechaInicio: v.fechaInicio, fechaFin: v.fechaFin, motivo: v.motivo.trim(), certificado: v.certificado.trim() }), exito: 'Inscripción suspendida.' }) },
+    i.estado === 'S' && { texto: 'Anular suspensión', permiso: 'inscripciones:anular', tono: 'btn-outline-danger', etiqueta: `Anular suspensión de la inscripción ${i.id}`, ejecutar: () => formulario({
+      titulo: 'Anular suspensión', mensaje: 'El número de suspensión aparece en el detalle de la inscripción.', tono: 'peligro', textoConfirmar: 'Anular suspensión',
+      campos: [{ nombre: 'suspensionId', etiqueta: 'Número de suspensión', tipo: 'number', paso: '1', min: 1, requerido: true }, { nombre: 'motivo', etiqueta: 'Motivo', tipo: 'textarea', requerido: true, maxlength: 200 }],
+      alConfirmar: (v) => inscripcionesModel.anularSuspension(v.suspensionId, v.motivo.trim()), exito: 'Suspensión anulada.' }) },
+    i.estado !== 'X' && { texto: 'Generar factura', permiso: 'facturas:generar', etiqueta: `Generar factura de la inscripción ${i.id}`, ejecutar: async () => (await confirmarAccion({
+      titulo: 'Generar factura', mensaje: `Se generará la factura de la inscripción ${i.id} a nombre del titular. Para facturar a otra persona usa Facturación.`, textoConfirmar: 'Generar', tono: 'primario',
+      alConfirmar: () => facturasModel.generar({ inscripcionId: i.id }) }) ? 'Factura generada. Registra su número en Facturación.' : null) },
+    i.estado !== 'X' && { texto: 'Anular', permiso: 'inscripciones:anular', tono: 'btn-outline-danger', etiqueta: `Anular la inscripción ${i.id}`, ejecutar: () => formulario({
+      titulo: `Anular la inscripción ${i.id}`, mensaje: 'Esta acción no se puede deshacer.', tono: 'peligro', textoConfirmar: 'Anular inscripción',
+      campos: [{ nombre: 'motivo', etiqueta: 'Motivo', tipo: 'textarea', requerido: true, maxlength: 200 }],
+      alConfirmar: (v) => inscripcionesModel.anular(i.id, v.motivo.trim()), exito: 'Inscripción anulada.' }) }
+  ]
+});
+
+enlazarBoton('[data-nueva-inscripcion]', 'inscripciones:gestionar', async () => {
+  await cargarPlanes();
+  const cedula = new URLSearchParams(location.search).get('cedula') || '';
+  const m = await dialogoConPagos({
+    titulo: 'Nueva inscripción en el local', conPlan: true, totalInicial: 0, idPagos: 'pagos-nueva-inscripcion',
+    campos: [
+      { nombre: 'clienteId', etiqueta: 'Cédula del titular', requerido: true, maxlength: 10, valor: cedula, ayuda: 'Si no está registrado, créalo antes en Clientes.' },
+      { nombre: 'membresiaId', etiqueta: 'Plan', tipo: 'select', requerido: true, opciones: opcionesPlanes() },
+      { nombre: 'fechaInicio', etiqueta: 'Fecha de inicio', tipo: 'date' },
+      { nombre: 'acompanantes', etiqueta: 'Cédulas de acompañantes (separadas por coma)', maxlength: 60 },
+      { nombre: 'promocionId', etiqueta: 'Número de promoción vigente (opcional)', tipo: 'number', paso: '1', min: 1 },
+      { nombre: 'empAutorizaId', etiqueta: 'Cédula del ADM que autoriza (si la promoción lo pide)', maxlength: 10, patron: CEDULA, mensajePatron: 'La cédula tiene 10 dígitos.' }
+    ],
+    alConfirmar: (v, pagos) => {
+      const acompanantes = String(v.acompanantes || '').split(/[,\s]+/).filter(Boolean);
+      return inscripcionesModel.crear({ clienteId: v.clienteId.trim(), membresiaId: v.membresiaId, ...(v.fechaInicio ? { fechaInicio: v.fechaInicio } : {}), ...(acompanantes.length ? { acompanantes } : {}), ...(v.promocionId ? { promocionId: Number(v.promocionId) } : {}), ...(v.empAutorizaId ? { empAutorizaId: v.empAutorizaId } : {}), pagos });
+    },
+    exito: (r) => `Inscripción ${escapar((r?.data ?? r)?.id ?? '')} registrada y cobrada.`
+  });
+  if (m) tabla?.recargar();
+  return m;
+});
 
 // Filtro rápido: canal Web y estado Pendiente de pago.
-const botonWebPendientes = document.querySelector('[data-filtro-web-pendientes]');
-const filtroEstado = document.querySelector('#filtro-inscripcion-estado');
-const filtroCanal = document.querySelector('#filtro-inscripcion-canal');
-const sincronizarRapido = () => botonWebPendientes?.setAttribute('aria-pressed', String(filtroEstado?.value === 'P' && filtroCanal?.value === 'W'));
-botonWebPendientes?.addEventListener('click', () => {
-  const activo = botonWebPendientes.getAttribute('aria-pressed') === 'true';
-  filtroEstado.value = activo ? '' : 'P';
-  filtroCanal.value = activo ? '' : 'W';
-  filtroCanal.dispatchEvent(new Event('change'));
-  sincronizarRapido();
+const boton = document.querySelector('[data-filtro-web-pendientes]');
+const fEstado = document.querySelector('#filtro-inscripcion-estado');
+const fCanal = document.querySelector('#filtro-inscripcion-canal');
+const sincronizar = () => boton?.setAttribute('aria-pressed', String(fEstado?.value === 'P' && fCanal?.value === 'W'));
+boton?.addEventListener('click', () => {
+  const activo = boton.getAttribute('aria-pressed') === 'true';
+  fEstado.value = activo ? '' : 'P';
+  fCanal.value = activo ? '' : 'W';
+  fCanal.dispatchEvent(new Event('change', { bubbles: true }));
+  sincronizar();
 });
-[filtroEstado, filtroCanal].forEach((control) => control?.addEventListener('change', sincronizarRapido));
-
-iniciarPantalla({
-  raiz: '#pantalla-inscripciones',
-  tabla: 'inscripcion',
-  titulo: 'Inscripciones',
-  soloLectura: true,
-  columnas: ['id', 'membresiaId', 'titular', 'fechaInicio', 'fechaFin', 'valor', 'porcentajeIva', 'canal', 'estado'],
-  etiquetas: { id: 'Número', membresiaId: 'Plan', porcentajeIva: 'IVA %', titular: 'Titular' },
-  accionesFila: (fila, clave) => `<button type="button" class="btn btn-sm btn-outline-primary" data-ver="${escapar(clave)}" aria-label="Ver detalle de la inscripción ${escapar(fila.id)}">Ver detalle</button>`,
-  formatoCelda: {
-    membresiaId: (valor, fila) => escapar(fila.__plan || planes.get(String(valor)) || valor || ''),
-    titular: (valor, fila) => escapar(fila.__titular || 'Sin integrantes'),
-    canal: (valor) => escapar(valor === 'W' ? 'Web' : valor === 'L' ? 'Local' : valor || ''),
-    estado: (valor, fila) => {
-      if (fila.canal === 'W' && valor === 'P') return '<span class="text-warning-emphasis fw-semibold">Pendiente de pago (web, cobrar en recepción)</span>';
-      return escapar({ P: 'Pendiente de pago', A: 'Activa', V: 'Vencida o tarjeta agotada', S: 'Suspendida', X: 'Anulada' }[valor] || valor || 'vacío');
-    }
-  },
-  completarFilas: async (filas) => {
-    await Promise.all(filas.map(async (fila) => {
-      fila.__plan = planes.get(String(fila.membresiaId));
-      try {
-        const respuesta = await adminModel.tablaFilas('inscripcion_cliente', { inscripcionId: fila.id, limit: 100 });
-        const integrantes = respuesta?.data || respuesta || [];
-        const titular = integrantes.find((i) => i.esTitular === 'S') || integrantes[0];
-        fila.__titular = titular ? (clientes.get(String(titular.clienteId)) || titular.clienteId) : '';
-      } catch { fila.__titular = ''; }
-    }));
-  },
-  detalle: async (fila) => {
-    try {
-      const respuesta = await adminModel.tablaFilas('inscripcion_cliente', { inscripcionId: fila.id, limit: 100 });
-      const integrantes = respuesta?.data || respuesta || [];
-      const filas = integrantes.length ? integrantes.map((i) => `<tr><th scope="row">${escapar(clientes.get(String(i.clienteId)) || i.clienteId)}</th><td>${escapar(i.esTitular === 'S' ? 'Titular' : 'Beneficiario')}</td></tr>`).join('') : '<tr><td colspan="2" class="text-body-secondary">Sin integrantes registrados.</td></tr>';
-      return `<h3 class="h6 mt-4">Integrantes</h3><div class="table-responsive"><table class="table table-sm"><caption class="visually-hidden">Integrantes de la inscripción</caption><thead><tr><th scope="col">Cliente</th><th scope="col">Rol</th></tr></thead><tbody>${filas}</tbody></table></div>`;
-    } catch {
-      return '<p class="small text-body-secondary mt-3">No se pudieron cargar los integrantes.</p>';
-    }
-  }
-});
+[fEstado, fCanal].forEach((c) => c?.addEventListener('change', sincronizar));
