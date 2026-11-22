@@ -1,4 +1,4 @@
-﻿name: CI/CD Planeta Fitness
+name: CI/CD Planeta Fitness
 
 # Ciclo completo: validación de código, seguridad, librerías, API y navegador.
 # Solo si todo pasa se publica en GitHub Pages y se comprueba el sitio publicado.
@@ -97,7 +97,7 @@ jobs:
         run: node pruebas/verificar-seguridad.mjs
 
       - name: Secretos en todo el historial (Gitleaks)
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
