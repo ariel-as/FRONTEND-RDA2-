@@ -27,6 +27,7 @@ export const MENU_ADMIN = [
   { texto: 'Otras tablas', pagina: 'tablas.html', grupo: 'Administración', permiso: 'tablas' },
   { texto: 'Cierres de caja', pagina: 'caja.html#cierres', grupo: 'Contabilidad', permiso: 'caja' },
   { texto: 'Facturas', pagina: 'facturas.html', grupo: 'Contabilidad', permiso: 'facturacion' },
+  { texto: 'Reportes', pagina: 'reportes.html', grupo: 'Contabilidad', permiso: 'reportes' },
   { texto: 'Notificaciones', pagina: 'notificaciones.html', grupo: 'Comunicación', permiso: null }
 ];
 
