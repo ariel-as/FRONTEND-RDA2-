@@ -1,5 +1,49 @@
 # Resultados de FRONTEND fase 2
 
+## Actualización del 22/11/2026: conexión con el backend publicado
+
+Base: `RESPUESTAS_BACKEND_PARA_FRONTEND.md` (backend `ariel-as/backend-de-prueba`, commit `e31524a`). Se trabajó en la rama `fase2`, con un commit por bloque, sin push a `main` y sin pruebas con datos reales ni en navegador (por instrucción). Las secciones 1 a 10 de más abajo describen la primera sesión y quedan como historia; esta sección manda donde haya diferencias.
+
+### Bloques terminados
+
+| Bloque | Commit | Qué quedó |
+|---|---|---|
+| A. Permisos reales | `0b135f5` | Permisos de `server/config/permisos.js` en menú, botones y dashboard; `rol: "staff"` se trata como personal del panel; convertir y entregar pedidos y notificaciones activados en `models/funciones.model.js` |
+| Paso 3 | `43a143a` | Usuarios con `GET/PUT /admin/usuarios` (buscar, editar correo, restablecer contraseña, roles con casillas sin quitarse ADM a uno mismo, activar o desactivar) y datos del gimnasio con horario. Piezas comunes nuevas: `models/fase2.model.js`, `controllers/lista-api.controller.js`, `views/lista-api.view.js` |
+| Paso 4 | `9384ebd` | Caja: abrir turno, totales en vivo, gastos y devoluciones, cierre con efectivo contado y diferencia en texto (faltante o sobrante), cuadres por rango y cierre semanal con resumen previo |
+| Paso 5 | `76f4155` | Pedidos con convertir en venta y entregar (`pedidos:gestionar`); en transferencia se envía solo `{ estado: 'C' }` (el servidor toma la referencia). Mis pedidos ya no muestra «informar comprobante» |
+| Paso 6 | `c5cf85d` | Clientes con `/admin/clientes` (búsqueda por cédula, nombre o apellido; alta con cédula validada; edición; activar o desactivar; historial). Inscripciones completas: nueva con pagos y acompañantes, cobrar, agregar o quitar acompañante, renovar, suspender, anular suspensión, anular y generar factura |
+| Paso 7 | `b8cf8e4` | Entradas y aforo: aforo con barra y texto, cédula con foco y Enter, entrada al gimnasio o a una clase, rechazo con `role="alert"`, personas adentro con salida, refresco cada 60 s; si la cédula no existe ofrece registrar cliente o vender pase |
+| Paso 8 | `86e01a1` | Ventas en mostrador (líneas editables, componente de pagos, factura al terminar, anulación con motivo solo ADM) y facturación (generar a cliente, consumidor final o tercero; datos del SRI con formato validado; por anular; impresión) |
+| Paso 9 | `bd57e70` | Inventario: lotes con filtros, bloqueo y baja; kárdex; recibir mercadería; ajustes. Proveedores del producto en `productos.html` |
+| Paso 10 | `2becbc1` | Notificaciones con `tipoNombre` como título y `noLeidas` del servidor (campana, pantalla y mi cuenta); dashboard con indicadores reales por rol y botones de marcar entrada o salida |
+| Paso 11 | `ce27af4` | Reportes: los 8 de `/admin/reportes` según permiso, tabla accesible, gráfico simple con CSS y descarga CSV |
+| Paso 12 | `31232d5` | Asistencia (marcar y reporte), compras (crear, autorizar, anular, recibir por partes), rutinas, aliados y comisiones, mensajes de contacto, mi cuenta con rutina vigente y notificaciones. Ya no queda ninguna pantalla «Disponible pronto» |
+
+### Pantallas conectadas
+
+Todas las del menú: entradas, inscripciones, clientes, pedidos, ventas, caja, productos, lotes y kárdex, compras, planes y promociones, clases, rutinas, personal, aliados, usuarios, datos del gimnasio, otras tablas, facturas, cierres de caja, reportes, mensajes y notificaciones. En la web del cliente: mis pedidos, checkout y mi cuenta (inscripciones con fecha de fin y total de ingresos, rutina y notificaciones).
+
+### Pendientes
+
+- Probar cada pantalla con las cuentas de cada rol contra Render (no se hizo por instrucción). Las cuentas REC, ENT y CON quizá haya que crearlas antes con la cuenta admin.
+- Correr la prueba de humo en navegador (`npm run humo`) y Lighthouse; no se ejecutaron en esta sesión.
+- Pasar `fase2` a `main` cuando se revise; el pipeline publicará en Pages.
+- Indicador «clases de hoy» del entrenador: no hay ruta para «mis clases de hoy»; el dashboard de ENT muestra aforo y rutinas.
+
+### Resultado del CI en cada bloque
+
+En todos los bloques: sintaxis de JavaScript sin errores (de 71 archivos en el bloque A a 88 en el paso 12) y `verificar-frontend.mjs` con 0 fallos. HTMLHint sin errores y `verificar-seguridad.mjs` con 0 fallos al final.
+
+### Dudas para el equipo
+
+1. **Totales antes de cobrar:** el contrato no tiene una ruta para cotizar. En nueva inscripción, renovación y venta el componente de pagos usa un total estimado (precio del plan o de los productos); si no cuadra, el servidor responde 400 con el total correcto y el usuario corrige. ¿Agregarían una ruta de cotización?
+2. **Formas inferidas del código del backend, sin probar con datos:** estados de lote (D, I, C), de factura (P, E, A), de mensaje (P, R) y de compra (P, A, M, R, X); líneas de venta `{ productoId, cantidad, descuento }` (¿el descuento es en dólares?); líneas de compra y recepción `{ productoId, cantidad, costoUnit, fechaCaducidad }`; proveedores del producto como lista de códigos.
+3. Los reportes, el historial del cliente y los detalles se muestran con una vista genérica (tablas por sección), porque cada respuesta tiene su propia forma.
+4. El gimnasio no tiene campo RUC en el backend; se usan nombre, propietaria (razón social), dirección, contacto, aforo, IVA, establecimiento y punto de emisión.
+5. Compras y recepciones se escriben como líneas de texto («código, cantidad, costo, caducidad»), validadas en el navegador. Si prefieren filas con campos, se puede cambiar.
+
+
 Rama: `fase2` (sin push ni merge a `main`). Un commit por paso de la sección 9, más un commit base inicial.
 Backend revisado: `https://planeta-fitness-api.onrender.com/api/v1`, solo con peticiones GET sin token, el 2026-11-21 y otra vez el 2026-11-22.
 

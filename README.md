@@ -61,30 +61,30 @@ El menú del panel se define una sola vez en `models/menu.model.js` (texto, pág
 
 | Grupo del menú | Pantalla | Archivo | Roles (además de ADM) | Estado |
 |---|---|---|---|---|
-| Recepción | Entradas y aforo | `admin/entradas.html` | REC; ENT ve aforo | Disponible pronto |
-| Recepción | Inscripciones | `admin/inscripciones.html` | REC; ENT y CON ven | Lista con filtros; acciones nuevas pronto |
-| Recepción | Clientes | `admin/clientes.html` | REC; ENT y CON ven | Búsqueda por cédula; historial pronto |
-| Recepción | Pedidos web | `admin/pedidos.html` | REC; CON lee | Operativa (convertir y entregar tras interruptor) |
-| Recepción | Ventas en mostrador | `admin/ventas.html` | REC; CON lee | Disponible pronto |
-| Recepción | Caja | `admin/caja.html` | REC y CON | Disponible pronto |
-| Inventario | Productos | `admin/productos.html` | REC y CON leen | Operativa |
-| Inventario | Lotes y kárdex | `admin/inventario.html` | REC y CON leen | Disponible pronto |
-| Inventario | Compras | `admin/compras.html` | CON lee | Disponible pronto |
-| Gimnasio | Planes y promociones | `admin/membresias.html` | REC, ENT y CON leen | Operativa |
-| Gimnasio | Clases | `admin/clases.html` | REC y ENT leen | Operativa |
-| Gimnasio | Rutinas | `admin/rutinas.html` | ENT; REC lee | Disponible pronto |
-| Gimnasio | Personal | `admin/personal.html` | REC y CON leen; todos marcan asistencia | Operativa; asistencia pronto |
-| Gimnasio | Aliados y comisiones | `admin/aliados.html` | CON; REC cobra | Disponible pronto |
-| Administración | Usuarios | `admin/usuarios.html` | Solo ADM | Operativa; correo, contraseña y casillas de roles pronto |
-| Administración | Datos del gimnasio | `admin/gimnasio.html` | REC, ENT y CON leen | Disponible pronto |
-| Administración | Otras tablas | `admin/tablas.html` | CON solo lectura | Operativa |
-| Contabilidad | Facturas | `admin/facturas.html` | REC genera; CON | Disponible pronto |
-| Contabilidad | Cierres de caja | `admin/caja.html#cierres` | CON | Disponible pronto |
-| Contabilidad | Reportes | `admin/reportes.html` | CON todos; REC clientes y entradas | Disponible pronto |
-| Comunicación | Mensajes de contacto | `admin/mensajes.html` | REC | Disponible pronto |
-| Comunicación | Notificaciones | `admin/notificaciones.html` | Todos | Disponible pronto |
+| Recepción | Entradas y aforo | `admin/entradas.html` | REC; ENT ve aforo | Conectada |
+| Recepción | Inscripciones | `admin/inscripciones.html` | REC; ENT y CON ven | Conectada |
+| Recepción | Clientes | `admin/clientes.html` | REC; ENT y CON ven | Conectada |
+| Recepción | Pedidos web | `admin/pedidos.html` | REC; CON lee | Conectada |
+| Recepción | Ventas en mostrador | `admin/ventas.html` | REC; CON lee | Conectada |
+| Recepción | Caja | `admin/caja.html` | REC y CON | Conectada |
+| Inventario | Productos | `admin/productos.html` | REC y CON leen | Conectada |
+| Inventario | Lotes y kárdex | `admin/inventario.html` | REC y CON leen | Conectada |
+| Inventario | Compras | `admin/compras.html` | CON lee | Conectada |
+| Gimnasio | Planes y promociones | `admin/membresias.html` | REC, ENT y CON leen | Conectada |
+| Gimnasio | Clases | `admin/clases.html` | REC y ENT leen | Conectada |
+| Gimnasio | Rutinas | `admin/rutinas.html` | ENT; REC lee | Conectada |
+| Gimnasio | Personal | `admin/personal.html` | REC y CON leen; todos marcan asistencia | Conectada |
+| Gimnasio | Aliados y comisiones | `admin/aliados.html` | CON; REC cobra | Conectada |
+| Administración | Usuarios | `admin/usuarios.html` | Solo ADM | Conectada |
+| Administración | Datos del gimnasio | `admin/gimnasio.html` | REC, ENT y CON leen | Conectada |
+| Administración | Otras tablas | `admin/tablas.html` | CON solo lectura | Conectada |
+| Contabilidad | Facturas | `admin/facturas.html` | REC genera; CON | Conectada |
+| Contabilidad | Cierres de caja | `admin/caja.html#cierres` | CON | Conectada |
+| Contabilidad | Reportes | `admin/reportes.html` | CON todos; REC clientes y entradas | Conectada |
+| Comunicación | Mensajes de contacto | `admin/mensajes.html` | REC | Conectada |
+| Comunicación | Notificaciones | `admin/notificaciones.html` | Todos | Conectada |
 
-«Disponible pronto» significa que el servicio todavía no está publicado en el backend de Render: la pantalla no hace ninguna llamada. Los servicios que el frontend ya sabe usar y esperan al backend se encienden en `models/funciones.model.js`.
+Desde el 22/11/2026 todas las pantallas usan las rutas de la fase 2 publicadas en Render (`models/fase2.model.js`). Las listas comparten `controllers/lista-api.controller.js` (tabla accesible, filtros, paginación, acciones según permiso y diálogos) y `views/lista-api.view.js`. Los permisos son los de `server/config/permisos.js` del backend; `rol: "staff"` es personal del panel.
 
 Piezas compartidas: `controllers/dialogo.controller.js` (diálogo propio de confirmación y datos, reemplaza `confirm()` y `prompt()`), `controllers/pagos.controller.js` (efectivo, transferencia o ambos, con referencia obligatoria en transferencia y control de que la suma cuadre con el total del servidor), `controllers/campana.controller.js` (campana de notificaciones) y `views/servidor.view.js` (aviso de servidor despertando).
 
