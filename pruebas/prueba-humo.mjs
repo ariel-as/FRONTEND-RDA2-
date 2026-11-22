@@ -19,7 +19,8 @@ import { chromium } from 'playwright';
 
 const raizRepo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const frontend = join(raizRepo, 'frontend');
-const BASE_API = (/API_BASE_URL\s*=\s*'([^']+)'/.exec(readFileSync(join(frontend, 'models/config.js'), 'utf8')) || [])[1];
+// El sitio de prueba corre en 127.0.0.1, así que el frontend usa la URL local de models/config.js.
+const BASE_API = (/API_URL_LOCAL\s*=\s*'([^']+)'/.exec(readFileSync(join(frontend, 'models/config.js'), 'utf8')) || [])[1];
 const PUERTO = 5600 + Math.floor(Math.random() * 300);
 const SITIO = `http://127.0.0.1:${PUERTO}/`;
 

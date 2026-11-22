@@ -44,7 +44,7 @@ const enLinea = html.filter(([, c]) => [...c.matchAll(/<script\b([^>]*)>([\s\S]*
 comprobar('Sin scripts en línea en el HTML', enLinea.length === 0, enLinea.map(([r]) => r).join(', '));
 
 const config = js.find(([r]) => r === 'models/config.js')?.[1] || '';
-const url = (/API_BASE_URL\s*=\s*'([^']+)'/.exec(config) || [])[1] || '';
+const url = (/API_URL_PRODUCCION\s*=\s*'([^']+)'/.exec(config) || [])[1] || '';
 comprobar('La API de producción usa HTTPS', url.startsWith('https://'), url);
 const urlsApi = buscar(js.filter(([r]) => r !== 'models/config.js'), /onrender\.com|localhost:\d+/);
 comprobar('La URL de la API solo aparece en models/config.js', urlsApi.length === 0, urlsApi.join(', '));

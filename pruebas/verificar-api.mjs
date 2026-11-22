@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 
 const raizRepo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const config = readFileSync(join(raizRepo, 'frontend/models/config.js'), 'utf8');
-const BASE = (/API_BASE_URL\s*=\s*'([^']+)'/.exec(config) || [])[1];
+const BASE = (/API_URL_PRODUCCION\s*=\s*'([^']+)'/.exec(config) || [])[1];
 const enActions = Boolean(process.env.GITHUB_ACTIONS);
 let fallos = 0;
 function comprobar(descripcion, condicion, extra = '') {
@@ -34,7 +34,7 @@ async function obtener(ruta, espera = 30000) {
   return { status: respuesta.status, cuerpo };
 }
 
-comprobar('API_BASE_URL definida en models/config.js', Boolean(BASE), BASE);
+comprobar('API_URL_PRODUCCION definida en models/config.js', Boolean(BASE), BASE);
 let despierto = false;
 for (let intento = 1; intento <= 3 && !despierto; intento += 1) {
   try {
