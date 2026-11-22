@@ -11,6 +11,7 @@ export const GRUPOS_MENU = ['Recepción', 'Inventario', 'Gimnasio', 'Administrac
 export const INICIO_PANEL = { texto: 'Dashboard', pagina: 'index.html', permiso: null };
 
 export const MENU_ADMIN = [
+  { texto: 'Entradas y aforo', pagina: 'entradas.html', grupo: 'Recepción', permiso: 'entradas' },
   { texto: 'Inscripciones', pagina: 'inscripciones.html', grupo: 'Recepción', permiso: 'inscripciones' },
   { texto: 'Clientes', pagina: 'clientes.html', grupo: 'Recepción', permiso: 'clientes' },
   { texto: 'Pedidos web', pagina: 'pedidos.html', grupo: 'Recepción', permiso: 'pedidos' },
