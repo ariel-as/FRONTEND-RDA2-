@@ -1,4 +1,4 @@
-﻿name: CI/CD Planeta Fitness
+name: CI/CD Planeta Fitness
 
 # Ciclo completo: validación de código, seguridad, librerías, API y navegador.
 # Solo si todo pasa se publica en GitHub Pages y se comprueba el sitio publicado.
@@ -209,7 +209,7 @@ jobs:
       url: ${{ steps.publicar.outputs.page_url }}
     steps:
       - name: Verificar la configuración de Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - uses: actions/checkout@v4
 
