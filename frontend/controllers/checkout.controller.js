@@ -28,7 +28,7 @@ export async function iniciarCheckout(){
     const boton = form.querySelector('button[type="submit"]');
     const metodoPago = form.querySelector('input[name="metodoPago"]:checked')?.value || 'EF';
     const ref = form.querySelector('#refTransferencia')?.value?.trim();
-    if (metodoPago==='TR' && ref && !/^[A-Za-z0-9-]{4,30}$/.test(ref)){ mostrarMensaje(region, 'La referencia debe tener 4 a 30 letras, números o guion.', 'error'); return false; }
+    if (metodoPago==='TR' && !/^[A-Za-z0-9-]{4,30}$/.test(ref || '')){ mostrarMensaje(region, 'Con transferencia, escribe el número de comprobante (4 a 30 letras, números o guion).', 'error'); form.querySelector('#refTransferencia')?.focus(); return false; }
     boton.disabled = true; form.setAttribute('aria-busy','true'); mostrarMensaje(region,'Registrando tu pedido...','info');
     try {
       const resultado = await confirmarCompra(items, { metodoPago, refTransferencia: ref });
@@ -55,7 +55,9 @@ export async function iniciarCheckout(){
 function configurarPago(){
   const radios = document.querySelectorAll('input[name="metodoPago"]');
   const campoRef = document.querySelector('[data-campo-transferencia]');
-  const actualizar = ()=>{ const esTR = document.querySelector('input[name="metodoPago"]:checked')?.value === 'TR'; if(campoRef) campoRef.hidden = !esTR; };
+  const entradaRef = document.querySelector('#refTransferencia');
+  // Con transferencia el número de comprobante es obligatorio; con efectivo el campo no se valida.
+  const actualizar = ()=>{ const esTR = document.querySelector('input[name="metodoPago"]:checked')?.value === 'TR'; if(campoRef) campoRef.hidden = !esTR; if(entradaRef){ entradaRef.required = esTR; entradaRef.disabled = !esTR; } };
   radios.forEach(r=>r.addEventListener('change', actualizar));
   actualizar();
 }

@@ -26,7 +26,11 @@
   <button type="button" class="btn btn-outline-light btn-sm pf-boton-tema ms-2" data-boton-tema aria-label="Cambiar el modo de color"><span aria-hidden="true" data-icono-tema>☾</span></button>
 </div></nav></header>
 <main id="contenido" class="container py-4">
-  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2"><h1 class="h3 mb-0">Pedidos</h1><select id="filtro-estado" class="form-select w-auto" aria-label="Filtrar por estado"><option value="">Todos</option><option value="P">Pendiente de pago</option><option value="R">Pago reportado</option><option value="G">Pagado</option><option value="E">Retirado</option><option value="X">Cancelado</option></select></div>
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-2"><h1 class="h3 mb-0">Pedidos web</h1>
+    <div class="d-flex flex-wrap align-items-end gap-2">
+      <button type="button" class="btn btn-outline-primary" data-filtro-por-verificar aria-pressed="false">Por verificar</button>
+      <div><label class="form-label mb-1" for="filtro-estado">Estado</label><select id="filtro-estado" class="form-select w-auto"><option value="">Todos</option><option value="P">Pendiente de pago</option><option value="R">Pago reportado, por verificar</option><option value="C">Pagado</option><option value="E">Entregado</option><option value="X">Cancelado</option></select></div>
+    </div></div>
   <p id="mensaje-pedidos" class="pf-mensaje mt-2" role="status" aria-live="polite" hidden></p>
   <div class="card shadow-sm mt-3"><div class="card-body"><div class="table-responsive"><table class="table table-hover align-middle"><caption class="visually-hidden">Pedidos</caption><thead class="table-light"><tr><th scope="col">#</th><th scope="col">Cliente</th><th scope="col">Fecha</th><th scope="col">Pago</th><th scope="col">Productos</th><th scope="col">Total</th><th scope="col">Estado</th><th scope="col">Acciones</th></tr></thead><tbody data-tabla-pedidos></tbody></table></div>
   <div data-paginacion-pedidos></div></div></div>

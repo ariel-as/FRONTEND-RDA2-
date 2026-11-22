@@ -29,7 +29,7 @@ export function pagosHtml({ id = 'pagos', total = 0, permitirAmbos = true, metod
       </div>
       <div class="col-12" data-pagos-bloque="TR" hidden>
         <label class="form-label" for="${escapar(id)}-referencia">Referencia de la transferencia *</label>
-        <input class="form-control" type="text" maxlength="30" pattern="^[A-Za-z0-9-]{4,30}$" data-mensaje-patron="La referencia debe tener 4 a 30 letras, números o guion." id="${escapar(id)}-referencia" name="${escapar(id)}-referencia" autocomplete="off" required>
+        <input class="form-control" type="text" maxlength="30" pattern="(?:[A-Za-z0-9]|-){4,30}" data-mensaje-patron="La referencia debe tener 4 a 30 letras, números o guion." id="${escapar(id)}-referencia" name="${escapar(id)}-referencia" autocomplete="off" required>
         <!-- Ranura reservada para subir la imagen del comprobante cuando el equipo decida dónde guardarla (sección 7). -->
         <div data-pagos-ranura-comprobante></div>
       </div>
