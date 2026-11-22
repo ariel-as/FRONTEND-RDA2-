@@ -17,6 +17,20 @@ async function cargarCatalogos() {
 
 cargarCatalogos();
 
+// Filtro rápido: canal Web y estado Pendiente de pago.
+const botonWebPendientes = document.querySelector('[data-filtro-web-pendientes]');
+const filtroEstado = document.querySelector('#filtro-inscripcion-estado');
+const filtroCanal = document.querySelector('#filtro-inscripcion-canal');
+const sincronizarRapido = () => botonWebPendientes?.setAttribute('aria-pressed', String(filtroEstado?.value === 'P' && filtroCanal?.value === 'W'));
+botonWebPendientes?.addEventListener('click', () => {
+  const activo = botonWebPendientes.getAttribute('aria-pressed') === 'true';
+  filtroEstado.value = activo ? '' : 'P';
+  filtroCanal.value = activo ? '' : 'W';
+  filtroCanal.dispatchEvent(new Event('change'));
+  sincronizarRapido();
+});
+[filtroEstado, filtroCanal].forEach((control) => control?.addEventListener('change', sincronizarRapido));
+
 iniciarPantalla({
   raiz: '#pantalla-inscripciones',
   tabla: 'inscripcion',

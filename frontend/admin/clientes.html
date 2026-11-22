@@ -34,10 +34,15 @@
 <main id="contenido" class="container py-4">
   <h1 class="h3">Clientes</h1>
   <p class="text-body-secondary">El cliente CONSUMIDOR FINAL (9999999999) se muestra protegido. Los clientes no se eliminan: se pasan a inactivos para conservar el historial.</p>
+  <div class="alert alert-info pf-disponible-pronto" role="note">
+    <p class="fw-bold mb-1">Disponible pronto</p>
+    <p class="mb-0">Búsqueda por nombre o apellido e historial del cliente (inscripciones, entradas, compras, pedidos, pagos y facturas). Se activarán cuando el servidor publique esos servicios.</p>
+  </div>
   <section id="pantalla-clientes" data-tabla="cliente" aria-labelledby="titulo-clientes">
     <h2 id="titulo-clientes" class="visually-hidden">Listado de clientes</h2>
     <p data-mensaje class="pf-mensaje" role="status" aria-live="polite" hidden></p>
     <div class="d-flex flex-wrap gap-2 align-items-end justify-content-between mb-3">
+      <div><label class="form-label" for="buscar-cliente-cedula">Buscar por cédula</label><input id="buscar-cliente-cedula" class="form-control" type="search" inputmode="numeric" maxlength="10" data-filtro data-campo="id" aria-describedby="ayuda-buscar-cedula"><p id="ayuda-buscar-cedula" class="form-text mb-0">Escribe los 10 dígitos y pulsa Enter.</p></div>
       <div><label class="form-label" for="filtro-cliente-estado">Estado</label><select id="filtro-cliente-estado" class="form-select w-auto" data-filtro data-campo="estado"><option value="">Todos</option><option value="A">Activos</option><option value="I">Inactivos</option></select></div>
       <button type="button" class="btn btn-primary" data-nuevo hidden>Nuevo cliente</button>
     </div>

@@ -33,13 +33,18 @@
 </div></nav></header>
 <main id="contenido" class="container py-4">
   <h1 class="h3">Inscripciones</h1>
-  <p class="text-body-secondary">Solo lectura. Las inscripciones web pendientes de pago (canal Web, estado Pendiente) se resaltan para que recepción sepa a quién cobrar.</p>
+  <p class="text-body-secondary">Las inscripciones web pendientes de pago (canal Web, estado Pendiente) se resaltan para que recepción sepa a quién cobrar.</p>
+  <div class="alert alert-info pf-disponible-pronto" role="note">
+    <p class="fw-bold mb-1">Disponible pronto</p>
+    <p class="mb-0">Nueva inscripción en el local con pagos, cobro de las inscripciones web pendientes, acompañantes, renovación, suspensión, anulación y factura. Mientras el servidor no publique esos servicios, esta lista es de solo lectura.</p>
+  </div>
   <section id="pantalla-inscripciones" data-tabla="inscripcion" aria-labelledby="titulo-inscripciones">
     <h2 id="titulo-inscripciones" class="visually-hidden">Listado de inscripciones</h2>
     <p data-mensaje class="pf-mensaje" role="status" aria-live="polite" hidden></p>
     <div class="d-flex flex-wrap gap-2 align-items-end mb-3">
       <div><label class="form-label" for="filtro-inscripcion-estado">Estado</label><select id="filtro-inscripcion-estado" class="form-select w-auto" data-filtro data-campo="estado"><option value="">Todos</option><option value="P">Pendiente de pago</option><option value="A">Activa</option><option value="V">Vencida</option><option value="S">Suspendida</option><option value="X">Anulada</option></select></div>
       <div><label class="form-label" for="filtro-inscripcion-canal">Canal</label><select id="filtro-inscripcion-canal" class="form-select w-auto" data-filtro data-campo="canal"><option value="">Todos</option><option value="W">Web</option><option value="L">Local</option></select></div>
+      <button type="button" class="btn btn-outline-primary" data-filtro-web-pendientes aria-pressed="false">Web pendientes de cobro</button>
     </div>
     <div class="card shadow-sm"><div class="card-body"><div class="table-responsive"><table class="table table-hover align-middle"><caption class="visually-hidden">Inscripciones registradas</caption><thead data-tabla-head></thead><tbody data-tabla-body></tbody></table></div><div data-paginacion></div></div></div>
   </section>

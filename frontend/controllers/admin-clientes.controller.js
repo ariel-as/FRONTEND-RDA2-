@@ -1,5 +1,6 @@
 import './admin.controller.js';
 import { iniciarPantalla, cambiarEstadoTabla } from './admin-generico.controller.js';
+import { validarCedula } from './validacion.controller.js';
 
 iniciarPantalla({
   raiz: '#pantalla-clientes',
@@ -8,6 +9,9 @@ iniciarPantalla({
   columnas: ['id', 'nombre', 'apellido', 'telefono', 'correo', 'nivelId', 'estado'],
   etiquetas: { id: 'Cédula', nivelId: 'Nivel', telefono: 'Teléfono' },
   etiquetasValor: { estado: true },
+  // Misma regla de cédula ecuatoriana que el registro web.
+  reglas: { id: validarCedula },
+  permisoEscritura: ['clientes:crear', 'clientes:editar'],
   soloLecturaCampos: ['fechaRegistro'],
   defaults: { estado: 'A', esEstudiante: 'N' },
   opcionesFijas: {
