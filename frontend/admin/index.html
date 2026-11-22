@@ -29,6 +29,16 @@
 <main id="contenido" class="container py-4">
   <h1 class="h3 mb-1">Dashboard</h1>
   <p id="mensaje-admin" class="pf-mensaje" role="status" aria-live="polite" hidden></p>
+  <section class="my-3" aria-labelledby="titulo-mi-rol" data-dashboard-rol hidden>
+    <h2 id="titulo-mi-rol" class="h5">Indicadores de tu rol</h2>
+    <div class="row g-3" data-indicadores-rol aria-busy="false"></div>
+  </section>
+  <section class="my-3" aria-labelledby="titulo-asistencia">
+    <div class="card shadow-sm"><div class="card-body">
+      <h2 id="titulo-asistencia" class="h5">Mi asistencia</h2>
+      <p class="mb-0"><strong>Disponible pronto:</strong> botones «Marcar entrada» y «Marcar salida» para tu turno. Se activarán cuando el servidor publique el registro de asistencia.</p>
+    </div></div>
+  </section>
   <section class="row g-3 my-1" aria-labelledby="titulo-indicadores" data-indicadores-adm><h2 id="titulo-indicadores" class="visually-hidden">Indicadores</h2>
     <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small">Productos a la venta</p><p class="display-6 fw-bold mb-0" data-total-productos>0</p></div></div></div>
     <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small">Bajo stock mínimo</p><p class="display-6 fw-bold mb-0" data-total-bajo-stock>0</p></div></div></div>
@@ -36,6 +46,12 @@
     <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small">Clientes activos</p><p class="display-6 fw-bold mb-0" data-total-clientes>0</p></div></div></div>
     <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small">Planes web por cobrar</p><p class="display-6 fw-bold mb-0" data-total-inscripciones>0</p></div></div></div>
     <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small">Mensajes sin responder</p><p class="display-6 fw-bold mb-0" data-total-mensajes>0</p></div></div></div>
+  </section>
+  <section class="mt-4" aria-labelledby="titulo-accesos">
+    <div class="card shadow-sm"><div class="card-body">
+      <h2 id="titulo-accesos" class="h5">Accesos directos</h2>
+      <div class="row g-3" data-accesos-directos></div>
+    </div></div>
   </section>
   <section class="mt-4" aria-labelledby="titulo-recientes" data-indicadores-adm><div class="card shadow-sm"><div class="card-body"><h2 id="titulo-recientes" class="h5">Pedidos recientes</h2>
     <div class="table-responsive"><table class="table table-sm align-middle"><caption class="visually-hidden">Últimos pedidos</caption><thead class="table-light"><tr><th scope="col">#</th><th scope="col">Cliente</th><th scope="col">Fecha</th><th scope="col">Estado</th><th scope="col">Total</th><th scope="col">Acción</th></tr></thead><tbody data-tabla-pedidos-recientes></tbody></table></div>

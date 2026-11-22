@@ -8,6 +8,8 @@ import { INICIO_PANEL, entradaDePagina, menuVisible } from '../models/menu.model
 import { construirValidador, mostrarMensaje } from './validacion.controller.js';
 import { escapar, mostrarAviso } from '../views/componentes.view.js';
 import { pintarMenuAdmin, pintarSinAcceso } from '../views/menu.view.js';
+import { accesosDirectosHtml, indicadorHtml } from '../views/dashboard.view.js';
+import { iniciarCampana } from './campana.controller.js';
 import { iniciarAvisoServidor } from '../views/servidor.view.js';
 import { formatearPrecio } from '../models/carrito.model.js';
 
@@ -99,11 +101,56 @@ export function iniciarLoginAdmin(){
   });
 }
 
+// Indicadores por rol (sección 3). Los que todavía no tienen servicio en el servidor se muestran como "Disponible pronto".
+const INDICADORES_ROL = {
+  REC: [
+    { titulo: 'Aforo actual', pronto: true },
+    { titulo: 'Caja abierta', pronto: true },
+    { titulo: 'Pedidos por verificar', clave: 'pedidosPorVerificar', permiso: 'pedidos', enlace: 'pedidos.html' },
+    { titulo: 'Inscripciones web pendientes', pronto: true }
+  ],
+  CON: [
+    { titulo: 'Cuadres sin cerrar', pronto: true },
+    { titulo: 'Facturas por registrar en el SRI', pronto: true }
+  ],
+  ENT: [
+    { titulo: 'Mis clases de hoy', pronto: true },
+    { titulo: 'Mis clientes con rutina', pronto: true }
+  ]
+};
+
+async function valorIndicador(clave) {
+  if (clave === 'pedidosPorVerificar') {
+    const res = await adminModel.pedidos({ estado: 'R', limit: 1 });
+    return res?.pagination?.total ?? res?.total ?? (res?.data || []).length;
+  }
+  return null;
+}
+
+async function pintarIndicadoresRol() {
+  const roles = codigosRol(usuarioActual()).filter((c) => INDICADORES_ROL[c]);
+  const seccion = select('[data-dashboard-rol]');
+  const cont = select('[data-indicadores-rol]');
+  if (!roles.length || !seccion || !cont) return;
+  seccion.hidden = false;
+  cont.setAttribute('aria-busy', 'true');
+  const definiciones = roles.flatMap((r) => INDICADORES_ROL[r]);
+  const tarjetas = await Promise.all(definiciones.map(async (d) => {
+    if (d.pronto || (d.permiso && !puede(d.permiso))) return indicadorHtml({ titulo: d.titulo, pronto: true });
+    try { return indicadorHtml({ titulo: d.titulo, valor: await valorIndicador(d.clave), enlace: d.enlace }); }
+    catch { return indicadorHtml({ titulo: d.titulo, valor: 'Sin datos' }); }
+  }));
+  cont.innerHTML = tarjetas.join('');
+  cont.setAttribute('aria-busy', 'false');
+}
+
 export async function iniciarDashboard(){
+  const accesos = select('[data-accesos-directos]');
+  if (accesos) accesos.innerHTML = accesosDirectosHtml(menuVisible((permiso) => puede(permiso)));
+  await pintarIndicadoresRol();
   if (!esAdm()) {
     // /admin/resumen solo responde a ADM; los demás roles no lo consultan.
     selectAll('[data-indicadores-adm]').forEach((n) => { n.hidden = true; });
-    mostrarMensaje(select('#mensaje-admin'), 'Usa el menú para entrar a las pantallas de tu rol.', 'info');
     return;
   }
   try {
@@ -146,6 +193,7 @@ export async function mainAdmin(){
   inyectarAvisosAdmin();
   selectAll('[data-anio]').forEach((nodo) => { nodo.textContent = new Date().getFullYear(); });
   if (!permitido) return;
+  iniciarCampana(select('[data-cabecera-acciones]'), { id: 'campana-admin', alInicio: true });
   if (!leerSesion(CLAVES.perfilRevisado, false)) {
     actualizarPermisos().then(() => {
       pintarMenu();

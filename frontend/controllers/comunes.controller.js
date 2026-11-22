@@ -1,5 +1,6 @@
 import { aplicarTema } from '../views/tema.view.js';
 import { iniciarAvisoServidor } from '../views/servidor.view.js';
+import { iniciarCampana } from './campana.controller.js';
 import { actualizarContadorCarrito, actualizarEstadoSesion } from '../views/componentes.view.js';
 import { carrito } from '../models/carrito.model.js';
 import { usuarioActual, cerrarSesion, tienePendencia } from '../models/sesion.model.js';
@@ -118,6 +119,7 @@ export function iniciarComunes() {
   iniciarEncabezadoFijo();
   iniciarNavegacionSecciones();
   iniciarSesionUI();
+  if (usuarioActual()) iniciarCampana(select('[data-sesion="activa"]'), { id: 'campana-cliente' });
   actualizarContadorCarrito(carrito.contar());
   const anio = select('[data-anio]'); if (anio) anio.textContent = new Date().getFullYear();
 }

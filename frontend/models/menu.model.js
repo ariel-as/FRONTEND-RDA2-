@@ -26,7 +26,8 @@ export const MENU_ADMIN = [
   { texto: 'Datos del gimnasio', pagina: 'gimnasio.html', grupo: 'Administración', permiso: 'gimnasio' },
   { texto: 'Otras tablas', pagina: 'tablas.html', grupo: 'Administración', permiso: 'tablas' },
   { texto: 'Cierres de caja', pagina: 'caja.html#cierres', grupo: 'Contabilidad', permiso: 'caja' },
-  { texto: 'Facturas', pagina: 'facturas.html', grupo: 'Contabilidad', permiso: 'facturacion' }
+  { texto: 'Facturas', pagina: 'facturas.html', grupo: 'Contabilidad', permiso: 'facturacion' },
+  { texto: 'Notificaciones', pagina: 'notificaciones.html', grupo: 'Comunicación', permiso: null }
 ];
 
 // Entrada que controla el acceso a una página (la primera que la nombra sin ancla).
