@@ -36,7 +36,8 @@
   <section class="my-3" aria-labelledby="titulo-asistencia">
     <div class="card shadow-sm"><div class="card-body">
       <h2 id="titulo-asistencia" class="h5">Mi asistencia</h2>
-      <p class="mb-0"><strong>Disponible pronto:</strong> botones «Marcar entrada» y «Marcar salida» para tu turno. Se activarán cuando el servidor publique el registro de asistencia.</p>
+      <div class="d-flex flex-wrap gap-2" data-permiso="asistencia:marcar,asistencia:gestionar"><button type="button" class="btn btn-success" data-asistencia="entrada">Marcar entrada</button><button type="button" class="btn btn-outline-secondary" data-asistencia="salida">Marcar salida</button></div>
+      <p id="mensaje-asistencia" class="pf-mensaje mt-2" role="status" aria-live="polite" hidden></p>
     </div></div>
   </section>
   <section class="row g-3 my-1" aria-labelledby="titulo-indicadores" data-indicadores-adm><h2 id="titulo-indicadores" class="visually-hidden">Indicadores</h2>

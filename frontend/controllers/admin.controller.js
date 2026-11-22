@@ -10,6 +10,7 @@ import { escapar, mostrarAviso } from '../views/componentes.view.js';
 import { pintarMenuAdmin, pintarSinAcceso } from '../views/menu.view.js';
 import { accesosDirectosHtml, indicadorHtml } from '../views/dashboard.view.js';
 import { iniciarCampana } from './campana.controller.js';
+import { entradasModel, cajaModel, inscripcionesModel, facturasModel, rutinasModel, asistenciaModel } from '../models/fase2.model.js';
 import { iniciarAvisoServidor } from '../views/servidor.view.js';
 import { formatearPrecio } from '../models/carrito.model.js';
 
@@ -104,27 +105,43 @@ export function iniciarLoginAdmin(){
 // Indicadores por rol (sección 3). Los que todavía no tienen servicio en el servidor se muestran como "Disponible pronto".
 const INDICADORES_ROL = {
   REC: [
-    { titulo: 'Aforo actual', pronto: true },
-    { titulo: 'Caja abierta', pronto: true },
+    { titulo: 'Aforo actual', clave: 'aforo', permiso: 'aforo:ver', enlace: 'entradas.html' },
+    { titulo: 'Caja', clave: 'caja', permiso: 'caja:operar', enlace: 'caja.html' },
     { titulo: 'Pedidos por verificar', clave: 'pedidosPorVerificar', permiso: 'pedidos:leer', enlace: 'pedidos.html' },
-    { titulo: 'Inscripciones web pendientes', pronto: true }
+    { titulo: 'Inscripciones web pendientes', clave: 'webPendientes', permiso: 'inscripciones:leer', enlace: 'inscripciones.html' }
   ],
   CON: [
-    { titulo: 'Cuadres sin cerrar', pronto: true },
-    { titulo: 'Facturas por registrar en el SRI', pronto: true }
+    { titulo: 'Cuadres sin cierre semanal', clave: 'cuadresSinCerrar', permiso: 'caja:cierre', enlace: 'caja.html#cierres' },
+    { titulo: 'Facturas por registrar en el SRI', clave: 'facturasPendientes', permiso: 'facturas:leer', enlace: 'facturas.html' }
   ],
   ENT: [
-    { titulo: 'Mis clases de hoy', pronto: true },
-    { titulo: 'Mis clientes con rutina', pronto: true }
+    { titulo: 'Aforo actual', clave: 'aforo', permiso: 'aforo:ver', enlace: 'entradas.html' },
+    { titulo: 'Rutinas registradas', clave: 'rutinas', permiso: 'rutinas:gestionar', enlace: 'rutinas.html' }
   ]
 };
 
+const totalDe = (r) => r?.pagination?.total ?? r?.total ?? (r?.data || r || []).length;
 async function valorIndicador(clave) {
-  if (clave === 'pedidosPorVerificar') {
-    const res = await adminModel.pedidos({ estado: 'R', limit: 1 });
-    return res?.pagination?.total ?? res?.total ?? (res?.data || []).length;
-  }
+  if (clave === 'pedidosPorVerificar') return totalDe(await adminModel.pedidos({ estado: 'R', limit: 1 }));
+  if (clave === 'aforo') { const a = await entradasModel.aforo().then((r) => r?.data ?? r); return `${a.personasAdentro} de ${a.aforoMax}`; }
+  if (clave === 'caja') { try { const t = await cajaModel.actual().then((r) => r?.data ?? r); return `Abierta (${t.turno || t.turnoId})`; } catch (e) { if (e.status === 404) return 'Sin turno abierto'; throw e; } }
+  if (clave === 'webPendientes') return totalDe(await inscripcionesModel.listar({ estado: 'P', canal: 'W', limit: 1 }));
+  if (clave === 'facturasPendientes') return totalDe(await facturasModel.listar({ estado: 'P', limit: 1 }));
+  if (clave === 'rutinas') return totalDe(await rutinasModel.listar({ limit: 1 }));
+  if (clave === 'cuadresSinCerrar') { const r = await cajaModel.turnos({ limit: 100 }); return (r?.data || r || []).filter((c) => !c.cierreCajaId && c.efectivoContado !== null).length; }
   return null;
+}
+
+// Marcar entrada y salida del empleado conectado.
+function enlazarAsistencia() {
+  document.querySelectorAll('[data-asistencia]').forEach((b) => b.addEventListener('click', async () => {
+    const region = select('#mensaje-asistencia');
+    try {
+      const r = await (b.dataset.asistencia === 'entrada' ? asistenciaModel.entrada() : asistenciaModel.salida()).then((x) => x?.data ?? x);
+      const hora = String((b.dataset.asistencia === 'entrada' ? r?.horaEntrada : r?.horaSalida) || '').slice(0, 5);
+      mostrarMensaje(region, `${b.dataset.asistencia === 'entrada' ? 'Entrada' : 'Salida'} registrada${hora ? ` a las ${hora}` : ''}.`, 'exito');
+    } catch (e) { mostrarMensaje(region, e.mensaje || 'No se pudo registrar la asistencia.', 'error'); }
+  }));
 }
 
 async function pintarIndicadoresRol() {
@@ -136,7 +153,7 @@ async function pintarIndicadoresRol() {
   cont.setAttribute('aria-busy', 'true');
   const definiciones = roles.flatMap((r) => INDICADORES_ROL[r]);
   const tarjetas = await Promise.all(definiciones.map(async (d) => {
-    if (d.pronto || (d.permiso && !puede(d.permiso))) return indicadorHtml({ titulo: d.titulo, pronto: true });
+    if (d.permiso && !puede(d.permiso)) return '';
     try { return indicadorHtml({ titulo: d.titulo, valor: await valorIndicador(d.clave), enlace: d.enlace }); }
     catch { return indicadorHtml({ titulo: d.titulo, valor: 'Sin datos' }); }
   }));
@@ -147,6 +164,7 @@ async function pintarIndicadoresRol() {
 export async function iniciarDashboard(){
   const accesos = select('[data-accesos-directos]');
   if (accesos) accesos.innerHTML = accesosDirectosHtml(menuVisible((permiso) => puede(permiso)));
+  enlazarAsistencia();
   await pintarIndicadoresRol();
   if (!puede('resumen:ver')) {
     // Sin resumen:ver (por ejemplo, sesión sin permisos del servidor) no se consulta /admin/resumen.

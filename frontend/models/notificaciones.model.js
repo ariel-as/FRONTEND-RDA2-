@@ -4,10 +4,12 @@ import { api } from './api.model.js';
 function normalizar(n = {}) {
   return {
     id: n.id,
-    titulo: n.titulo || n.asunto || '',
-    mensaje: n.mensaje || n.descripcion || n.texto || '',
-    fecha: n.fecha || n.createdAt || n.fechaCreacion || null,
-    leida: n.leida === true || n.leida === 'S' || Boolean(n.fechaLectura)
+    // El backend no envía título: se usa tipoNombre (V vencimiento, P promoción, L pedido listo, K lote por caducar, S stock mínimo).
+    titulo: n.tipoNombre || '',
+    tipo: n.tipo || '',
+    mensaje: n.mensaje || '',
+    fecha: n.fechaEnvio || null,
+    leida: n.leida === true || n.leida === 'S' || n.estado === 'L'
   };
 }
 
@@ -15,8 +17,10 @@ export const notificacionesModel = {
   async listar(params = { limit: 20 }) {
     const sp = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== ''));
     const res = await api.get(`/notificaciones${sp.toString() ? `?${sp}` : ''}`, { requiereSesion: true });
-    const lista = Array.isArray(res) ? res : (res?.data || []);
-    return lista.map(normalizar);
+    const lista = (Array.isArray(res) ? res : (res?.data || [])).map(normalizar);
+    lista.noLeidas = Number.isFinite(Number(res?.noLeidas)) ? Number(res.noLeidas) : lista.filter((x) => !x.leida).length;
+    lista.pagination = res?.pagination;
+    return lista;
   },
   marcarLeida: (id) => api.patch(`/notificaciones/${encodeURIComponent(id)}/leida`, {}, { requiereSesion: true })
 };

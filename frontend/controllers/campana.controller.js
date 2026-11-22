@@ -18,7 +18,7 @@ export function iniciarCampana(contenedor, { id = 'campana', alInicio = false } 
   let datos = [];
 
   function pintarContador() {
-    const n = datos.filter((d) => !d.leida).length;
+    const n = Number.isFinite(datos.noLeidas) ? datos.noLeidas : datos.filter((d) => !d.leida).length;
     raiz.querySelector('[data-campana-texto]').textContent = textoNoLeidas(n);
     const contador = raiz.querySelector('[data-campana-contador]');
     contador.textContent = String(n);
@@ -59,7 +59,7 @@ export function iniciarCampana(contenedor, { id = 'campana', alInicio = false } 
     try {
       await notificacionesModel.marcarLeida(marcar.dataset.marcarLeida);
       const item = datos.find((d) => String(d.id) === marcar.dataset.marcarLeida);
-      if (item) item.leida = true;
+      if (item && !item.leida) { item.leida = true; if (Number.isFinite(datos.noLeidas)) datos.noLeidas = Math.max(0, datos.noLeidas - 1); }
       lista.innerHTML = itemsCampanaHtml(datos);
       estado.textContent = 'Notificación marcada como leída.';
       pintarContador();
