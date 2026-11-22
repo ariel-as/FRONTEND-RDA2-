@@ -50,6 +50,7 @@ async function cobrar() {
     contenido: '<div data-contenedor-pagos></div>',
     alPreparar: (f) => { pagos = crearPagos(f.querySelector('[data-contenedor-pagos]'), { total: estimado(), id: 'pagos-venta' }); },
     validarExtra: () => (pagos.validar() ? null : 'Revisa la forma de pago: los montos deben sumar el total.'),
+    alFallar: (fallo, _, nodo) => pagos?.ajustarDesdeError(fallo, nodo),
     alConfirmar: () => ventasModel.crear({ clienteId: cliente, items: lineas.map((l) => ({ productoId: String(l.producto.id), cantidad: l.cantidad, ...(l.descuento ? { descuento: l.descuento } : {}) })), pagos: pagos.obtener() }),
     exito: (r) => r?.data ?? r
   });

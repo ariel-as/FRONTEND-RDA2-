@@ -1,6 +1,7 @@
 import './admin.controller.js';
 import { adminModel } from '../models/admin.model.js';
 import { iniciarPantalla } from './admin-generico.controller.js';
+import { puede } from '../models/permisos.model.js';
 import { escapar } from '../views/componentes.view.js';
 
 const ESTADO_CLASE = { A: 'Activa', S: 'Suspendida' };
@@ -14,7 +15,8 @@ async function filasDe(tabla) {
 }
 
 async function iniciar() {
-  const [servicios, empleados, horarios] = await Promise.all([filasDe('servicio'), filasDe('empleado'), filasDe('horario')]);
+  // ENT no lee la tabla empleado: el instructor se muestra con su código.
+  const [servicios, empleados, horarios] = await Promise.all([filasDe('servicio'), puede('empleados') ? filasDe('empleado') : Promise.resolve([]), filasDe('horario')]);
   const mapaServicios = new Map(servicios.map((s) => [String(s.id), s.nombre || s.id]));
   const mapaEmpleados = new Map(empleados.map((e) => [String(e.id), `${e.nombre || ''} ${e.apellido || ''}`.trim() || e.id]));
   const mapaHorarios = new Map(horarios.map((h) => [String(h.id), `${h.dia || ''} ${h.horaInicio || ''}-${h.horaFin || ''}`.trim()]));

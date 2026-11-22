@@ -73,7 +73,10 @@ async function cargar(inst) {
 
 async function cargarOpciones(inst) {
   const columnas = columnasMeta(inst);
-  const referencias = [...new Set(columnas.map((c) => c.referencia || c.ref || c.tablaReferencia).filter(Boolean))];
+  // Tablas referenciadas que el rol no puede leer: no se piden (evita 403) y el campo muestra el código.
+  const PERMISO_TABLA = { usuario: 'usuarios:gestionar', empleado: 'empleados' };
+  const referencias = [...new Set(columnas.map((c) => c.referencia || c.ref || c.tablaReferencia).filter(Boolean))]
+    .filter((tabla) => !PERMISO_TABLA[tabla] || puede(PERMISO_TABLA[tabla]));
   await Promise.all(referencias.map(async (tabla) => {
     try { inst.opcionesCache[tabla] = normalizarOpciones(await adminModel.tablaOpciones(tabla)); } catch { inst.opcionesCache[tabla] = []; }
   }));

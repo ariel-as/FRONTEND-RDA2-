@@ -74,8 +74,8 @@ export function crearLista(opciones) {
 }
 
 // Diálogo de formulario: abre, envía con alConfirmar y devuelve el mensaje de éxito (o null si se canceló).
-export async function formulario({ titulo, mensaje, campos, contenido, textoConfirmar = 'Guardar', tono = 'primario', reglas, alPreparar, validarExtra, alConfirmar, exito }) {
-  const r = await abrirDialogo({ titulo, mensaje, campos, contenido, textoConfirmar, tono, reglas, alPreparar, validarExtra, alConfirmar });
+export async function formulario({ titulo, mensaje, campos, contenido, textoConfirmar = 'Guardar', tono = 'primario', reglas, alPreparar, validarExtra, alConfirmar, alFallar, exito }) {
+  const r = await abrirDialogo({ titulo, mensaje, campos, contenido, textoConfirmar, tono, reglas, alPreparar, validarExtra, alConfirmar, alFallar });
   return r ? (typeof exito === 'function' ? exito(r.resultado, r.valores) : exito) : null;
 }
 

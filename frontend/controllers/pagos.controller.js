@@ -63,6 +63,15 @@ export function crearPagos(contenedor, { total = 0, id = 'pagos', permitirAmbos 
       aplicarMetodo();
     },
     cuadra: () => diferencia() === 0,
+    // Si el servidor responde «El pago debe ser exactamente el total: X», toma ese total y lo explica en el error del diálogo.
+    ajustarDesdeError(fallo, nodoError) {
+      // El mensaje termina en punto («total: 1.00. Recibido…»): se toma solo el número.
+      const m = /total:\s*(\d+(?:\.\d+)?)/i.exec(fallo?.mensaje || '');
+      if (!m) return false;
+      this.actualizarTotal(Number(m[1]));
+      if (nodoError) nodoError.textContent = `El servidor indica que el total es ${formatearPrecio(Number(m[1]))}. Se actualizó el cobro: revisa los montos y confirma de nuevo.`;
+      return true;
+    },
     // Valida los campos activos y que la suma sea exacta. Enfoca el primer error.
     validar() {
       const activos = [montoEf, montoTr, referencia].filter((c) => !c.disabled);

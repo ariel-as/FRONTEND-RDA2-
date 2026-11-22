@@ -113,6 +113,7 @@ async function convertir(p) {
     textoConfirmar: enEfectivo ? 'Cobrar y convertir' : 'Verificar y convertir',
     alPreparar: (form) => { if (enEfectivo) pagos = crearPagos(form.querySelector('[data-contenedor-pagos]'), { total: p.total, id: `pagos-pedido-${p.id}` }); },
     validarExtra: () => (pagos && !pagos.validar() ? 'Revisa la forma de pago: los montos deben sumar exactamente el total.' : null),
+    alFallar: (fallo, _, nodo) => pagos?.ajustarDesdeError(fallo, nodo),
     alConfirmar: () => adminModel.cambiarEstadoPedido(p.id, { estado: 'C', ...(pagos ? { pagos: pagos.obtener() } : {}) })
   });
   if (respuesta) await terminar(`Pedido ${p.id} convertido en venta.`);

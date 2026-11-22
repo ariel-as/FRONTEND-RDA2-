@@ -31,6 +31,7 @@ async function dialogoConPagos({ titulo, mensaje, campos, totalInicial, idPagos,
     },
     validarExtra: () => (pagos && !pagos.validar() ? 'Revisa la forma de pago: los montos deben sumar el total.' : null),
     alConfirmar: (v) => alConfirmar(v, pagos.obtener()),
+    alFallar: (fallo, _, nodo) => pagos?.ajustarDesdeError(fallo, nodo),
     exito
   });
 }

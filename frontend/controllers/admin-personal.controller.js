@@ -2,6 +2,7 @@ import './admin.controller.js';
 import { adminModel } from '../models/admin.model.js';
 import { iniciarPantalla, cambiarEstadoTabla } from './admin-generico.controller.js';
 import { escapar } from '../views/componentes.view.js';
+import { puede } from '../models/permisos.model.js';
 
 const ESTADO = { A: 'Activo', I: 'Inactivo' };
 
@@ -13,6 +14,8 @@ async function filasDe(tabla) {
 }
 
 async function iniciar() {
+// Sin empleados:leer (por ejemplo ENT) solo se muestra la asistencia propia.
+if (!puede('empleados')) { ['#pantalla-empleado', '#pantalla-cargo', '#pantalla-turno'].forEach((s) => { const n = document.querySelector(s); if (n) n.hidden = true; }); return; }
 const [cargos, turnos] = await Promise.all([filasDe('cargo'), filasDe('turno')]);
 const mapaCargos = new Map(cargos.map((c) => [String(c.id), c.descripcion || c.id]));
 const mapaTurnos = new Map(turnos.map((t) => [String(t.id), t.descripcion || t.id]));

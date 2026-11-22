@@ -65,6 +65,7 @@ export function abrirDialogo(opciones = {}) {
           mostrarErroresServidor(form, fallo);
           error.textContent = fallo?.mensaje || 'No se pudo completar la acción.';
           error.hidden = false;
+          if (typeof opciones.alFallar === 'function') opciones.alFallar(fallo, form, error);
           return false;
         } finally {
           botonConfirmar.disabled = false;
