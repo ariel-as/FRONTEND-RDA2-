@@ -14,13 +14,15 @@ export const MENU_ADMIN = [
   { texto: 'Inscripciones', pagina: 'inscripciones.html', grupo: 'Recepción', permiso: 'inscripciones' },
   { texto: 'Clientes', pagina: 'clientes.html', grupo: 'Recepción', permiso: 'clientes' },
   { texto: 'Pedidos web', pagina: 'pedidos.html', grupo: 'Recepción', permiso: 'pedidos' },
+  { texto: 'Caja', pagina: 'caja.html', grupo: 'Recepción', permiso: 'caja' },
   { texto: 'Productos', pagina: 'productos.html', grupo: 'Inventario', permiso: 'inventario' },
   { texto: 'Planes y promociones', pagina: 'membresias.html', grupo: 'Gimnasio', permiso: 'planes' },
   { texto: 'Clases', pagina: 'clases.html', grupo: 'Gimnasio', permiso: 'clases' },
   { texto: 'Personal', pagina: 'personal.html', grupo: 'Gimnasio', permiso: ['empleados', 'asistencia'] },
   { texto: 'Usuarios', pagina: 'usuarios.html', grupo: 'Administración', permiso: 'usuarios' },
   { texto: 'Datos del gimnasio', pagina: 'gimnasio.html', grupo: 'Administración', permiso: 'gimnasio' },
-  { texto: 'Otras tablas', pagina: 'tablas.html', grupo: 'Administración', permiso: 'tablas' }
+  { texto: 'Otras tablas', pagina: 'tablas.html', grupo: 'Administración', permiso: 'tablas' },
+  { texto: 'Cierres de caja', pagina: 'caja.html#cierres', grupo: 'Contabilidad', permiso: 'caja' }
 ];
 
 // Entrada que controla el acceso a una página (la primera que la nombra sin ancla).
