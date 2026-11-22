@@ -18,6 +18,7 @@ export const MENU_ADMIN = [
   { texto: 'Ventas en mostrador', pagina: 'ventas.html', grupo: 'Recepción', permiso: 'ventas' },
   { texto: 'Caja', pagina: 'caja.html', grupo: 'Recepción', permiso: 'caja' },
   { texto: 'Productos', pagina: 'productos.html', grupo: 'Inventario', permiso: 'inventario' },
+  { texto: 'Lotes y kárdex', pagina: 'inventario.html', grupo: 'Inventario', permiso: 'inventario' },
   { texto: 'Planes y promociones', pagina: 'membresias.html', grupo: 'Gimnasio', permiso: 'planes' },
   { texto: 'Clases', pagina: 'clases.html', grupo: 'Gimnasio', permiso: 'clases' },
   { texto: 'Personal', pagina: 'personal.html', grupo: 'Gimnasio', permiso: ['empleados', 'asistencia'] },
