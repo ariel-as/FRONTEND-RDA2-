@@ -29,102 +29,23 @@ jobs:
         with:
           node-version: '22'
 
-      # Playwright se instala solo en el servidor de CI: el proyecto no declara
-      # dependencias ni aÃ±ade archivos de paquete al repositorio.
-      - name: Instalar Playwright para las pruebas de navegador
-        run: |
-          npm install --no-save --no-package-lock playwright@1.63.0
-          npx playwright install --with-deps chromium
-
       - name: Sintaxis de JavaScript
         run: |
-          fallos=0
-          for archivo in $(git ls-files '*.js' '*.mjs'); do
-            node --check "$archivo" || fallos=1
-          done
-          if [ "$fallos" -ne 0 ]; then exit 1; fi
-          echo "Sintaxis correcta en $(git ls-files '*.js' '*.mjs' | wc -l) archivos"
+          set -o pipefail
+          archivos=$(find frontend pruebas -type f \( -name '*.js' -o -name '*.mjs' \) | sort)
+          while IFS= read -r archivo; do
+            node --check "$archivo"
+          done <<< "$archivos"
+          echo "Sintaxis correcta en $(printf '%s\n' "$archivos" | wc -l) archivos"
 
-      - name: HTML5 y semÃ¡ntica
+      - name: HTML, accesibilidad, rutas y arquitectura del frontend
         run: |
           codigo=0
-          node pruebas/prueba-html.mjs > /tmp/salida.txt 2>&1 || codigo=$?
+          node pruebas/verificar-frontend.mjs > /tmp/salida.txt 2>&1 || codigo=$?
           cat /tmp/salida.txt
           grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
           exit $codigo
 
-      - name: Accesibilidad WCAG y ARIA
-        run: |
-          codigo=0
-          node pruebas/prueba-accesibilidad.mjs > /tmp/salida.txt 2>&1 || codigo=$?
-          cat /tmp/salida.txt
-          grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
-          exit $codigo
-
-      - name: Enlaces externos y rutas
-        run: |
-          codigo=0
-          node pruebas/prueba-enlaces.mjs > /tmp/salida.txt 2>&1 || codigo=$?
-          cat /tmp/salida.txt
-          grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
-          exit $codigo
-
-      - name: LÃ³gica del carrito y planes
-        run: |
-          codigo=0
-          node pruebas/prueba-logica.mjs > /tmp/salida.txt 2>&1 || codigo=$?
-          cat /tmp/salida.txt
-          grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
-          exit $codigo
-
-      - name: Integridad de los datos
-        run: |
-          codigo=0
-          node pruebas/prueba-repo.mjs > /tmp/salida.txt 2>&1 || codigo=$?
-          cat /tmp/salida.txt
-          grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
-          exit $codigo
-
-      - name: Selectores del DOM
-        run: |
-          codigo=0
-          node pruebas/prueba-selectores.mjs > /tmp/salida.txt 2>&1 || codigo=$?
-          cat /tmp/salida.txt
-          grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
-          exit $codigo
-
-      - name: Capas MVC, formularios y teclado
-        run: |
-          codigo=0
-          node pruebas/prueba-arquitectura.mjs > /tmp/salida.txt 2>&1 || codigo=$?
-          cat /tmp/salida.txt
-          grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
-          exit $codigo
-
-      - name: Recorrido completo en navegador
-        run: |
-          codigo=0
-          node pruebas/prueba-navegador.mjs > /tmp/salida.txt 2>&1 || codigo=$?
-          cat /tmp/salida.txt
-          grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
-          exit $codigo
-
-      - name: Hash y posicion pendiente
-        run: |
-          codigo=0
-          node pruebas/prueba-hash.mjs > /tmp/salida.txt 2>&1 || codigo=$?
-          cat /tmp/salida.txt
-          grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
-          exit $codigo
-
-
-      - name: DiseÃ±o responsive y accesibilidad medida
-        run: |
-          codigo=0
-          node pruebas/prueba-responsive.mjs > /tmp/salida.txt 2>&1 || codigo=$?
-          cat /tmp/salida.txt
-          grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
-          exit $codigo
 
   desplegar:
     name: Publicar en GitHub Pages
@@ -153,18 +74,15 @@ jobs:
       - name: Preparar el sitio
         run: |
           mkdir -p _sitio
-          cp index.html _sitio/
-          for carpeta in admin assets cliente data js; do
-            cp -r "$carpeta" _sitio/
-          done
+          cp -r frontend/. _sitio/
           echo "Archivos preparados: $(find _sitio -type f | wc -l)"
 
-      # Ãšltima revisiÃ³n antes de publicar: comprueba sobre la copia final que no
+      # Última revisión antes de publicar: comprueba sobre la copia final que no
       # hay rutas rotas ni destinos inseguros.
       - name: Validar el sitio preparado
         run: |
           codigo=0
-          node pruebas/prueba-enlaces.mjs _sitio > /tmp/salida.txt 2>&1 || codigo=$?
+          node pruebas/verificar-frontend.mjs _sitio > /tmp/salida.txt 2>&1 || codigo=$?
           cat /tmp/salida.txt
           grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
           exit $codigo

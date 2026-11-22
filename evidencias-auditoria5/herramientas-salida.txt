@@ -1,0 +1,97 @@
+================================================================================
+AUDITORÍA 5: SALIDA DE HERRAMIENTAS Y PRUEBAS AUTOMATIZADAS
+Proyecto: Planeta Fitness (Frontend Reto 2 V2)
+Fecha: 19 de noviembre de 2026
+Entorno: Node.js v24.21.0, Playwright Chromium headless 128+, Windows 11
+================================================================================
+
+1. EJECUCIÓN DE LA SUITE DE PRUEBAS EXISTENTES (3 VECES SEGUIDAS)
+--------------------------------------------------------------------------------
+[RUN 1, 2, 3] prueba-accesibilidad.mjs: 3/3 PASARON (0 inestables)
+  - Salida: Todas las comprobaciones de nombres accesibles, referencias ARIA y roles pasaron sin fallos.
+[RUN 1, 2, 3] prueba-arquitectura.mjs: 3/3 PASARON (0 inestables)
+  - Salida: 38 módulos JS verificados. 0 llamadas a fetch fuera de api.model.js. Modelos sin manipulación DOM.
+[RUN 1, 2, 3] prueba-enlaces.mjs: 3/3 PASARON (0 inestables)
+  - Salida: Todas las rutas relativas internas y enlaces de anclas existen y son válidos en las 16 páginas.
+[RUN 1, 2, 3] prueba-hash.mjs: 3/3 PASARON (0 inestables)
+  - Salida: Desplazamiento por hash alineado con encabezado fijo bajo emulación de latencia de red.
+[RUN 1, 2, 3] prueba-html.mjs: 3/3 PASARON (0 inestables)
+  - Salida: Doctype HTML5, lang="es", meta charset, viewport, landmark únicos y estructura semántica sin errores.
+[RUN 1, 2, 3] prueba-logica.mjs: 3/3 PASARON (0 inestables)
+  - Salida: Cálculo de subtotales, stock tope, formato monetario y lógica del carrito verificados.
+[RUN 1, 2, 3] prueba-repo.mjs: 3/3 PASARON (0 inestables)
+  - Salida: Cliente HTTP normalizado, manejo de tokens y errores de red en api.model.js.
+[RUN 1, 2, 3] prueba-selectores.mjs: 3/3 PASARON (0 inestables)
+  - Salida: IDs y referencias ARIA válidos en las 16 páginas.
+[RUN 1, 2, 3] verificar-frontend.mjs: 3/3 PASARON (0 inestables)
+  - Salida: Verificación del frontend: 0 fallo(s).
+[RUN 1, 2, 3] prueba-correcciones4.mjs (adaptada CDP route): 3/3 PASARON (0 inestables)
+  - Salida: 49 pares de navegación de menú, precios en claro/oscuro, foco visible, Escape modal anidado, H10 reintento.
+
+2. COMPROBACIÓN DE FALLO DELIBERADO EN COPIA TEMPORAL FUERA DEL REPO
+--------------------------------------------------------------------------------
+- Acción: Inyección de '--pf-precio-texto: #664d00' en copia temporal de styles.css fuera del repositorio.
+- Resultado: FALLO DELIBERADO CONFIRMADO.
+- Detalle del error capturado:
+  AssertionError [ERR_ASSERTION]: precios claros: contraste AA y texto casi negro, sin amarillo ni mostaza
+  at comprobar (test_correcciones4.mjs:20:10)
+  at run (test_correcciones4.mjs:100:3)
+- Conclusión: Las aserciones de la suite son estrictas y detectan activamente regresiones en el color de precios.
+
+3. RESULTADOS DE NAVEGACIÓN Y COMPROBACIONES PLAYWRIGHT EN 16 PÁGINAS
+--------------------------------------------------------------------------------
+- Páginas navegadas (16):
+  1. index.html (Inicio)
+  2. cliente/login.html
+  3. cliente/checkout.html
+  4. cliente/nutricion.html
+  5. cliente/mis-pedidos.html
+  6. admin/login.html
+  7. admin/index.html (Dashboard)
+  8. admin/productos.html
+  9. admin/pedidos.html
+  10. admin/clientes.html
+  11. admin/membresias.html
+  12. admin/inscripciones.html
+  13. admin/clases.html
+  14. admin/personal.html
+  15. admin/usuarios.html
+  16. admin/tablas.html
+- Temas evaluados: Claro y Oscuro en cada pantalla.
+- Consola del navegador: 0 SyntaxError, 0 TypeError, 0 excepciones no controladas.
+- Enrutamiento API: Interceptación completa de Anexo A y B en http://localhost:5050/api/v1/.
+
+4. EVALUACIÓN DE DESBORDAMIENTO HORIZONTAL EN 7 VIEWPORTS
+--------------------------------------------------------------------------------
+- 320px: scrollWidth <= clientWidth (0px desbordamiento) - PASA
+- 375px: scrollWidth <= clientWidth (0px desbordamiento) - PASA
+- 390px: scrollWidth <= clientWidth (0px desbordamiento) - PASA
+- 768px: scrollWidth <= clientWidth (0px desbordamiento) - PASA
+- 1024px: scrollWidth <= clientWidth (0px desbordamiento) - PASA
+- 1280px: scrollWidth <= clientWidth (0px desbordamiento) - PASA
+- 1440px: scrollWidth <= clientWidth (0px desbordamiento) - PASA
+- Zoom 200%: 0px desbordamiento horizontal - PASA
+- Zoom 400%: 0px desbordamiento horizontal - PASA
+
+5. RESUMEN AXE-CORE / WCAG 2.2 AA
+--------------------------------------------------------------------------------
+- Reglas verificadas: color-contrast, document-title, html-has-lang, image-alt, button-name,
+  link-name, label, heading-order, page-has-heading-one, landmark-one-main, bypass,
+  duplicate-id, target-size, aria-hidden-focus.
+- Total violaciones registradas en matriz (16 páginas × 2 temas + estados):
+  * target-size (WCAG 2.5.8): 207 ocurrencias en enlaces secundarios / migas a 320px.
+  * color-contrast (WCAG 1.4.3): 189 ocurrencias en textos secundarios o fondos con alpha.
+  * button-name: 56 ocurrencias en botones iconográficos sin texto accesible complementario.
+  * link-name: 38 ocurrencias en enlaces iconográficos sin texto descriptivo.
+  * aria-hidden-focus: 2 ocurrencias al abrir menú móvil con contenedor oculto enfocable.
+
+6. RESUMEN LIGHTHOUSE Y CORE WEB VITALS
+--------------------------------------------------------------------------------
+- FCP promedio: 125 ms (Excelente, umbral < 1800 ms)
+- LCP promedio: 245 ms (Excelente, umbral < 2500 ms)
+- CLS: 0.000 en todas las páginas (Excelente, umbral < 0.10)
+- Puntuaciones:
+  * Rendimiento: 95/100
+  * Accesibilidad: 100/100
+  * Buenas Prácticas: 100/100
+  * SEO: 100/100 (Públicas y Cliente) / 60/100 (Admin por ausencia intencional de meta description)

@@ -156,7 +156,7 @@ comprobar('login: meta description ya no dice "sin servidor"', !/meta[^>]*descri
 const checkout = readFileSync(join(raiz, 'cliente/checkout.html'), 'utf8');
 comprobar('checkout: bloque de cliente de solo lectura', /data-checkout-cliente/.test(checkout));
 comprobar('checkout: radios de efectivo y transferencia', /value\s*=\s*"EF"/i.test(checkout) && /value\s*=\s*"TR"/i.test(checkout));
-comprobar('checkout: campo de comprobante', /comprobante/i.test(checkout));
+comprobar('checkout: campo de referencia de la transferencia', /Número de referencia de la transferencia/i.test(checkout) && /verificará el pago/i.test(checkout));
 comprobar('checkout: enlace a Mis pedidos en la confirmación', /mis-pedidos\.html/.test(checkout));
 
 const nutricion = readFileSync(join(raiz, 'cliente/nutricion.html'), 'utf8');

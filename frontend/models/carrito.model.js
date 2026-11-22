@@ -33,6 +33,7 @@ export function agregarProducto(producto, cantidad = 1) {
     id: String(producto.id),
     nombre: producto.nombre,
     precio: Number(producto.precio),
+    porcentajeIva: producto.porcentajeIva,
     imagen: producto.imagen || '',
     tipo: producto.tipo || 'producto',
     membresiaId: producto.membresiaId || (producto.tipo === 'plan' ? String(producto.id) : undefined),

@@ -271,6 +271,57 @@ footer img[src*="logo-planeta.png"] {
   padding-bottom: 0.55rem;
 }
 
+/* ---------- Barra flotante de la página principal ---------- */
+
+/* Igual que en el panel administrativo: la cabecera se transparenta y la
+   navegación se convierte en una píldora separada del borde superior. */
+.pf-encabezado-flotante {
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.pf-encabezado-flotante[data-fijo="true"] {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.pf-encabezado-flotante .pf-nav {
+  width: min(100%, 1400px);
+  max-width: 1400px;
+  min-height: 3.5rem;
+  margin-inline: auto;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--pf-linea);
+  border-radius: 1rem;
+  background-color: var(--pf-fondo-encabezado-fijo);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+}
+
+.pf-encabezado-flotante .pf-enlace {
+  border-radius: 999px;
+}
+
+.pf-encabezado-flotante .pf-enlace-activo {
+  color: #111111;
+  background-color: var(--pf-amarillo);
+}
+
+.pf-encabezado-flotante .pf-enlace-activo::after {
+  display: none;
+}
+
+@media (max-width: 1023.98px) {
+  .pf-encabezado-flotante .pf-menu.pf-menu-abierto {
+    border-radius: 1rem;
+    background-color: var(--pf-fondo-encabezado-fijo);
+    backdrop-filter: blur(12px);
+  }
+}
+
 .pf-logo {
   display: inline-flex;
   align-items: center;
@@ -602,6 +653,22 @@ html.pf-posicion-pendiente {
 
 body {
   overflow-x: clip;
+  transition: background-color var(--pf-transicion), color var(--pf-transicion);
+}
+
+/* Enlaces en línea ("Crear cuenta", "Acceso administrativo") y migas de pan:
+   el texto conserva su aspecto, pero el área pulsable llega a 24 px (WCAG 2.2
+   SC 2.5.8). */
+a.underline {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+}
+
+/* En ambos temas el enlace subrayado usa el color de acento legible sobre el
+   fondo de la página; antes heredo un gris que no llegaba a 4.5:1 en oscuro. */
+body:not(.pf-admin) a.underline {
+  color: var(--pf-amarillo-texto);
 }
 
 /* Al entrar con un ancla, el alto del documento aún no es el definitivo: el
@@ -706,7 +773,22 @@ footer a {
   border-radius: 1rem;
   box-shadow: var(--pf-sombra);
   transition: transform var(--pf-transicion), box-shadow var(--pf-transicion),
-    border-color var(--pf-transicion);
+    border-color var(--pf-transicion), background-color var(--pf-transicion),
+    color var(--pf-transicion);
+}
+
+/* Los tres planes reales ocupan toda la altura de la fila y el botón queda
+   abajo, aunque un plan tenga más beneficios que los otros. */
+[data-planes] > .pf-tarjeta[data-plan] {
+  height: 100%;
+}
+
+[data-planes] > .pf-tarjeta[data-plan] > div:last-child {
+  flex: 1;
+}
+
+[data-planes] > .pf-tarjeta[data-plan] button[data-accion="elegir-plan"] {
+  margin-top: auto;
 }
 
 .pf-tarjeta:hover,
@@ -902,6 +984,7 @@ body:not(.pf-admin) .pf-boton-tema {
   border: 1px solid rgba(255, 208, 0, 0.18);
   border-radius: 0.6rem;
   background-color: rgba(255, 208, 0, 0.06);
+  color: var(--pf-blanco);
 }
 
 .pf-clase-dia {
@@ -999,6 +1082,14 @@ textarea {
   border: 1px solid var(--pf-borde-control);
 }
 
+/* Los campos de texto también son objetivos táctiles: 24 px de alto sin
+   cambiar tipografía ni relleno (WCAG 2.2 SC 2.5.8). */
+input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  min-height: 24px;
+}
+
 input::placeholder,
 textarea::placeholder {
   color: var(--pf-gris-oscuro);
@@ -1016,13 +1107,13 @@ select option {
   padding: 0.85rem 1rem;
   font-weight: 600;
   border-left: 6px solid var(--pf-amarillo);
-  background-color: rgba(255, 208, 0, 0.12);
+  background-color: var(--pf-carbon);
   color: var(--pf-blanco);
 }
 
 .pf-mensaje[data-tipo="error"] {
   border-left-color: var(--pf-rojo);
-  background-color: rgba(226, 27, 35, 0.16);
+  background-color: var(--pf-carbon);
   color: var(--pf-error-aviso);
 }
 
@@ -1137,6 +1228,8 @@ select option {
   flex-direction: column;
   width: min(26rem, 100%);
   height: 100%;
+  min-height: 0;
+  overflow: hidden;
   background-color: var(--pf-grafito);
   border-left: 1px solid var(--pf-linea);
   box-shadow: var(--pf-sombra-alta);
@@ -1152,6 +1245,14 @@ select option {
 .pf-panel[data-visible="true"] {
   transform: translateX(0);
   visibility: visible;
+}
+
+[data-panel-contenido] {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* En móvil el panel ocupa casi todo el ancho */
@@ -1209,6 +1310,7 @@ select option {
 }
 
 .pf-panel-pie {
+  flex-shrink: 0;
   border-top: 1px solid var(--pf-linea);
   background-color: var(--pf-negro);
   padding: 1rem 1.25rem 1.25rem;
@@ -1499,12 +1601,139 @@ html[data-tema="claro"] .pf-tarjeta h4.text-pf-amarillo {
    (variables que en el panel valen siempre los tonos oscuros). */
 .pf-admin {
   color: var(--pf-carbon);
+  background-color: #f8f9fa;
 }
 
 .pf-admin h1,
 .pf-admin h2,
 .pf-admin h3 {
   color: var(--pf-negro);
+}
+
+.pf-admin > header {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  padding: 0.75rem 1rem;
+  background: transparent !important;
+}
+
+.pf-admin > header .navbar {
+  width: min(100%, 1400px);
+  margin-inline: auto;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1rem;
+  background-color: rgba(15, 18, 22, 0.94);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+}
+
+.pf-admin > header .navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.pf-admin > header .nav-link {
+  padding: 0.45rem 0.75rem !important;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.78) !important;
+  transition: background-color var(--pf-transicion), color var(--pf-transicion);
+}
+
+.pf-admin > header .nav-link:hover,
+.pf-admin > header .nav-link:focus-visible {
+  color: #ffffff !important;
+  background-color: rgba(255, 208, 0, 0.14);
+}
+
+.pf-admin > header .nav-link.active {
+  color: #111111 !important;
+  background-color: var(--pf-amarillo);
+  font-weight: 700;
+}
+
+.pf-admin > header .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: none;
+}
+
+.pf-admin > header .pf-admin-usuario {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.pf-admin > header .pf-admin-usuario svg {
+  color: var(--pf-amarillo);
+}
+
+.pf-admin > header .dropdown-menu {
+  min-width: 14rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.75rem;
+  background-color: #15181d;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.pf-admin > header .dropdown-header {
+  color: #adb5bd;
+}
+
+.pf-admin > header .dropdown-item {
+  border-radius: 0.5rem;
+  color: #dee2e6;
+}
+
+.pf-admin > header .dropdown-item:hover,
+.pf-admin > header .dropdown-item:focus-visible {
+  background-color: rgba(255, 208, 0, 0.14);
+  color: #ffffff;
+}
+
+.pf-admin > header .dropdown-divider {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.pf-admin > header + main {
+  padding-top: 2rem;
+}
+
+.pf-admin main[id] {
+  scroll-margin-top: 8rem;
+}
+
+.pf-admin .pf-saltar {
+  z-index: 1080;
+}
+
+@media (min-width: 992px) {
+  .pf-admin > header .navbar-nav {
+    gap: 0.15rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .pf-admin > header .navbar-collapse {
+    margin-top: 0.65rem;
+    padding: 0.65rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 0.85rem;
+    background-color: rgba(10, 10, 10, 0.96);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  .pf-admin > header .navbar-collapse .navbar-nav {
+    gap: 0.15rem;
+  }
+
+  .pf-admin > header .navbar-collapse .d-flex {
+    margin-top: 0.4rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+  }
 }
 
 /* Errores de formulario en el panel: el tono del área cliente (#ff8b91,
@@ -1540,6 +1769,28 @@ html[data-bs-theme="dark"] .pf-admin .pf-error {
    sus fondos y textos son literales y se leen en ambos modos. */
 html[data-bs-theme="dark"] .pf-admin {
   color: #dee2e6;
+  background-color: #212529;
+}
+
+html[data-bs-theme="dark"] .pf-admin .card {
+  background-color: #2b3035;
+}
+
+.pf-admin > header .navbar-brand,
+.pf-admin > header .btn-outline-light {
+  color: #ffffff;
+}
+
+.pf-admin > header .navbar-brand:hover,
+.pf-admin > header .navbar-brand:focus-visible,
+.pf-admin > header .btn-outline-light:hover,
+.pf-admin > header .btn-outline-light:focus-visible {
+  color: #ffffff;
+}
+
+body:not(.pf-admin) a[href^="tel:"],
+body:not(.pf-admin) [data-aliados-nutricion] a[href^="mailto:"] {
+  color: var(--pf-amarillo-texto);
 }
 
 html[data-bs-theme="dark"] .pf-admin h1,

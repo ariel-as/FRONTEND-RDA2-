@@ -1,5 +1,5 @@
 ﻿import { formatearPrecio } from '../models/carrito.model.js';
-import { escapar, rutaArchivo } from './componentes.view.js';
+import { escapar, rutaArchivo, etiquetaIva } from './componentes.view.js';
 
 export function pintarResumenCheckout(contenedor, items, total) {
   if (!contenedor) return;
@@ -7,7 +7,7 @@ export function pintarResumenCheckout(contenedor, items, total) {
     <li class="flex items-center justify-between gap-3 border-b border-pf-linea py-3">
       <div class="flex items-center gap-3">
         ${item.imagen ? `<img src="${escapar(rutaArchivo(item.imagen))}" alt="" width="48" height="48" class="rounded">` : ''}
-        <div><p class="m-0 font-semibold text-white">${escapar(item.nombre)} ${item.tipo==='plan'?'<span class="pf-etiqueta ml-2">Plan</span>':''}</p><p class="m-0 text-sm text-neutral-400">${item.cantidad} x ${formatearPrecio(item.precio)}</p></div>
+        <div><p class="m-0 font-semibold text-white">${escapar(item.nombre)} ${item.tipo==='plan'?'<span class="pf-etiqueta ml-2">Plan</span>':''}</p><p class="m-0 text-sm text-neutral-400">${item.cantidad} x ${formatearPrecio(item.precio)} · ${etiquetaIva(item.porcentajeIva)}</p></div>
       </div>
       <span class="font-bold pf-precio">${formatearPrecio(item.precio * item.cantidad)}</span>
     </li>`).join('');
@@ -31,7 +31,7 @@ export function pintarConfirmacion(contenedor, { pedido, inscripciones }) {
   (inscripciones || []).forEach((ins)=>{
     const plan = ins.plan || ins.membresia?.nombre || ins.membresiaId || 'Plan';
     const total = ins.totalCobrar ?? ins.valor ?? ins.precio ?? 0;
-    partes.push(`<div class="mb-4 rounded border border-pf-linea p-3"><p class="font-bold text-white">${escapar(plan)}</p><p class="text-sm text-neutral-300">Pendiente de pago en recepción</p><p class="pf-precio font-semibold">Valor: ${formatearPrecio(total)}</p></div>`);
+    partes.push(`<div class="mb-4 rounded border border-pf-linea p-3"><p class="font-bold text-white">${escapar(plan)}</p><p class="text-sm text-neutral-300">Inscripción registrada por separado de los pedidos de productos. Pendiente de pago en recepción.</p><p class="pf-precio font-semibold">Valor: ${formatearPrecio(total)}</p></div>`);
   });
   contenedor.innerHTML = partes.join('') || '<p>Pedido registrado.</p>';
 }

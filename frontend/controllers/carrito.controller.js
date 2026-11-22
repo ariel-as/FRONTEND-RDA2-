@@ -8,7 +8,7 @@ import { raizSitio } from '../models/storage.model.js';
 let focoAnteriorPanel = null;
 let focoAnteriorModal = null;
 
-function alternarCapa(nodo, visible){ if(!nodo) return; nodo.dataset.visible=String(visible); nodo.setAttribute('aria-hidden', String(!visible)); }
+function alternarCapa(nodo, visible){ if(!nodo) return; nodo.dataset.visible=String(visible); nodo.setAttribute('aria-hidden', String(!visible)); nodo.inert = !visible; }
 function estaAbierto(nodo){ return nodo?.dataset.visible === 'true'; }
 function enfocarEnDialogo(elemento, intentos=40){ if(!elemento) return; let restantes=intentos; const intentar=()=>{ elemento.focus(); if(document.activeElement===elemento||restantes<=1) return; restantes-=1; requestAnimationFrame(intentar); }; requestAnimationFrame(intentar); }
 

@@ -1,0 +1,306 @@
+{
+  "index.html": {
+    "fcpMs": 272,
+    "lcpMs": 392,
+    "lcpElement": "IMG.",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 484,
+    "totalBytes": 1093230,
+    "cssBytes": 41682,
+    "jsBytes": 103747,
+    "imgBytes": 942801,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100
+    },
+    "hasRobots": false
+  },
+  "cliente/login.html": {
+    "fcpMs": 136,
+    "lcpMs": 256,
+    "lcpElement": "IMG.",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 204,
+    "totalBytes": 329954,
+    "cssBytes": 41682,
+    "jsBytes": 103747,
+    "imgBytes": 183525,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100
+    },
+    "hasRobots": false
+  },
+  "cliente/checkout.html": {
+    "fcpMs": 120,
+    "lcpMs": 240,
+    "lcpElement": "IMG.",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 219,
+    "totalBytes": 329954,
+    "cssBytes": 41682,
+    "jsBytes": 103747,
+    "imgBytes": 183525,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100
+    },
+    "hasRobots": false
+  },
+  "cliente/nutricion.html": {
+    "fcpMs": 124,
+    "lcpMs": 244,
+    "lcpElement": "IMG.",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 198,
+    "totalBytes": 329954,
+    "cssBytes": 41682,
+    "jsBytes": 103747,
+    "imgBytes": 183525,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100
+    },
+    "hasRobots": false
+  },
+  "cliente/mis-pedidos.html": {
+    "fcpMs": 140,
+    "lcpMs": 260,
+    "lcpElement": "IMG.",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 186,
+    "totalBytes": 330954,
+    "cssBytes": 41682,
+    "jsBytes": 103747,
+    "imgBytes": 183525,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100
+    },
+    "hasRobots": false
+  },
+  "admin/login.html": {
+    "fcpMs": 88,
+    "lcpMs": 208,
+    "lcpElement": "IMG.pf-admin-logo",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 45,
+    "totalBytes": 281275,
+    "cssBytes": 42682,
+    "jsBytes": 55068,
+    "imgBytes": 183525,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 60
+    },
+    "hasRobots": false
+  },
+  "admin/index.html": {
+    "fcpMs": 108,
+    "lcpMs": 228,
+    "lcpElement": "IMG.pf-admin-logo",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 120,
+    "totalBytes": 284275,
+    "cssBytes": 42682,
+    "jsBytes": 56068,
+    "imgBytes": 183525,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 60
+    },
+    "hasRobots": false
+  },
+  "admin/productos.html": {
+    "fcpMs": 112,
+    "lcpMs": 232,
+    "lcpElement": "IMG.pf-admin-logo",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 298,
+    "totalBytes": 301954,
+    "cssBytes": 42682,
+    "jsBytes": 72747,
+    "imgBytes": 183525,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 60
+    },
+    "hasRobots": false
+  },
+  "admin/pedidos.html": {
+    "fcpMs": 136,
+    "lcpMs": 256,
+    "lcpElement": "IMG.pf-admin-logo",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 101,
+    "totalBytes": 295824,
+    "cssBytes": 42682,
+    "jsBytes": 68617,
+    "imgBytes": 183525,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 60
+    },
+    "hasRobots": false
+  },
+  "admin/clientes.html": {
+    "fcpMs": 104,
+    "lcpMs": 224,
+    "lcpElement": "IMG.pf-admin-logo",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 140,
+    "totalBytes": 317990,
+    "cssBytes": 42682,
+    "jsBytes": 89783,
+    "imgBytes": 183525,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 60
+    },
+    "hasRobots": false
+  },
+  "admin/membresias.html": {
+    "fcpMs": 112,
+    "lcpMs": 232,
+    "lcpElement": "IMG.pf-admin-logo",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 268,
+    "totalBytes": 324202,
+    "cssBytes": 42682,
+    "jsBytes": 91995,
+    "imgBytes": 183525,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 60
+    },
+    "hasRobots": false
+  },
+  "admin/inscripciones.html": {
+    "fcpMs": 96,
+    "lcpMs": 216,
+    "lcpElement": "IMG.pf-admin-logo",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 154,
+    "totalBytes": 324489,
+    "cssBytes": 42682,
+    "jsBytes": 92282,
+    "imgBytes": 183525,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 60
+    },
+    "hasRobots": false
+  },
+  "admin/clases.html": {
+    "fcpMs": 96,
+    "lcpMs": 216,
+    "lcpElement": "IMG.pf-admin-logo",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 222,
+    "totalBytes": 328689,
+    "cssBytes": 42682,
+    "jsBytes": 92482,
+    "imgBytes": 183525,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 60
+    },
+    "hasRobots": false
+  },
+  "admin/personal.html": {
+    "fcpMs": 96,
+    "lcpMs": 216,
+    "lcpElement": "IMG.pf-admin-logo",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 226,
+    "totalBytes": 325318,
+    "cssBytes": 42682,
+    "jsBytes": 91111,
+    "imgBytes": 183525,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 60
+    },
+    "hasRobots": false
+  },
+  "admin/usuarios.html": {
+    "fcpMs": 116,
+    "lcpMs": 236,
+    "lcpElement": "IMG.pf-admin-logo",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 152,
+    "totalBytes": 307904,
+    "cssBytes": 42682,
+    "jsBytes": 76697,
+    "imgBytes": 183525,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 60
+    },
+    "hasRobots": false
+  },
+  "admin/tablas.html": {
+    "fcpMs": 96,
+    "lcpMs": 216,
+    "lcpElement": "IMG.pf-admin-logo",
+    "cls": 0,
+    "tbtMs": 0,
+    "domNodes": 129,
+    "totalBytes": 320815,
+    "cssBytes": 42682,
+    "jsBytes": 91608,
+    "imgBytes": 183525,
+    "scores": {
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 60
+    },
+    "hasRobots": false
+  }
+}

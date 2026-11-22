@@ -13,21 +13,51 @@ export function rutaArchivo(ruta) {
   return new URL(ruta, raizSitio()).href;
 }
 
+export function etiquetaIva(porcentaje) {
+  return Number(porcentaje ?? 1) === 0 ? 'IVA 0%' : 'IVA incluido';
+}
+
+
+const IMAGENES_WEBP = new Set([
+  'clases/bailoterapia.jpg',
+  'entrenadores/entrenador-1.jpg',
+  'entrenadores/entrenador-2.jpg',
+  'entrenadores/entrenador-3.jpg',
+  'gimnasio/cardio.jpg',
+  'gimnasio/hero-gimnasio.jpg',
+  'gimnasio/nutricion.jpg',
+  'productos/buzo-compresion.jpg',
+  'productos/straps.jpg'
+]);
+
+function rutaWebp(ruta) {
+  const valor = String(ruta || '');
+  const relativo = valor.split('/assets/img/').pop()?.replace(/^assets\/img\//, '');
+  if (!IMAGENES_WEBP.has(relativo)) return '';
+  return rutaArchivo(valor.replace(/\.jpe?g$/i, '.webp'));
+}
+
+function imagenConWebp(ruta, atributos) {
+  const webp = rutaWebp(ruta);
+  const fuente = webp ? `<source type="image/webp" srcset="${escapar(webp)}">` : '';
+  return `<picture class="pf-imagen-picture">${fuente}<img ${atributos} src="${escapar(rutaArchivo(ruta))}"></picture>`;
+}
+
 export function tarjetaProducto(producto) {
   const disponible = producto.disponible !== false && Number(producto.stock ?? 0) > 0;
   const boton = disponible
-    ? `<button type="button" class="pf-boton pf-boton-primario w-full" data-accion="agregar" data-id="${escapar(producto.id)}" aria-label="Agregar ${escapar(producto.nombre)} al carrito, precio ${formatearPrecio(producto.precio)}">Agregar al carrito</button>`
+    ? `<button type="button" class="pf-boton pf-boton-primario w-full" data-accion="agregar" data-id="${escapar(producto.id)}" aria-label="Agregar al carrito: ${escapar(producto.nombre)}, precio ${formatearPrecio(producto.precio)}">Agregar al carrito</button>`
     : `<button type="button" class="pf-boton pf-boton-primario w-full" disabled aria-disabled="true">Agotado</button>`;
   return `
     <article class="pf-tarjeta h-full flex flex-col overflow-hidden" data-producto="${escapar(producto.id)}">
-      <img class="pf-imagen-tarjeta" src="${escapar(rutaArchivo(producto.imagen))}" alt="${escapar(producto.nombre)} de Planeta Fitness" loading="lazy" width="800" height="800">
+      ${imagenConWebp(producto.imagen, `class="pf-imagen-tarjeta" alt="${escapar(producto.nombre)} de Planeta Fitness" loading="lazy" width="600" height="600"`)}
       <div class="flex flex-col gap-3 p-5 flex-1">
         <p class="pf-etiqueta">${escapar(producto.categoria || producto.categoriaId || '')}</p>
         <h4 class="text-lg font-bold text-white">${escapar(producto.nombre)}</h4>
         <p class="text-sm text-neutral-300 flex-1">${escapar(producto.descripcion || '')}</p>
         <div>
           <p class="text-2xl font-extrabold pf-precio">${formatearPrecio(producto.precio)}</p>
-          <p class="text-xs text-neutral-400">IVA incluido</p>
+          <p class="text-xs text-neutral-400">${etiquetaIva(producto.porcentajeIva)}</p>
         </div>
         ${boton}
       </div>
@@ -52,15 +82,15 @@ export function tarjetaPlan(plan) {
         <li class="flex items-start gap-2 text-sm text-neutral-300"><span aria-hidden="true" class="font-bold text-pf-amarillo">✓</span><span>${escapar(b)}</span></li>`).join('');
   return `
     <article class="pf-tarjeta h-full flex flex-col overflow-hidden" data-plan="${escapar(plan.id)}">
-      <img class="pf-imagen-tarjeta" src="${escapar(rutaArchivo(plan.imagen))}" alt="${escapar(plan.nombre)} de Planeta Fitness" loading="lazy" width="600" height="450">
+      ${imagenConWebp(plan.imagen, `class="pf-imagen-tarjeta" alt="${escapar(plan.nombre)} de Planeta Fitness" loading="lazy" width="600" height="450"`)}
       <div class="flex flex-col gap-4 p-6 flex-1">
         <h3 class="text-xl font-bold text-white">${escapar(plan.nombre)}</h3>
         <p class="text-sm text-neutral-300">${escapar(plan.descripcion || '')}</p>
         <p class="text-3xl font-extrabold pf-precio">${formatearPrecio(plan.precio)} <span class="text-sm font-semibold text-neutral-300">/ mes</span></p>
-        <p class="text-xs text-neutral-400">IVA incluido</p>
+        <p class="text-xs text-neutral-400">${etiquetaIva(plan.porcentajeIva)}</p>
         <h4 class="text-sm font-bold uppercase tracking-wide text-pf-amarillo">Incluye</h4>
         <ul class="space-y-1 flex-1">${beneficios}</ul>
-        <button type="button" class="pf-boton pf-boton-primario w-full" data-accion="elegir-plan" data-plan-id="${escapar(plan.id)}" data-plan-nombre="${escapar(plan.nombre)}" data-plan-precio="${escapar(plan.precio)}" aria-label="Agregar ${escapar(plan.nombre)} al carrito, precio ${formatearPrecio(plan.precio)} al mes">Elegir plan</button>
+        <button type="button" class="pf-boton pf-boton-primario w-full" data-accion="elegir-plan" data-plan-id="${escapar(plan.id)}" data-plan-nombre="${escapar(plan.nombre)}" data-plan-precio="${escapar(plan.precio)}" aria-label="Elegir plan: ${escapar(plan.nombre)}, ${formatearPrecio(plan.precio)} al mes">Elegir plan</button>
       </div>
     </article>`;
 }
@@ -68,7 +98,7 @@ export function tarjetaPlan(plan) {
 export function tarjetaServicio(servicio) {
   return `
     <article class="pf-tarjeta h-full flex flex-col overflow-hidden">
-      <img class="pf-imagen-tarjeta" src="${escapar(rutaArchivo(servicio.imagen))}" alt="${escapar(servicio.nombre)} en Planeta Fitness" loading="lazy" width="600" height="450">
+      ${imagenConWebp(servicio.imagen, `class="pf-imagen-tarjeta" alt="${escapar(servicio.nombre)} en Planeta Fitness" loading="lazy" width="600" height="450"`)}
       <div class="flex flex-col gap-2 p-5 flex-1">
         <h4 class="text-lg font-bold text-white">${escapar(servicio.nombre)}</h4>
         <p class="text-sm text-neutral-300">${escapar(servicio.descripcion || '')}</p>
@@ -82,7 +112,7 @@ export function tarjetaClase(clase, entrenador) {
   const nombreEntrenador = entrenador ? (entrenador.nombre || `${entrenador.nombres || ''} ${entrenador.apellidos || ''}`.trim()) : (clase.entrenador?.nombre || 'Por confirmar');
   return `
     <article class="pf-clase" data-clase="${escapar(clase.id)}">
-      <img class="pf-clase-imagen" src="${escapar(rutaArchivo(clase.imagen))}" alt="Clase de ${escapar(clase.nombre)} en Planeta Fitness" loading="lazy" width="600" height="400">
+      ${imagenConWebp(clase.imagen, `class="pf-clase-imagen" alt="Clase de ${escapar(clase.nombre)} en Planeta Fitness" loading="lazy" width="800" height="450"`)}
       <div class="pf-clase-cuerpo">
         <h3 class="pf-clase-nombre">${escapar(clase.nombre)}</h3>
         <p class="pf-clase-descripcion">${escapar(clase.descripcion || '')}</p>
@@ -99,7 +129,7 @@ export function tarjetaEntrenador(entrenador) {
   const nombre = entrenador.nombre || `${entrenador.nombres || ''} ${entrenador.apellidos || ''}`.trim();
   return `
     <article class="pf-tarjeta h-full flex flex-col overflow-hidden" data-entrenador="${escapar(entrenador.id)}">
-      <img class="pf-imagen-tarjeta object-cover" src="${escapar(rutaArchivo(entrenador.imagen))}" alt="${escapar(nombre)} de Planeta Fitness" loading="lazy" width="600" height="450">
+      ${imagenConWebp(entrenador.imagen, `class="pf-imagen-tarjeta object-cover" alt="${escapar(nombre)} de Planeta Fitness" loading="lazy" width="560" height="747"`)}
       <div class="flex flex-col gap-2 p-5 flex-1">
         <h4 class="text-lg font-bold text-white">${escapar(nombre)}</h4>
         <p class="pf-etiqueta self-start">${escapar(entrenador.especialidad || 'Entrenador')}</p>
@@ -116,7 +146,7 @@ export function actualizarContadorCarrito(articulos = contarArticulos()) {
     elemento.textContent = articulos;
     const contenedor = elemento.closest('a') || elemento.closest('button');
     if (contenedor) {
-      contenedor.setAttribute('aria-label', articulos === 0 ? 'Carrito de compras, vacío' : `Carrito de compras con ${articulos} producto${articulos === 1 ? '' : 's'}`);
+      contenedor.setAttribute('aria-label', articulos === 0 ? 'Carrito: 0 productos, vacío' : `Carrito: ${articulos} producto${articulos === 1 ? '' : 's'}`);
     }
   });
 }

@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Planeta Fitness | Gimnasio en Quito</title>
   <meta name="description" content="Planeta Fitness: gimnasio en Quito con planes de $35, $60 y $85 al mes, clases de boxeo y bailoterapia, nutrición y venta de productos deportivos.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Planeta Fitness | Gimnasio en Quito">
+  <meta property="og:description" content="Gimnasio en Quito con planes accesibles, clases de boxeo y bailoterapia, y suplementación deportiva.">
+  <meta property="og:image" content="assets/img/logo/logo-planeta.png">
+  <meta property="og:locale" content="es_EC">
   <link rel="icon" href="assets/img/logo/logo-planeta.png" type="image/png">
 
   <!-- Fija el tema (cookie pf_tema o el esquema del sistema) en <html> antes
@@ -24,10 +29,10 @@
   <a class="pf-saltar" href="#contenido">Ir al contenido principal</a>
 
   <!-- ================= Encabezado y navegación ================= -->
-  <header class="pf-encabezado border-b border-pf-linea bg-pf-negro">
+  <header class="pf-encabezado pf-encabezado-flotante">
     <nav class="pf-nav mx-auto max-w-6xl px-4" aria-label="Navegación principal">
       <a href="#inicio" class="pf-logo" aria-label="Planeta Fitness, ir al inicio">
-        <img src="assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="112" height="101" class="">
+        <picture><source type="image/webp" srcset="assets/img/logo/logo-planeta-compact.webp"><img src="assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="112" height="101" class=""></picture>
       </a>
 
       <div id="menu-principal" data-menu class="pf-menu">
@@ -92,11 +97,15 @@
   <main id="contenido">
     <!-- ================= Hero / Inicio ================= -->
     <section id="inicio" class="pf-hero relative isolate scroll-mt-24 overflow-hidden" aria-labelledby="titulo-hero">
-      <img
-        src="assets/img/gimnasio/hero-gimnasio.jpg"
-        alt=""
-        aria-hidden="true"
-        class="absolute inset-0 h-full w-full object-cover opacity-45">
+      <picture>
+        <source type="image/webp" srcset="assets/img/gimnasio/hero-gimnasio.webp">
+        <img
+          src="assets/img/gimnasio/hero-gimnasio.jpg"
+          alt=""
+          aria-hidden="true"
+          class="absolute inset-0 h-full w-full object-cover opacity-45"
+          width="1200" height="800" fetchpriority="high">
+      </picture>
       <div class="relative mx-auto max-w-6xl px-4 py-24 text-center sm:py-28">
         <h1 id="titulo-hero" class="text-5xl font-extrabold uppercase leading-tight tracking-tight text-white sm:text-6xl">
           Entrena.<br>
@@ -256,11 +265,14 @@
           <a href="cliente/nutricion.html" class="pf-boton pf-boton-primario mt-6">Solicitar cita</a>
         </div>
         <figure>
-          <img
-            src="assets/img/gimnasio/nutricion.jpg"
-            alt="Consultorio de la nutricionista de Planeta Fitness"
-            class="rounded-xl border border-pf-linea"
-            width="1200" height="817" loading="lazy">
+          <picture>
+            <source type="image/webp" srcset="assets/img/gimnasio/nutricion.webp">
+            <img
+              src="assets/img/gimnasio/nutricion.jpg"
+              alt="Consultorio de la nutricionista de Planeta Fitness"
+              class="rounded-xl border border-pf-linea"
+              width="1200" height="817" loading="lazy">
+          </picture>
           <figcaption class="mt-2 text-sm text-neutral-400">La asesoría nutricional se agenda con hora previa.</figcaption>
         </figure>
       </div>
@@ -342,7 +354,7 @@
   </main>
 
   <!-- ================= Pie de página ================= -->
-    <aside class="pf-panel" id="panel-carrito" data-panel-carrito data-visible="false" role="dialog" aria-modal="true" aria-labelledby="titulo-panel-carrito" hidden>
+    <aside class="pf-panel" id="panel-carrito" data-panel-carrito data-visible="false" role="dialog" aria-modal="true" aria-labelledby="titulo-panel-carrito" inert hidden>
     <div class="pf-panel-cabecera"><h2 id="titulo-panel-carrito">Carrito <span class="text-pf-amarillo" data-panel-articulos>(0)</span></h2><button type="button" class="pf-panel-cerrar" data-cerrar-carrito aria-label="Cerrar el carrito"><span aria-hidden="true">&times;</span></button></div>
     <div data-panel-contenido></div>
   </aside>

@@ -28,7 +28,7 @@ export async function iniciarCheckout(){
     const boton = form.querySelector('button[type="submit"]');
     const metodoPago = form.querySelector('input[name="metodoPago"]:checked')?.value || 'EF';
     const ref = form.querySelector('#refTransferencia')?.value?.trim();
-    if (metodoPago==='TR' && ref && !/^[A-Za-z0-9-]{4,30}$/.test(ref)){ mostrarMensaje(region, 'El comprobante debe tener 4 a 30 letras, números o guion.', 'error'); return false; }
+    if (metodoPago==='TR' && ref && !/^[A-Za-z0-9-]{4,30}$/.test(ref)){ mostrarMensaje(region, 'La referencia debe tener 4 a 30 letras, números o guion.', 'error'); return false; }
     boton.disabled = true; form.setAttribute('aria-busy','true'); mostrarMensaje(region,'Registrando tu pedido...','info');
     try {
       const resultado = await confirmarCompra(items, { metodoPago, refTransferencia: ref });

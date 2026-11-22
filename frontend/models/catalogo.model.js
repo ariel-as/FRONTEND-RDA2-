@@ -36,7 +36,7 @@ export function obtenerProductos() {
     porcentajeIva: Number(p.porcentajeIva ?? 0),
     imagen: rutaImagen(imagenProducto(p.id)),
     destacado: productoDestacado.has(String(p.id)),
-    disponible: p.disponible !== false && p.estado === 'A' && Number(p.stock ?? 0) > 0,
+    disponible: p.disponible !== false && Number(p.stock ?? 0) > 0,
     stock: Number(p.stock ?? 0)
   }));
 }

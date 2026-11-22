@@ -20,7 +20,10 @@ export function iniciarSesionAdminUI(){
   const u = usuarioActual();
   const codigos = codigosRol(u);
   const rolAdm = codigos.includes('ADM') || (!codigos.length && u?.rol === 'admin');
-  selectAll('[data-admin-nombre]').forEach(n=> n.textContent = u?.nombre || u?.login || '');
+  const TIPOS = { ADM: 'Administrador general', REC: 'Recepcionista', ENT: 'Entrenador', CON: 'Contador' };
+  const tipo = codigos.map((c)=>TIPOS[c]).find(Boolean) || (u?.rol === 'admin' ? 'Administrador general' : 'Administrador');
+  selectAll('[data-admin-tipo]').forEach(n=> { n.textContent = tipo; });
+  document.querySelector('.pf-admin-usuario')?.setAttribute('aria-label', `Opciones de ${tipo}`);
   selectAll('[data-solo-adm]').forEach(n=> { n.hidden = !rolAdm; });
   if (!rolAdm && document.body.dataset.pagina === 'usuarios-admin') {
     window.location.replace(new URL('index.html', document.baseURI).href);

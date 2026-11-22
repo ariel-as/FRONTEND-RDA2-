@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex, nofollow">
   <title>Inscríbete o inicia sesión | Planeta Fitness</title>
   <meta name="description" content="Inicio de sesión y registro de clientes de Planeta Fitness.">
   <link rel="icon" href="../assets/img/logo/logo-planeta.png" type="image/png">
@@ -16,7 +16,7 @@
   <header class="pf-encabezado border-b border-pf-linea bg-pf-negro">
     <nav class="pf-nav mx-auto max-w-6xl px-4" aria-label="Navegación principal">
       <a href="../index.html" class="pf-logo" aria-label="Planeta Fitness, ir al inicio">
-        <img src="../assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="112" height="101" class="">
+        <picture><source type="image/webp" srcset="../assets/img/logo/logo-planeta-compact.webp"><img src="../assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="112" height="101" class=""></picture>
       </a>
       <div id="menu-principal" data-menu class="pf-menu">
         <ul class="pf-menu-lista">
@@ -123,7 +123,7 @@
     </div>
   </main>
 
-      <aside class="pf-panel" id="panel-carrito" data-panel-carrito data-visible="false" role="dialog" aria-modal="true" aria-labelledby="titulo-panel-carrito" hidden>
+      <aside class="pf-panel" id="panel-carrito" data-panel-carrito data-visible="false" role="dialog" aria-modal="true" aria-labelledby="titulo-panel-carrito" inert hidden>
     <div class="pf-panel-cabecera"><h2 id="titulo-panel-carrito">Carrito <span class="text-pf-amarillo" data-panel-articulos>(0)</span></h2><button type="button" class="pf-panel-cerrar" data-cerrar-carrito aria-label="Cerrar el carrito"><span aria-hidden="true">&times;</span></button></div>
     <div data-panel-contenido></div>
   </aside>
