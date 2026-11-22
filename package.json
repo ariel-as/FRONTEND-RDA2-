@@ -1,0 +1,21 @@
+{
+  "name": "planeta-fitness-frontend",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Frontend de Planeta Fitness (HTML, CSS y JavaScript con módulos ES, sin empaquetador).",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "servir": "node pruebas/servidor.mjs",
+    "verificar": "node pruebas/verificar-frontend.mjs",
+    "seguridad": "node pruebas/verificar-seguridad.mjs",
+    "dependencias": "node pruebas/verificar-dependencias.mjs --red",
+    "api": "node pruebas/verificar-api.mjs",
+    "humo": "node pruebas/prueba-humo.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}

@@ -119,7 +119,26 @@ node pruebas/verificar-frontend.mjs
 
 La prueba revisa HTML semántico, accesibilidad básica, rutas internas, arquitectura MVC, contrato de las pantallas nuevas y ausencia de restos del almacenamiento local anterior. También se puede ejecutar sobre una copia publicada: `node pruebas/verificar-frontend.mjs _sitio`.
 
-El recorrido completo con navegador y backend requiere la API con el seed del anexo B y no forma parte del CI. La integración continua ejecuta `node --check` sobre todos los módulos y `verificar-frontend.mjs`; después publica únicamente el contenido de `frontend/` en GitHub Pages.
+El recorrido completo con el backend real requiere la API con el seed del anexo B y no forma parte del CI.
+
+### CI/CD (`.github/workflows/ci-cd.yml`)
+
+Cada push o pull request a `main` ejecuta estos trabajos en paralelo; solo si todos pasan, un push a `main` publica en GitHub Pages:
+
+| Trabajo | Qué revisa |
+|---|---|
+| Validación de código | `node --check` de todos los módulos con Node 20, 22 y 24 |
+| HTML, accesibilidad y arquitectura | `verificar-frontend.mjs`, HTMLHint (`.htmlhintrc`) y las pruebas estáticas de `pruebas/` |
+| Seguridad | `verificar-seguridad.mjs` (sin `eval`, sin scripts en línea, API por HTTPS, token en `sessionStorage`, sin secretos) y Gitleaks sobre todo el historial (`.gitleaks.toml`) |
+| CodeQL | Análisis estático de JavaScript con las consultas `security-extended` |
+| Librerías y versiones | `npm audit`, versiones exactas, SRI comprobado contra el CDN y una sola versión de Bootstrap; revisión de dependencias en pull requests |
+| API | `verificar-api.mjs`: rutas públicas con la forma esperada, rutas protegidas con 401 y cuántas rutas de la fase 2 ya están publicadas (solo GET) |
+| Navegador | `prueba-humo.mjs` con Playwright: todas las páginas con ADM, REC, CON y cliente, permisos sin llamadas, diálogo con Escape y foco, checkout |
+| Publicar y comprobar | Copia `frontend/` con `version.json` (versión, commit y fecha), la valida, la publica y comprueba que el sitio publicado responde con esa versión |
+
+Además se repite cada lunes sin publicar, y Dependabot (`.github/dependabot.yml`) propone actualizaciones de las acciones y de Playwright. Tailwind se sirve desde `frontend/assets/vendor/` (versión 3.4.17 fija) porque su CDN no permite verificación SRI.
+
+Para correr lo mismo en local: `npm ci`, `npx playwright install chromium` y los scripts de `package.json` (`npm run verificar`, `seguridad`, `dependencias`, `api`, `humo`).
 
 ## Imágenes
 

@@ -1,44 +1,67 @@
-﻿name: VerificaciÃ³n y publicaciÃ³n
+﻿name: CI/CD Planeta Fitness
 
-# El sitio se valida en cada cambio y solo se publica si todo pasa.
+# Ciclo completo: validación de código, seguridad, librerías, API y navegador.
+# Solo si todo pasa se publica en GitHub Pages y se comprueba el sitio publicado.
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    # Revisión semanal (lunes 06:00 UTC) de seguridad, dependencias y API, sin publicar.
+    - cron: '0 6 * * 1'
 
 permissions:
   contents: read
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  NODE_VERSION: '22'
 
 jobs:
-  verificar:
-    name: Comprobaciones de calidad
+  sintaxis:
+    name: Validación de código · Node ${{ matrix.node }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['20', '22', '24']
     steps:
       - name: Copiar el repositorio
         uses: actions/checkout@v4
 
-      - name: Preparar Node.js
+      - name: Preparar Node.js ${{ matrix.node }}
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: ${{ matrix.node }}
 
       - name: Sintaxis de JavaScript
         run: |
           set -o pipefail
-          archivos=$(find frontend pruebas -type f \( -name '*.js' -o -name '*.mjs' \) | sort)
+          total=0
           while IFS= read -r archivo; do
             node --check "$archivo"
-          done <<< "$archivos"
-          echo "Sintaxis correcta en $(printf '%s\n' "$archivos" | wc -l) archivos"
+            total=$((total + 1))
+          done < <(find frontend pruebas -type f \( -name '*.js' -o -name '*.mjs' \) | sort)
+          echo "Sintaxis correcta en $total archivos con Node $(node --version)"
 
-      - name: HTML, accesibilidad, rutas y arquitectura del frontend
+  calidad:
+    name: HTML, accesibilidad y arquitectura
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Verificación general del frontend
         run: |
           codigo=0
           node pruebas/verificar-frontend.mjs > /tmp/salida.txt 2>&1 || codigo=$?
@@ -46,46 +69,165 @@ jobs:
           grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
           exit $codigo
 
+      - name: Lint de HTML (HTMLHint)
+        run: npx --yes htmlhint@1.1.4 "frontend/**/*.html"
+
+      - name: Pruebas estáticas (HTML, accesibilidad, enlaces, selectores, arquitectura y lógica)
+        run: |
+          for prueba in html accesibilidad enlaces selectores arquitectura logica repo hash correcciones5; do
+            echo "::group::prueba-$prueba"
+            node "pruebas/prueba-$prueba.mjs"
+            echo "::endgroup::"
+          done
+
+  seguridad:
+    name: Seguridad del código y secretos
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Reglas de seguridad del frontend
+        run: node pruebas/verificar-seguridad.mjs
+
+      - name: Secretos en todo el historial (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  codeql:
+    name: Análisis estático (CodeQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Iniciar CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          build-mode: none
+          queries: security-extended
+          config: |
+            paths-ignore:
+              - frontend/assets/vendor
+              - node_modules
+
+      - name: Analizar
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:javascript-typescript'
+
+  dependencias:
+    name: Librerías, framework y versiones
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Instalar dependencias de desarrollo (reproducible)
+        run: npm ci --ignore-scripts
+
+      - name: Vulnerabilidades conocidas (npm audit)
+        run: npm audit --audit-level=high
+
+      - name: Versiones fijas, SRI y CDN permitidos (Bootstrap y librerías locales)
+        run: node pruebas/verificar-dependencias.mjs --red
+
+      - name: Revisión de dependencias nuevas
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+  api:
+    name: Contrato con la API (Render)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Rutas públicas, protegidas y estado de la fase 2 (solo lectura)
+        run: node pruebas/verificar-api.mjs
+
+  navegador:
+    name: Prueba de humo en navegador
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Instalar Playwright
+        run: |
+          npm ci --ignore-scripts
+          npx playwright install --with-deps chromium
+
+      - name: Todas las páginas con cada rol, permisos, diálogos y checkout
+        run: node pruebas/prueba-humo.mjs
 
   desplegar:
     name: Publicar en GitHub Pages
-    needs: verificar
-    # La publicaciÃ³n solo ocurre con un push a la rama principal, nunca desde una
-    # pull request ni desde una ejecuciÃ³n manual incompleta.
+    needs: [sintaxis, calidad, seguridad, codeql, dependencias, api, navegador]
+    # Solo un push a main publica; las pull requests y la revisión semanal no.
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     permissions:
       pages: write
       id-token: write
     environment:
       name: github-pages
       url: ${{ steps.publicar.outputs.page_url }}
+    outputs:
+      url: ${{ steps.publicar.outputs.page_url }}
     steps:
-      # Falla aquÃ­ si Pages no estÃ¡ habilitado en el repositorio, de modo que no
-      # se publica nada sin la configuraciÃ³n correcta.
-      - name: Verificar la configuraciÃ³n de Pages
-        id: pages
+      - name: Verificar la configuración de Pages
         uses: actions/configure-pages@v5
 
-      - name: Copiar el repositorio
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Preparar el sitio
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Preparar el sitio con su versión
         run: |
           mkdir -p _sitio
           cp -r frontend/. _sitio/
+          printf '{"version":"%s","commit":"%s","fecha":"%s","ejecucion":"%s"}\n' \
+            "$(node -p "require('./package.json').version")" "$GITHUB_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$GITHUB_RUN_NUMBER" > _sitio/version.json
+          cat _sitio/version.json
           echo "Archivos preparados: $(find _sitio -type f | wc -l)"
 
-      # Última revisión antes de publicar: comprueba sobre la copia final que no
-      # hay rutas rotas ni destinos inseguros.
       - name: Validar el sitio preparado
-        run: |
-          codigo=0
-          node pruebas/verificar-frontend.mjs _sitio > /tmp/salida.txt 2>&1 || codigo=$?
-          cat /tmp/salida.txt
-          grep '^FALLA' /tmp/salida.txt | sed -e 's/%/%25/g' -e 's/^/::error::/' || true
-          exit $codigo
+        run: node pruebas/verificar-frontend.mjs _sitio
 
       - name: Subir el artefacto
         uses: actions/upload-pages-artifact@v3
@@ -95,3 +237,26 @@ jobs:
       - name: Publicar
         id: publicar
         uses: actions/deploy-pages@v4
+
+  verificar-despliegue:
+    name: Comprobar el sitio publicado
+    needs: desplegar
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Páginas principales y versión publicada
+        env:
+          URL: ${{ needs.desplegar.outputs.url }}
+        run: |
+          set -e
+          for intento in 1 2 3 4 5 6; do
+            if curl -fsS "${URL}version.json" | grep -q "$GITHUB_SHA"; then break; fi
+            echo "La versión nueva aún no está disponible (intento $intento)"; sleep 20
+          done
+          curl -fsS "${URL}version.json" | grep -q "$GITHUB_SHA"
+          for pagina in index.html admin/login.html admin/index.html admin/pedidos.html cliente/mi-cuenta.html cliente/checkout.html assets/vendor/tailwindcss-play-3.4.17.js models/config.js; do
+            codigo=$(curl -s -o /dev/null -w '%{http_code}' "${URL}${pagina}")
+            echo "$codigo ${URL}${pagina}"
+            test "$codigo" = "200"
+          done
+          echo "Sitio publicado en ${URL}"

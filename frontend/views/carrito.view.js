@@ -45,7 +45,7 @@ export function pintarPanelCarrito() {
   lista.innerHTML = items.map((item)=>`
       <li class="pf-linea" data-linea-panel="${escapar(item.id)}">
         ${item.imagen ? `<img src="${escapar(rutaArchivo(item.imagen))}" alt="${escapar(item.nombre)}" width="64" height="64">` : `<span class="pf-linea-sin-imagen" aria-hidden="true">${escapar((item.nombre||'?').charAt(0).toUpperCase())}</span>`}
-        <div class="pf-linea-detalle"><p class="m-0 font-bold text-white">${escapar(item.nombre)}</p><p class="m-0 text-sm text-neutral-400">${escapar(esPlan(item)?'Plan mensual':'Producto')} ${formatearPrecio(item.precio)} c/u · ${etiquetaIva(item.porcentajeIva)}</p><div class="pf-linea-precios">${controlCantidad(item)}<span class="pf-precio">${formatearPrecio(item.precio*item.cantidad)}</span></div><button type="button" class="pf-quitar" data-quitar="${escapar(item.id)}" aria-label="Eliminar ${nombre} del carrito">Eliminar del carrito</button></div>
+        <div class="pf-linea-detalle"><p class="m-0 font-bold text-white">${escapar(item.nombre)}</p><p class="m-0 text-sm text-neutral-400">${escapar(esPlan(item)?'Plan mensual':'Producto')} ${formatearPrecio(item.precio)} c/u · ${etiquetaIva(item.porcentajeIva)}</p><div class="pf-linea-precios">${controlCantidad(item)}<span class="pf-precio">${formatearPrecio(item.precio*item.cantidad)}</span></div><button type="button" class="pf-quitar" data-quitar="${escapar(item.id)}" aria-label="Eliminar ${escapar(item.nombre)} del carrito">Eliminar del carrito</button></div>
       </li>`).join('');
   const etiqueta = document.querySelector('[data-panel-articulos]'); if (etiqueta) etiqueta.textContent = `(${articulos})`;
   const subtotal = carrito.subtotal();
