@@ -34,7 +34,7 @@
 <main id="contenido" class="container py-4">
   <h1 class="h3">Usuarios del sistema</h1>
   <p class="text-body-secondary" data-solo-adm>Solo administradores (ADM). Las cuentas de clientes se crean desde el registro web. La contraseña nunca se muestra ni se edita en esta pantalla.</p>
-  <p id="mensaje-pantalla" class="pf-mensaje" role="status" aria-live="polite" hidden></p>
+  <p id="mensaje-pantalla" class="pf-mensaje" data-mensaje role="status" aria-live="polite" hidden></p>
 
   <div class="row g-4">
     <section class="col-12 col-xl-4" aria-labelledby="titulo-nueva-cuenta">
@@ -51,17 +51,11 @@
       </div></div>
     </section>
 
-    <section class="col-12" aria-labelledby="titulo-gestion-cuentas" data-solo-adm>
-      <div class="alert alert-info pf-disponible-pronto mb-0" role="note">
-        <h2 id="titulo-gestion-cuentas" class="h6 fw-bold mb-1">Disponible pronto: editar correo, restablecer contraseña y roles con casillas</h2>
-        <p class="mb-0">Se activará cuando el servidor publique la gestión de cuentas. Mientras tanto, los roles se siguen administrando con el botón «Roles» de cada cuenta.</p>
-      </div>
-    </section>
-
-    <section class="col-12 col-xl-8" aria-labelledby="titulo-cuentas">
+    <section class="col-12 col-xl-8" aria-labelledby="titulo-cuentas" id="pantalla-usuarios" data-solo-adm>
       <div class="card shadow-sm"><div class="card-body">
         <h2 id="titulo-cuentas" class="h5">Cuentas del personal</h2>
-        <div class="table-responsive"><table class="table table-sm table-hover align-middle"><caption class="visually-hidden">Cuentas de usuario del personal</caption><thead><tr><th scope="col">Código</th><th scope="col">Login</th><th scope="col">Roles</th><th scope="col">Creada</th><th scope="col">Último acceso</th><th scope="col">Estado</th><th scope="col">Acciones</th></tr></thead><tbody data-usuarios-body><tr><td colspan="7" class="text-center text-body-secondary">Cargando usuarios…</td></tr></tbody></table></div>
+        <form id="filtros-usuarios" class="d-flex flex-wrap gap-2 align-items-end mb-2" role="search"><div><label class="form-label" for="buscar-usuario">Buscar por correo o nombre</label><input class="form-control" id="buscar-usuario" name="buscar" type="search" maxlength="60"></div><button type="submit" class="btn btn-outline-primary">Buscar</button></form>
+        <div data-lista aria-busy="false"></div>
       </div></div>
     </section>
   </div>
