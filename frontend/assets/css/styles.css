@@ -1986,6 +1986,21 @@ body:not(.pf-admin) .pf-dialogo-acciones {
   color: #facc15;
 }
 
+/* ---------- Fase 2: estados y diferencias de caja (siempre con texto) ---------- */
+
+.pf-dif-faltante { color: #b02a37; font-weight: 700; }
+.pf-dif-sobrante { color: #0a58ca; font-weight: 700; }
+.pf-dif-cero { color: #146c43; font-weight: 700; }
+html[data-bs-theme="dark"] .pf-dif-faltante { color: #ff8a95; }
+html[data-bs-theme="dark"] .pf-dif-sobrante { color: #8bb9fe; }
+html[data-bs-theme="dark"] .pf-dif-cero { color: #75d6a6; }
+.pf-aforo-barra { height: 1.5rem; }
+.pf-entrada-cedula { font-size: 1.5rem; max-width: 18rem; }
+@media print {
+  .pf-admin header, .pf-admin footer, .pf-admin .btn, .pf-admin [data-mensaje], .pf-no-imprimir { display: none !important; }
+  .pf-factura-impresa { display: block !important; color: #000; }
+}
+
 /* ---------- Respeta a quien prefiere reducir el movimiento ---------- */
 
 @media (prefers-reduced-motion: reduce) {
