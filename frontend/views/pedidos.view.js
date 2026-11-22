@@ -32,11 +32,11 @@ function fechaCorta(valor) {
 export function tarjetaInscripcion(ins) {
   const plan = ins.plan || ins.membresia?.nombre || ins.membresiaId || 'Plan';
   const estado = ESTADOS_INSCRIPCION[ins.estado] || ins.estadoNombre || ins.estado || '';
-  // El servidor solo informa el total de ingresos; "ingresos que quedan" llegará con la fase 2.
+  // mis-inscripciones trae fecha de fin y total de ingresos; los restantes solo los ve el personal.
   const restantes = ins.ingresosRestantes ?? ins.ingresosDisponibles;
   const ingresos = restantes !== undefined && restantes !== null
     ? `<p class="text-sm text-neutral-300">Ingresos que te quedan: <strong>${escapar(restantes)}</strong></p>`
-    : (ins.ingresosTotal ? `<p class="text-sm text-neutral-300">Ingresos del plan: ${escapar(ins.ingresosTotal)}</p>` : '');
+    : (ins.ingresosTotal ? `<p class="text-sm text-neutral-300">Total de ingresos del plan: ${escapar(ins.ingresosTotal)}</p>` : '');
   return `<article class="pf-tarjeta p-5"><h3 class="m-0 text-lg font-bold text-white">${escapar(plan)}</h3><p class="text-sm text-neutral-300">Inicio: ${escapar(fechaCorta(ins.fechaInicio))} · Fin: ${escapar(fechaCorta(ins.fechaFin))}</p>${ingresos}<p class="text-sm">Estado: <span class="font-semibold">${escapar(estado)}</span></p><p class="font-bold pf-precio">Valor: ${formatearPrecio(ins.totalCobrar ?? ins.valor ?? 0)}</p></article>`;
 }
 
@@ -46,4 +46,16 @@ export function paginacion({ page, totalPages }, baseAttr) {
     <span aria-live="polite">Página ${page} de ${totalPages || 1}</span>
     <button type="button" class="pf-boton pf-boton-secundario" data-page="${page+1}" ${page>=totalPages?'disabled':''}>Siguiente</button>
   </nav>`;
+}
+
+export function tarjetaRutina(r, error = '') {
+  if (!r) return `<p class="pf-mensaje">${escapar(error || 'Todavía no tienes una rutina vigente. Pídela a tu entrenador si tu plan la incluye.')}</p>`;
+  return `<article class="pf-tarjeta p-5"><h3 class="m-0 text-lg font-bold text-white">${escapar(r.objetivo || 'Rutina')}</h3>
+    <p class="text-sm text-neutral-300">Nivel: ${escapar(r.nivel || r.nivelId || '-')} · Del ${escapar(fechaCorta(r.fechaInicio))} al ${escapar(fechaCorta(r.fechaFin))}${r.entrenador || r.empleado ? ` · Entrenador: ${escapar(r.entrenador?.nombre || r.entrenador || r.empleado?.nombre || r.empleado)}` : ''}</p>
+    <p class="mt-2 whitespace-pre-line text-sm">${escapar(r.detalle || '')}</p></article>`;
+}
+
+export function tarjetasNotificaciones(lista) {
+  if (!lista.length) return '<p class="pf-mensaje">No tienes notificaciones.</p>';
+  return lista.map((n) => `<article class="pf-tarjeta p-4"><p class="m-0 text-sm"><strong>${escapar(n.leida ? 'Leída' : 'Nueva')}: ${escapar(n.titulo)}</strong></p><p class="m-0 text-sm text-neutral-300">${escapar(n.mensaje)}</p>${n.fecha ? `<p class="m-0 text-xs text-neutral-400">${escapar(new Date(n.fecha).toLocaleString('es-EC'))}</p>` : ''}${n.leida ? '' : `<button type="button" class="pf-boton pf-boton-secundario mt-2" data-leer-notificacion="${escapar(n.id)}">Marcar leída</button>`}</article>`).join('');
 }

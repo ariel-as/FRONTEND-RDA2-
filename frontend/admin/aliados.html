@@ -28,18 +28,17 @@
 </div></nav></header>
 <main id="contenido" class="container py-4">
   <h1 class="h3">Aliados y comisiones</h1>
-  <p class="text-body-secondary">Profesionales aliados y sus comisiones.</p>
-  <div class="alert alert-info pf-disponible-pronto" role="note" data-disponible-pronto>
-    <p class="fw-bold mb-1">Disponible pronto</p>
-    <p class="mb-0">Esta pantalla se activará cuando el servidor publique sus servicios. Por ahora no realiza ninguna consulta.</p>
-  </div>
-  <section class="card shadow-sm" aria-labelledby="titulo-funciones"><div class="card-body">
-    <h2 id="titulo-funciones" class="h5">Qué podrás hacer aquí</h2>
-    <ul class="mb-0"><li>Lista de profesionales aliados.</li><li>Cobrar la comisión de un periodo con fechas, monto y método de pago.</li><li>Reporte de periodos pagados y pendientes.</li></ul>
+  <p class="text-body-secondary">La lista de profesionales aliados se administra en Otras tablas (tabla profesional_aliado).</p>
+  <p data-mensaje class="pf-mensaje" role="status" aria-live="polite" hidden></p>
+  <div class="mb-3"><button type="button" class="btn btn-primary" data-cobrar-comision hidden>Cobrar comisión</button></div>
+  <section class="card shadow-sm" id="pantalla-comisiones" aria-labelledby="titulo-pantalla-comisiones"><div class="card-body">
+    <h2 id="titulo-pantalla-comisiones" class="h5">Comisiones por periodo</h2>
+    <form id="filtros-pantalla-comisiones" class="d-flex flex-wrap gap-2 align-items-end mb-2"><div><label class="form-label" for="comisiones-desde">Desde</label><input class="form-control" type="date" id="comisiones-desde" name="desde" ></div><div><label class="form-label" for="comisiones-hasta">Hasta</label><input class="form-control" type="date" id="comisiones-hasta" name="hasta" ></div><div><label class="form-label" for="comisiones-cedula">Cédula del aliado</label><input class="form-control" type="search" id="comisiones-cedula" name="cedula" inputmode="numeric" maxlength="10"></div></form>
+    <div data-lista aria-busy="false"></div>
   </div></section>
 </main>
 <footer class="border-top py-4 mt-5"><p class="container text-center text-body-secondary mb-0">© <span data-anio>2026</span> Planeta Fitness</p></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script type="module" src="../controllers/admin.controller.js"></script>
+<script type="module" src="../controllers/admin-aliados.controller.js"></script>
 </body>
 </html>

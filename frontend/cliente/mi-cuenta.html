@@ -50,18 +50,18 @@
 
     <section class="mt-8" aria-labelledby="titulo-mis-inscripciones">
       <h2 id="titulo-mis-inscripciones" class="text-2xl font-bold uppercase text-white">Mis inscripciones</h2>
-      <p class="mt-2 text-sm text-neutral-300">Fecha de fin o ingresos de cada plan. Los acompañantes de un plan grupal se registran en recepción.</p>
+      <p class="mt-2 text-sm text-neutral-300">Fecha de fin y total de ingresos de cada plan. Los acompañantes de un plan grupal se registran en recepción.</p>
       <div data-mis-planes class="mt-4 grid gap-4 md:grid-cols-2" aria-busy="false"></div>
     </section>
 
     <section class="mt-12" aria-labelledby="titulo-mi-rutina">
       <h2 id="titulo-mi-rutina" class="text-2xl font-bold uppercase text-white">Mi rutina</h2>
-      <div class="pf-tarjeta mt-4 p-5" role="note"><p class="m-0"><strong>Disponible pronto:</strong> aquí verás tu rutina vigente con nivel, objetivo, detalle y fechas, cuando el servidor publique ese servicio.</p></div>
+      <div class="mt-4" data-mi-rutina aria-busy="true"></div>
     </section>
 
     <section class="mt-12" aria-labelledby="titulo-mis-notificaciones">
       <h2 id="titulo-mis-notificaciones" class="text-2xl font-bold uppercase text-white">Mis notificaciones</h2>
-      <div class="pf-tarjeta mt-4 p-5" role="note"><p class="m-0"><strong>Disponible pronto:</strong> avisos de tu cuenta (por ejemplo, plan por vencer o pedido listo), cuando el servidor publique ese servicio.</p></div>
+      <p class="mt-2 text-sm font-semibold" data-mis-no-leidas aria-live="polite"></p><div class="mt-4 grid gap-3" data-mis-notificaciones aria-busy="true"></div>
     </section>
 
     <p class="mt-10"><a href="mis-pedidos.html" class="pf-boton pf-boton-secundario">Ver mis pedidos de la tienda</a></p>

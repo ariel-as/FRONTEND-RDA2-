@@ -4,8 +4,7 @@
  * - Despierta Render con /salud (hasta 90 s, con reintentos).
  * - Las rutas públicas que usa el sitio responden 200 con la forma esperada.
  * - Las rutas protegidas responden 401 sin token (existen y piden sesión).
- * - Informa qué rutas de la fase 2 ya están publicadas (no falla por ellas:
- *   el frontend las muestra como "Disponible pronto" hasta entonces).
+ * - Avisa si alguna ruta de la fase 2 no responde (no falla: Render puede estar despertando).
  *
  * Si el servidor no responde, avisa sin fallar: el frontend tiene respaldo
  * local del catálogo y no debe bloquear un despliegue por una caída externa.
@@ -82,7 +81,8 @@ for (const ruta of FASE2) {
   try { const { status } = await obtener(ruta); if (status !== 404) publicadas.push(ruta); } catch { /* sin respuesta: se considera no publicada */ }
 }
 console.log(`INFO Rutas de la fase 2 publicadas: ${publicadas.length} de ${FASE2.length}${publicadas.length ? ` (${publicadas.join(', ')})` : ''}`);
-if (publicadas.length) aviso(`Hay rutas de la fase 2 publicadas en el backend (${publicadas.join(', ')}): revisar models/funciones.model.js y las pantallas "Disponible pronto".`);
+const faltan = FASE2.filter((r) => !publicadas.includes(r));
+if (faltan.length) aviso(`Rutas de la fase 2 que el backend no responde (404): ${faltan.join(', ')}. Las pantallas que las usan mostrarán error.`);
 
 console.log(`\n${fallos === 0 ? 'OK' : 'FALLA'} API: ${fallos} fallo(s).`);
 process.exit(fallos ? 1 : 0);

@@ -102,7 +102,7 @@ export function iniciarLoginAdmin(){
   });
 }
 
-// Indicadores por rol (sección 3). Los que todavía no tienen servicio en el servidor se muestran como "Disponible pronto".
+// Indicadores por rol (sección 3); cada uno solo se muestra si el rol tiene su permiso.
 const INDICADORES_ROL = {
   REC: [
     { titulo: 'Aforo actual', clave: 'aforo', permiso: 'aforo:ver', enlace: 'entradas.html' },

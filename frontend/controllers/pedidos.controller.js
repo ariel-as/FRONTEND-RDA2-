@@ -4,6 +4,9 @@ import { tarjetaPedido, tarjetaInscripcion, paginacion } from '../views/pedidos.
 import { raizSitio } from '../models/storage.model.js';
 import { mostrarAviso } from '../views/componentes.view.js';
 import { confirmarAccion } from './dialogo.controller.js';
+import { rutinasModel } from '../models/fase2.model.js';
+import { notificacionesModel } from '../models/notificaciones.model.js';
+import { tarjetaRutina, tarjetasNotificaciones } from '../views/pedidos.view.js';
 
 function mostrarErrorCarga(contenedor, mensaje) {
   const aviso = document.createElement('p');
@@ -32,10 +35,35 @@ export async function iniciarMisPedidos(){
 
 async function cargar(){ await Promise.all([cargarPedidos(), cargarInscripciones()]); }
 
-// Mi cuenta: inscripciones con fecha de fin o ingresos. Rutina y notificaciones esperan sus servicios (Disponible pronto).
+// Mi cuenta: inscripciones (fecha de fin y total de ingresos), rutina vigente y notificaciones.
 export async function iniciarMiCuenta(){
   if (!haySesion()){ window.location.href = new URL('cliente/login.html?origen=mi-cuenta', raizSitio()).href; return; }
-  await cargarInscripciones();
+  await Promise.all([cargarInscripciones(), cargarRutina(), cargarNotificaciones()]);
+}
+
+async function cargarRutina(){
+  const cont = select('[data-mi-rutina]'); if (!cont) return;
+  try { const r = await rutinasModel.miRutina(); cont.innerHTML = tarjetaRutina(r?.data ?? r); }
+  catch (e){ cont.innerHTML = tarjetaRutina(null, e.status === 404 ? '' : (e.mensaje || 'No se pudo cargar tu rutina.')); }
+  finally { cont.setAttribute('aria-busy', 'false'); }
+}
+
+async function cargarNotificaciones(){
+  const cont = select('[data-mis-notificaciones]'); if (!cont) return;
+  const pintar = async () => {
+    try {
+      const lista = await notificacionesModel.listar({ limit: 20 });
+      cont.innerHTML = tarjetasNotificaciones(lista);
+      const n = select('[data-mis-no-leidas]'); if (n) n.textContent = lista.noLeidas ? `${lista.noLeidas} notificaci${lista.noLeidas === 1 ? 'ón' : 'ones'} sin leer` : 'No tienes notificaciones sin leer.';
+    } catch (e){ mostrarErrorCarga(cont, e.mensaje || 'No se pudieron cargar las notificaciones.'); }
+    finally { cont.setAttribute('aria-busy', 'false'); }
+  };
+  cont.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-leer-notificacion]'); if (!b) return;
+    try { await notificacionesModel.marcarLeida(b.dataset.leerNotificacion); mostrarAviso('Notificación marcada como leída.', 'exito'); await pintar(); }
+    catch (err){ mostrarAviso(err.mensaje || 'No se pudo marcar la notificación.', 'error'); }
+  });
+  await pintar();
 }
 
 async function cargarPedidos(){

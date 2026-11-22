@@ -6,7 +6,7 @@ export function accesosDirectosHtml(grupos) {
   return grupos.map(({ grupo, entradas }) => `<div class="col-12 col-md-6 col-xl-4"><h3 class="h6">${escapar(grupo)}</h3><ul class="list-unstyled mb-0">${entradas.map((e) => `<li><a class="d-inline-block py-1" href="${escapar(e.pagina)}">${escapar(e.texto)}</a></li>`).join('')}</ul></div>`).join('');
 }
 
-// Tarjeta de indicador; cuando el servicio no existe muestra "Disponible pronto" en texto.
+// Tarjeta de indicador; "pronto" queda para indicadores sin servicio en el servidor.
 export function indicadorHtml({ titulo, valor, pronto = false, enlace }) {
   const contenido = pronto
     ? '<p class="fw-semibold mb-0">Disponible pronto</p>'
