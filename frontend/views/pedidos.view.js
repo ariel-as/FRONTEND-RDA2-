@@ -7,10 +7,6 @@ const METODOS = { EF: 'Efectivo al retirar', TR: 'Transferencia' };
 
 export function tarjetaPedido(pedido, onCancelar) {
   const estadoTexto = ESTADOS_PEDIDO[pedido.estado] || pedido.estadoNombre || pedido.estado || '';
-  // Informar el comprobante después de comprar no tiene ruta en el contrato de la fase 2.
-  const informarComprobante = pedido.estado === 'P' && pedido.metodoPago === 'TR'
-    ? '<p class="mt-2 text-sm text-neutral-300"><strong>Disponible pronto:</strong> informar aquí el número de comprobante de tu transferencia. Mientras tanto, preséntalo en recepción.</p>'
-    : '';
   const puedeCancelar = pedido.estado === 'P';
   const lineas = (pedido.detalles || []).map(d=>`<li class="flex justify-between text-sm"><span>${escapar(d.nombre || d.productoId)} x ${d.cantidad}</span><span>${formatearPrecio(d.subtotal ?? 0)}</span></li>`).join('');
   return `
@@ -20,7 +16,6 @@ export function tarjetaPedido(pedido, onCancelar) {
       <p class="m-0 text-sm"><span class="text-neutral-400">Estado:</span> <span class="pf-etiqueta">${escapar(estadoTexto)}</span></p>
     </div>
     <p class="mt-2 text-sm text-neutral-300">Pago: ${escapar(METODOS[pedido.metodoPago] || pedido.metodoPago || '')} ${pedido.refTransferencia ? `(comprobante ${escapar(pedido.refTransferencia)})` : ''}</p>
-    ${informarComprobante}
     <ul class="mt-3 list-none p-0 space-y-1">${lineas}</ul>
     <p class="mt-3 font-bold pf-precio">Total: ${formatearPrecio(pedido.total)}</p>
     ${puedeCancelar ? `<button type="button" class="pf-boton pf-boton-secundario mt-2" data-cancelar-pedido="${escapar(pedido.id)}" aria-label="Cancelar pedido ${escapar(pedido.id)}">Cancelar pedido</button>` : ''}
