@@ -2,23 +2,27 @@ import { escapar } from './componentes.view.js';
 import { formatearPrecio } from '../models/carrito.model.js';
 
 // Formatos comunes para las pantallas de la fase 2 (texto siempre visible, nunca solo color).
-export const vacioTxt = '<span class="text-body-secondary">vacío</span>';
+export const vacioTxt = '<span class="text-body-secondary" aria-hidden="true">—</span><span class="visually-hidden">Sin dato</span>';
 export const txt = (v) => (v === null || v === undefined || v === '' ? vacioTxt : escapar(v));
-export const dinero = (v) => (v === null || v === undefined || v === '' ? vacioTxt : formatearPrecio(v));
+export const dinero = (v) => (v === null || v === undefined || v === '' ? vacioTxt : `<span class="pf-num">${formatearPrecio(v)}</span>`);
 export function fecha(v, conHora = false) {
   if (!v) return vacioTxt;
   const d = new Date(v);
   if (Number.isNaN(d.getTime())) return escapar(v);
-  return escapar(conHora ? d.toLocaleString('es-EC', { dateStyle: 'short', timeStyle: 'short' }) : d.toLocaleDateString('es-EC', { timeZone: 'UTC' }));
+  // Fechas cortas y sin partirse: 22/11/2026 12:50.
+  const texto = conHora
+    ? d.toLocaleString('es-EC', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })
+    : d.toLocaleDateString('es-EC', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' });
+  return `<span class="pf-num">${escapar(texto.replace(',', ''))}</span>`;
 }
-export const estado = (mapa, v) => `<span class="pf-estado" data-estado="${escapar(v ?? '')}">${escapar(mapa[v] || v || 'vacío')}</span>`;
+export const estado = (mapa, v) => `<span class="pf-estado" data-estado="${escapar(v ?? '')}">${escapar(mapa[v] || v || 'Sin estado')}</span>`;
 export const nombrePersona = (p) => (p ? [p.nombre, p.apellido].filter(Boolean).join(' ') || p.id || '' : '');
 
 export function tablaHtml({ caption, columnas, filas, acciones }) {
   const head = `<tr>${columnas.map(([t]) => `<th scope="col">${escapar(t)}</th>`).join('')}${acciones ? '<th scope="col">Acciones</th>' : ''}</tr>`;
-  const cuerpo = filas.length ? filas.map((f, i) => `<tr>${columnas.map(([, fn], j) => (j === 0 ? `<th scope="row">${fn(f)}</th>` : `<td>${fn(f)}</td>`)).join('')}${acciones ? `<td class="text-nowrap">${acciones(f, i) || '<span class="text-body-secondary">Sin acciones</span>'}</td>` : ''}</tr>`).join('')
+  const cuerpo = filas.length ? filas.map((f, i) => `<tr>${columnas.map(([t, fn], j) => (j === 0 ? `<th scope="row" data-label="${escapar(t)}">${fn(f)}</th>` : `<td data-label="${escapar(t)}">${fn(f)}</td>`)).join('')}${acciones ? `<td class="pf-celda-acciones" data-label="Acciones">${acciones(f, i) || '<span class="text-body-secondary">Sin acciones</span>'}</td>` : ''}</tr>`).join('')
     : `<tr><td colspan="${columnas.length + (acciones ? 1 : 0)}" class="text-center text-body-secondary">No hay registros.</td></tr>`;
-  return `<div class="table-responsive"><table class="table table-hover align-middle"><caption class="visually-hidden">${escapar(caption)}</caption><thead class="table-light">${head}</thead><tbody>${cuerpo}</tbody></table></div>`;
+  return `<div class="table-responsive"><table class="table table-hover align-middle pf-tabla-apilable"><caption class="visually-hidden">${escapar(caption)}</caption><thead class="table-light">${head}</thead><tbody>${cuerpo}</tbody></table></div>`;
 }
 
 const ETIQUETA = (k) => String(k).replace(/([a-z])([A-Z])/g, '$1 $2').replace(/Id$/, '').replace(/^./, (c) => c.toUpperCase());

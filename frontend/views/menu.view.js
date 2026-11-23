@@ -33,7 +33,7 @@ export function pintarMenuAdmin(contenedor, { inicio, grupos, actual }) {
 export function pintarMigas(main, entrada) {
   const h1 = main?.querySelector('h1');
   if (!h1 || !entrada?.grupo || main.querySelector('[data-migas]')) return;
-  h1.insertAdjacentHTML('afterend', `<nav class="pf-migas" aria-label="Ruta de navegación" data-migas><ol class="breadcrumb"><li class="breadcrumb-item"><a href="index.html">Dashboard</a></li><li class="breadcrumb-item">${escapar(entrada.grupo)}</li><li class="breadcrumb-item active" aria-current="page">${escapar(entrada.texto)}</li></ol></nav>`);
+  h1.insertAdjacentHTML('beforebegin', `<nav class="pf-migas" aria-label="Ruta de navegación" data-migas><ol class="breadcrumb"><li class="breadcrumb-item"><a href="index.html">Dashboard</a></li><li class="breadcrumb-item">${escapar(entrada.grupo)}</li><li class="breadcrumb-item active" aria-current="page">${escapar(entrada.texto)}</li></ol></nav>`);
 }
 
 // Reemplaza visualmente el contenido de la página cuando el usuario no tiene permiso.

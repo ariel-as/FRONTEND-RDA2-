@@ -1,5 +1,31 @@
 ﻿import { escapar } from './componentes.view.js';
 
+// Celda sin dato: un guion visible y texto para lectores de pantalla.
+export const VACIO = '<span class="text-body-secondary" aria-hidden="true">—</span><span class="visually-hidden">Sin dato</span>';
+
+// Etiquetas en español para los campos del panel genérico (tablas y formularios).
+export const ETIQUETAS_CAMPO = {
+  id: 'Código', nombre: 'Nombre', apellido: 'Apellido', descripcion: 'Descripción', estado: 'Estado', telefono: 'Teléfono', correo: 'Correo',
+  direccion: 'Dirección', ruc: 'RUC', contacto: 'Contacto', tipo: 'Tipo', valor: 'Valor', precio: 'Precio', porcentaje: 'Porcentaje',
+  servicioId: 'Servicio', cargoId: 'Cargo', turnoId: 'Turno', nivelId: 'Nivel', empleadoId: 'Empleado', clienteId: 'Cliente', claseId: 'Clase',
+  horarioId: 'Horario', membresiaId: 'Plan', promocionId: 'Promoción', proveedorId: 'Proveedor', categoriaId: 'Categoría', usuarioId: 'Usuario',
+  profesionalAliadoId: 'Aliado', metodoPagoId: 'Método de pago', unidadMedidaId: 'Unidad de medida', gimnasioId: 'Gimnasio',
+  duracion: 'Duración', unidadDuracion: 'Unidad de duración', numIngresos: 'Número de ingresos', numPersonas: 'Personas', pagaIva: 'Paga IVA',
+  incluyeRutina: 'Incluye rutina', esEstudiantil: 'Estudiantil', esEstudiante: 'Estudiante', publicarWeb: 'Publicar en la web',
+  requiereAutoriz: 'Requiere autorización', horaInicio: 'Hora de inicio', horaFin: 'Hora de fin', horaApertura: 'Apertura', horaCierre: 'Cierre',
+  dia: 'Día', abierto: 'Abierto', aforoMax: 'Aforo máximo', cupoMax: 'Cupo máximo', lugar: 'Lugar', especialidad: 'Especialidad',
+  fechaIngreso: 'Fecha de ingreso', fechaInicio: 'Fecha de inicio', fechaFin: 'Fecha de fin', fechaRegistro: 'Fecha de registro',
+  fechaNacimiento: 'Fecha de nacimiento', sector: 'Sector', propietaria: 'Propietaria', porcentajeIva: 'IVA (%)', establecimiento: 'Establecimiento',
+  puntoEmision: 'Punto de emisión', stock: 'Stock', stockMinimo: 'Stock mínimo', precioVenta: 'Precio de venta', costo: 'Costo',
+  controlaCaducidad: 'Controla caducidad', diasAlertaCad: 'Días de alerta de caducidad', esContable: 'Es contable', esTitular: 'Titular',
+  canal: 'Canal', permisos: 'Permisos', login: 'Correo de acceso', ultimoAcceso: 'Último acceso', fechaCreacion: 'Fecha de creación'
+};
+export function etiquetaCampo(nombre) {
+  if (ETIQUETAS_CAMPO[nombre]) return ETIQUETAS_CAMPO[nombre];
+  const texto = String(nombre || '').replace(/Id$/, '').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
+
 export function tablaGenerica({ caption, columnas, filas, accionesHtml }) {
   return `<div class="table-responsive"><table class="table table-hover align-middle">
     <caption class="visually-hidden">${escapar(caption||'')}</caption>
@@ -9,6 +35,7 @@ export function tablaGenerica({ caption, columnas, filas, accionesHtml }) {
 }
 
 export function paginacionAdmin({ page=1, totalPages=1 }, prefix='') {
+  if ((Number(totalPages) || 1) <= 1) return '';
   return `<nav aria-label="Paginación" class="mt-3 d-flex justify-content-center align-items-center gap-2" data-paginacion="${prefix}">
     <button type="button" class="btn btn-outline-secondary btn-sm" data-page="${page-1}" ${page<=1?'disabled':''}>Anterior</button>
     <span aria-live="polite">Página ${page} de ${totalPages||1}</span>
@@ -17,7 +44,7 @@ export function paginacionAdmin({ page=1, totalPages=1 }, prefix='') {
 }
 
 export function celda(valor) {
-  if (valor === null || valor === undefined || valor === '') return '<span class="text-body-secondary">vacío</span>';
+  if (valor === null || valor === undefined || valor === '') return VACIO;
   return escapar(typeof valor === 'object' ? JSON.stringify(valor) : valor);
 }
 
@@ -39,18 +66,18 @@ export const ETIQUETAS_VALOR = {
 };
 
 export function valorTexto(valor) {
-  if (valor === null || valor === undefined || valor === '') return '<span class="text-body-secondary">vacío</span>';
+  if (valor === null || valor === undefined || valor === '') return VACIO;
   return escapar(String(valor));
 }
 
 export function valorConEtiqueta(campo, valor) {
-  if (valor === null || valor === undefined || valor === '') return '<span class="text-body-secondary">vacío</span>';
+  if (valor === null || valor === undefined || valor === '') return VACIO;
   const etiqueta = ETIQUETAS_VALOR[campo]?.[valor];
   return escapar(etiqueta || String(valor));
 }
 
 export function fechaLocal(valor) {
-  if (valor === null || valor === undefined || valor === '') return '<span class="text-body-secondary">vacío</span>';
+  if (valor === null || valor === undefined || valor === '') return VACIO;
   const fecha = new Date(valor);
   if (Number.isNaN(fecha.getTime())) return escapar(String(valor));
   return escapar(fecha.toLocaleString('es-EC', { dateStyle: 'short', timeStyle: 'short' }));
@@ -94,7 +121,7 @@ export function campoFormulario({ col, valor, etiqueta, opciones, soloLectura = 
   return `<div class="${ancho}" data-campo="${nombre}"><label class="form-label" for="${id}">${etiquetaSegura}${requerido ? ' *' : ''}</label>${control}${ayuda ? `<p class="form-text mb-0">${escapar(ayuda)}</p>` : ''}</div>`;
 }
 
-export function tablaAdmin({ columnas, filas, idCampos = ['id'], acciones, caption = 'Datos', id = 'tabla-datos' }) {
+export function tablaAdmin({ columnas, filas, idCampos = ['id'], acciones, caption = 'Datos', id = 'tabla-datos', soloFilas = false }) {
   const head = `<tr>${columnas.map((c, i) => `<th scope="col">${escapar(c.etiqueta || c.nombre)}</th>`).join('')}${acciones ? '<th scope="col">Acciones</th>' : ''}</tr>`;
   const cuerpo = filas.length ? filas.map((fila) => {
     const clave = fila.__clave ?? idCampos.map((k) => fila[k]).join('~');
@@ -105,6 +132,8 @@ export function tablaAdmin({ columnas, filas, idCampos = ['id'], acciones, capti
     const accion = acciones ? `<td class="text-nowrap">${acciones(fila, clave)}</td>` : '';
     return `<tr>${celdas}${accion}</tr>`;
   }).join('') : `<tr><td colspan="${columnas.length + (acciones ? 1 : 0)}" class="text-center text-body-secondary">No hay registros.</td></tr>`;
+  // El encabezado lo pinta la tabla una sola vez; aquí solo van las filas cuando se pide.
+  if (soloFilas) return cuerpo;
   return `<caption class="visually-hidden">${escapar(caption)}</caption><thead>${head}</thead><tbody>${cuerpo}</tbody>`;
 }
 

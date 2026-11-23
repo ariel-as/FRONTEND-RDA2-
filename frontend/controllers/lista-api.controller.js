@@ -42,7 +42,13 @@ export function crearLista(opciones) {
         caption: opciones.caption,
         columnas: opciones.columnas,
         filas,
-        acciones: conAcciones ? (f, i) => accionesFila[i].map((a, j) => `<button type="button" class="btn btn-sm ${a.tono || 'btn-outline-primary'} me-1 mb-1" data-fila="${i}" data-accion-lista="${j}"${a.etiqueta ? ` aria-label="${escapar(a.etiqueta)}"` : ''}>${escapar(a.texto)}</button>`).join('') : null
+        // Con más de dos acciones se muestra la primera y el resto queda en «Más acciones».
+        acciones: conAcciones ? (f, i) => {
+          const botones = accionesFila[i];
+          const boton = (a, j) => `<button type="button" class="btn btn-sm ${a.tono || 'btn-outline-primary'} me-1 mb-1" data-fila="${i}" data-accion-lista="${j}"${a.etiqueta ? ` aria-label="${escapar(a.etiqueta)}"` : ''}>${escapar(a.texto)}</button>`;
+          if (botones.length <= 2) return botones.map(boton).join('');
+          return boton(botones[0], 0) + `<button type="button" class="btn btn-sm btn-outline-secondary mb-1" data-fila="${i}" data-mas-acciones aria-haspopup="dialog">Más acciones<span class="visually-hidden"> (${botones.length - 1})</span></button>`;
+        } : null
       }) + (opciones.paginar === false ? '' : paginacionAdmin({ page: respuesta?.pagination?.page || pagina, totalPages: respuesta?.pagination?.totalPages || 1 }));
       opciones.alCargar?.(respuesta, filas);
     } catch (error) {
@@ -56,6 +62,8 @@ export function crearLista(opciones) {
   cont.addEventListener('click', async (evento) => {
     const pag = evento.target.closest('[data-page]');
     if (pag && !pag.disabled) { pagina = Number(pag.dataset.page) || 1; recargar(); return; }
+    const mas = evento.target.closest('[data-mas-acciones]');
+    if (mas) { elegirAccion(Number(mas.dataset.fila)); return; }
     const boton = evento.target.closest('[data-accion-lista]');
     if (!boton) return;
     const accion = accionesFila[Number(boton.dataset.fila)]?.[Number(boton.dataset.accionLista)];
@@ -67,6 +75,21 @@ export function crearLista(opciones) {
       mostrarMensaje(region, error.mensaje || 'No se pudo completar la acción.', 'error');
     }
   });
+  // Menú de acciones en un diálogo (no se recorta dentro de la tabla con desplazamiento).
+  async function elegirAccion(i) {
+    const botones = accionesFila[i] || [];
+    let elegida = null;
+    await abrirDialogo({
+      titulo: 'Acciones', textoConfirmar: 'Cerrar', textoCancelar: 'Volver',
+      contenido: `<div class="d-grid gap-2">${botones.map((a, j) => `<button type="button" class="btn ${a.tono || 'btn-outline-primary'}" data-elegir="${j}">${escapar(a.texto)}</button>`).join('')}</div>`,
+      alPreparar: (form, dialogo) => form.querySelectorAll('[data-elegir]').forEach((b) => b.addEventListener('click', () => { elegida = botones[Number(b.dataset.elegir)]; dialogo.close(); }))
+    });
+    if (!elegida) return;
+    try {
+      const mensaje = await elegida.ejecutar(filas[i]);
+      if (mensaje) { mostrarMensaje(region, mensaje, 'exito'); await recargar(); }
+    } catch (error) { mostrarMensaje(region, error.mensaje || 'No se pudo completar la acción.', 'error'); }
+  }
   filtros?.addEventListener('submit', (e) => { e.preventDefault(); pagina = 1; recargar(); });
   filtros?.addEventListener('change', (e) => { if (e.target.matches('select, input[type="checkbox"], input[type="date"]')) { pagina = 1; recargar(); } });
   recargar();

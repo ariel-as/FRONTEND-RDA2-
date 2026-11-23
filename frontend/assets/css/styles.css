@@ -2036,6 +2036,51 @@ html[data-tema="claro"] .pf-iniciales { background: #f4f4f5; color: #92400e; }
   .pf-hero > .relative { padding-top: 6.5rem; padding-bottom: 3rem; }
 }
 
+/* ---------- Correcciones de diseño: plantilla, tablas y colores del panel ---------- */
+
+.pf-admin main.container { max-width: 1320px; }
+.pf-admin main > h1 { margin-bottom: 0.25rem; }
+.pf-admin main > h1 + p.text-body-secondary { margin-bottom: 1.25rem; }
+.pf-admin main .card { border-radius: 0.75rem; margin-bottom: 1.25rem; }
+.pf-admin main .card-body { padding: 1.25rem; }
+.pf-admin main > section { margin-bottom: 1.5rem; }
+.pf-cabecera-bloque { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.75rem; }
+.pf-admin .form-text { margin-top: 0.25rem; }
+@media (max-width: 575.98px) {
+  .pf-admin main [data-nuevo], .pf-admin main [data-nueva-inscripcion], .pf-admin main [data-nuevo-cliente], .pf-admin main [data-nueva-compra], .pf-admin main [data-nueva-rutina] { width: 100%; }
+}
+
+/* Encabezados de tabla que siguen el tema (no blancos sobre panel oscuro). */
+.pf-admin .table > thead, .pf-admin .table > thead.table-light { --bs-table-bg: var(--bs-tertiary-bg); --bs-table-color: var(--bs-emphasis-color); }
+.pf-admin .table > thead th { font-weight: 700; white-space: nowrap; }
+.pf-admin td:has(> .pf-num), .pf-admin th:has(> .pf-num) { text-align: right; white-space: nowrap; }
+.pf-admin .pf-celda-acciones { white-space: nowrap; }
+
+/* Colores de marca: primario amarillo con texto oscuro. */
+.pf-admin .btn-primary { --bs-btn-bg: var(--pf-amarillo); --bs-btn-border-color: var(--pf-amarillo); --bs-btn-color: #111111; --bs-btn-hover-bg: #eab308; --bs-btn-hover-border-color: #eab308; --bs-btn-hover-color: #111111; --bs-btn-active-bg: #ca8a04; --bs-btn-active-border-color: #ca8a04; --bs-btn-active-color: #111111; --bs-btn-disabled-bg: #fde68a; --bs-btn-disabled-border-color: #fde68a; --bs-btn-disabled-color: #3f3f46; font-weight: 700; }
+.pf-admin .btn-outline-primary { --bs-btn-color: #854d0e; --bs-btn-border-color: #a16207; --bs-btn-hover-bg: var(--pf-amarillo); --bs-btn-hover-border-color: var(--pf-amarillo); --bs-btn-hover-color: #111111; --bs-btn-active-bg: #eab308; --bs-btn-active-border-color: #eab308; --bs-btn-active-color: #111111; }
+html[data-bs-theme="dark"] .pf-admin .btn-outline-primary { --bs-btn-color: #fde047; --bs-btn-border-color: #facc15; }
+.pf-admin .btn-outline-primary[aria-pressed="true"] { background: var(--pf-amarillo); color: #111111; border-color: var(--pf-amarillo); }
+.pf-admin .progress-bar.bg-success { color: #ffffff; }
+
+/* Celular: el botón de tema en la fila del menú y las listas como tarjetas apiladas. */
+@media (max-width: 991.98px) {
+  .pf-admin > header .navbar > .container-fluid { flex-wrap: wrap; }
+  .pf-admin > header .navbar-brand { flex: 1 1 0; min-width: 0; margin-right: 0.5rem; }
+  .pf-admin > header .navbar-brand > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pf-admin > header .navbar .pf-boton-tema { order: 2; margin-left: auto; flex: 0 0 auto; }
+  .pf-admin > header .navbar .navbar-toggler { order: 3; margin-left: 0.5rem; flex: 0 0 auto; }
+  .pf-admin > header .navbar .navbar-collapse { order: 4; }
+}
+@media (max-width: 639.98px) {
+  .pf-tabla-apilable thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .pf-tabla-apilable, .pf-tabla-apilable tbody, .pf-tabla-apilable tr, .pf-tabla-apilable th, .pf-tabla-apilable td { display: block; width: 100%; }
+  .pf-tabla-apilable tr { margin-bottom: 0.75rem; border: 1px solid var(--bs-border-color); border-radius: 0.5rem; padding: 0.5rem 0.75rem; }
+  .pf-tabla-apilable th[data-label], .pf-tabla-apilable td[data-label] { display: flex; justify-content: space-between; gap: 0.75rem; border: 0; padding: 0.3rem 0; text-align: right; white-space: normal; }
+  .pf-tabla-apilable th[data-label]::before, .pf-tabla-apilable td[data-label]::before { content: attr(data-label); font-weight: 700; text-align: left; }
+  .pf-tabla-apilable .pf-celda-acciones { flex-wrap: wrap; justify-content: flex-end; }
+}
+
 /* ---------- Respeta a quien prefiere reducir el movimiento ---------- */
 
 @media (prefers-reduced-motion: reduce) {

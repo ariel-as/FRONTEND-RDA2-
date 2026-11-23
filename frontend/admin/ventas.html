@@ -32,15 +32,15 @@
   <p data-mensaje class="pf-mensaje" role="status" aria-live="polite" hidden></p>
   <section class="card shadow-sm mb-4" aria-labelledby="titulo-nueva-venta" data-permiso="ventas:crear"><div class="card-body">
     <h2 id="titulo-nueva-venta" class="h5">Nueva venta</h2>
-    <form id="form-linea" class="row g-2 align-items-end" novalidate>
+    <form id="form-linea" class="row g-2 align-items-start" novalidate>
       <div class="col-12 col-md-3"><label class="form-label" for="venta-cliente">Cédula del cliente</label><input class="form-control" id="venta-cliente" name="cliente" inputmode="numeric" maxlength="13" value="9999999999" aria-describedby="venta-cliente-ayuda"><p id="venta-cliente-ayuda" class="form-text mb-0">9999999999 = CONSUMIDOR FINAL.</p></div>
       <div class="col-12 col-md-4"><label class="form-label" for="venta-producto">Producto (activos con stock)</label><select class="form-select" id="venta-producto" name="producto"><option value="">Cargando productos…</option></select></div>
       <div class="col-6 col-md-2"><label class="form-label" for="venta-cantidad">Cantidad</label><input class="form-control" id="venta-cantidad" name="cantidad" type="number" min="1" step="1" value="1"></div>
       <div class="col-6 col-md-2"><label class="form-label" for="venta-descuento">Descuento ($)</label><input class="form-control" id="venta-descuento" name="descuento" type="number" min="0" step="0.01" value="0"></div>
-      <div class="col-12 col-md-1"><button type="submit" class="btn btn-outline-primary w-100">Agregar</button></div>
+      <div class="col-12 col-md-1"><span class="form-label d-none d-md-block invisible" aria-hidden="true">Agregar</span><button type="submit" class="btn btn-outline-primary w-100">Agregar</button></div>
     </form>
     <div class="mt-3" data-lineas aria-live="polite"></div>
-    <button type="button" class="btn btn-primary btn-lg mt-2" data-cobrar-venta disabled>Cobrar venta</button>
+    <div class="d-flex justify-content-end mt-2"><button type="button" class="btn btn-primary btn-lg" data-cobrar-venta disabled>Cobrar venta</button></div>
   </div></section>
   <section class="card shadow-sm" id="pantalla-ventas" aria-labelledby="titulo-ventas"><div class="card-body">
     <h2 id="titulo-ventas" class="h5">Ventas</h2>

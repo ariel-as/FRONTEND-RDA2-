@@ -5,7 +5,7 @@ import { confirmarAccion } from './dialogo.controller.js';
 import { escapar } from '../views/componentes.view.js';
 import {
   tablaAdmin, paginacionAdmin, valorTexto, valorConEtiqueta, fechaLocal,
-  campoFormulario, leyendaObligatorios
+  campoFormulario, leyendaObligatorios, etiquetaCampo
 } from '../views/admin.view.js';
 
 const instancias = new WeakMap();
@@ -101,7 +101,8 @@ function columnasVista(inst) {
 }
 
 function etiqueta(inst, col) {
-  return inst.config.etiquetas?.[col.nombre] || col.etiqueta || col.nombre;
+  if (inst.config.etiquetas?.[col.nombre]) return inst.config.etiquetas[col.nombre];
+  return col.etiqueta && col.etiqueta !== col.nombre ? col.etiqueta : etiquetaCampo(col.nombre);
 }
 
 function region(inst) {
@@ -140,6 +141,12 @@ function etiquetaRegistro(inst, fila) {
 function celdaDe(inst, col, valor, fila) {
   const formato = inst.config.formatoCelda?.[col.nombre];
   if (typeof formato === 'function') return formato(valor, fila);
+  // Claves foráneas: se muestra el nombre de la opción y no el código.
+  const ref = col.referencia || col.ref || col.tablaReferencia;
+  if (ref && valor !== null && valor !== undefined && valor !== '') {
+    const opcion = (inst.opcionesCache[ref] || []).find((o) => String(o.valor ?? o.value ?? o.id) === String(valor));
+    if (opcion) return escapar(opcion.texto ?? opcion.label ?? opcion.descripcion ?? valor);
+  }
   if (formato && typeof formato === 'object') return valorConEtiqueta(col.nombre, valor);
   if (inst.config.etiquetasValor?.[col.nombre]) return valorConEtiqueta(col.nombre, valor);
   if (valor === null || valor === undefined || valor === '') return valorTexto(valor);
@@ -176,7 +183,8 @@ async function cargarFilas(inst) {
       idCampos: inst.meta?.idCampos || ['id'],
       acciones,
       caption: inst.config.titulo || inst.tabla,
-      id: `tabla-${inst.key}`
+      id: `tabla-${inst.key}`,
+      soloFilas: true
     });
     const cont = inst.raiz.querySelector('[data-paginacion]');
     if (cont) {
