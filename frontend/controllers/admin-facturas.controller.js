@@ -3,10 +3,11 @@ import { facturasModel } from '../models/fase2.model.js';
 import { txt, dinero, fecha, estado, detalleHtml } from '../views/lista-api.view.js';
 import { confirmarAccion } from './dialogo.controller.js';
 import { puede } from '../models/permisos.model.js';
+import { mostrarFactura } from './factura.controller.js';
 import { crearLista, formulario, enlazarBoton } from './lista-api.controller.js';
 
 const ESTADOS = { P: 'Sin número del SRI', E: 'Registrada en el SRI', A: 'Anulada' };
-const columnas = [['N.º', (f) => txt(f.id)], ['Comprobante', (f) => txt(f.numComprobante || 'Pendiente')], ['Fecha', (f) => fecha(f.fecha)], ['Cliente', (f) => txt(f.cliente?.nombre || f.cliente || f.clienteId)],
+const columnas = [['N.º de factura', (f) => txt(f.numComprobante || `Pendiente del SRI (interno ${f.id})`)], ['Fecha', (f) => fecha(f.fecha)], ['Cliente', (f) => txt(f.cliente?.nombre || f.cliente || f.clienteId)],
   ['Origen', (f) => txt([f.ventaId && `Venta ${f.ventaId}`, f.inscripcionId && `Inscripción ${f.inscripcionId}`].filter(Boolean).join(' · '))], ['Total', (f) => dinero(f.total)], ['Estado', (f) => estado(ESTADOS, f.estado)]];
 
 async function imprimir(f) {
@@ -24,7 +25,7 @@ const facturas = crearLista({
   cargar: (p) => facturasModel.listar(p),
   columnas,
   acciones: (f) => [
-    { texto: 'Ver e imprimir', permiso: 'facturas:leer', etiqueta: `Ver e imprimir la factura ${f.id}`, ejecutar: () => imprimir(f) },
+    { texto: 'Ver e imprimir', permiso: 'facturas:leer', etiqueta: `Ver e imprimir la factura ${f.numComprobante || f.id}`, ejecutar: async () => { await mostrarFactura(f.id); return null; } },
     f.estado === 'P' && { texto: 'Registrar SRI', permiso: 'facturas:sri', tono: 'btn-primary', etiqueta: `Registrar número del SRI de la factura ${f.id}`, ejecutar: () => formulario({
       titulo: `Datos del SRI de la factura ${f.id}`,
       campos: [
@@ -55,8 +56,8 @@ enlazarBoton('[data-generar-factura]', 'facturas:generar', async () => {
     ],
     validarExtra: (_, v) => (!v.ventaId && !v.inscripcionId ? 'Indica una venta o una inscripción.' : v.aQuien === 'tercero' && !v.tercero ? 'Escribe la cédula o el RUC del tercero.' : null),
     alConfirmar: (v) => facturasModel.generar({ ...(v.ventaId ? { ventaId: Number(v.ventaId) } : {}), ...(v.inscripcionId ? { inscripcionId: Number(v.inscripcionId) } : {}), ...(v.aQuien === 'tercero' ? { clienteId: v.tercero.trim() } : v.aQuien ? { clienteId: v.aQuien } : {}) }),
-    exito: 'Factura generada. Registra su número del SRI.'
+    exito: (r) => r?.data ?? r
   });
-  if (m) { facturas?.recargar(); porAnular?.recargar(); }
+  if (m) { facturas?.recargar(); porAnular?.recargar(); if (m.id) await mostrarFactura(m.id).catch(() => {}); return 'Factura generada. Registra su número del SRI.'; }
   return m;
 });

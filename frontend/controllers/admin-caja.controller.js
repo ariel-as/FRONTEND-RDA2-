@@ -1,5 +1,5 @@
 import './admin.controller.js';
-import { cajaModel } from '../models/fase2.model.js';
+import { cajaModel, turnoAbierto } from '../models/fase2.model.js';
 import { adminModel } from '../models/admin.model.js';
 import { puede } from '../models/permisos.model.js';
 import { formatearPrecio } from '../models/carrito.model.js';
@@ -23,7 +23,8 @@ function diferenciaTexto(dif) {
 async function pintarTurno() {
   cont.setAttribute('aria-busy', 'true');
   try {
-    const t = await cajaModel.actual().then((r) => r?.data ?? r);
+    const t = await turnoAbierto();
+    if (!t) { const sinTurno = new Error('sin turno'); sinTurno.status = 404; throw sinTurno; }
     cont.innerHTML = `<p class="mb-2">Turno <strong>${txt(t.turno || t.turnoId)}</strong> del ${fecha(t.fecha)} · Responsable: ${txt(t.empleado || t.empleadoId)} · Estado: <strong>abierto</strong></p>
       <dl class="row text-center g-2 mb-3" aria-live="polite">
         ${[['Saldo inicial', t.saldoInicial], ['Efectivo recibido', t.totalIngresos], ['Transferencias (aparte)', t.totalTransf], ['Egresos', t.totalEgresos], ['Saldo esperado en caja', t.saldoFinal]].map(([k, v]) => `<div class="col-6 col-md"><dt class="small text-body-secondary">${k}</dt><dd class="fs-5 fw-bold mb-0">${dinero(v)}</dd></div>`).join('')}
@@ -101,6 +102,11 @@ async function cerrarTurno(t) {
 
 const columnasCuadre = [['Fecha', (c) => fecha(c.fecha)], ['Turno', (c) => txt(c.turno || c.turnoId)], ['Responsable', (c) => txt(c.empleado || c.empleadoId)], ['Esperado', (c) => dinero(c.saldoFinal)], ['Contado', (c) => dinero(c.efectivoContado)],
   ['Diferencia', (c) => (c.efectivoContado === null || c.efectivoContado === undefined ? txt('Turno abierto') : `<span class="${diferenciaTexto(c.diferencia).clase}">${escapar(diferenciaTexto(c.diferencia).texto)}</span>`)], ['Cierre semanal', (c) => txt(c.cierreCajaId ? `N.º ${c.cierreCajaId}` : 'Pendiente')]];
+// Cuadres por defecto en la semana actual.
+const inicioSemana = (() => { const d = new Date(); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.toLocaleDateString('en-CA'); })();
+const fDesde = document.querySelector('#cuadres-desde'); const fHasta = document.querySelector('#cuadres-hasta');
+if (fDesde && !fDesde.value) fDesde.value = inicioSemana;
+if (fHasta && !fHasta.value) fHasta.value = new Date().toLocaleDateString('en-CA');
 const cuadres = puede('caja') ? crearLista({ raiz: '#lista-cuadres', caption: 'Cuadres de turno', filtros: '#filtros-cuadres', cargar: (p) => cajaModel.turnos(p), columnas: columnasCuadre }) : null;
 const cierres = puede('caja') ? crearLista({ raiz: '#lista-cierres', caption: 'Cierres semanales', cargar: (p) => cajaModel.cierres(p), columnas: [['N.º', (c) => txt(c.id)], ['Desde', (c) => fecha(c.fechaDesde)], ['Hasta', (c) => fecha(c.fechaHasta)], ['Efectivo', (c) => dinero(c.totalEfectivo)], ['Transferencias', (c) => dinero(c.totalTransf)], ['Egresos', (c) => dinero(c.totalEgresos)], ['Diferencia', (c) => dinero(c.diferencia)], ['Observación', (c) => txt(c.observacion)]] }) : null;
 

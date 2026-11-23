@@ -3,6 +3,8 @@ import { comprasModel, lista as extraer } from '../models/fase2.model.js';
 import { adminModel } from '../models/admin.model.js';
 import { txt, dinero, fecha, estado } from '../views/lista-api.view.js';
 import { confirmarAccion } from './dialogo.controller.js';
+import { iniciarPantalla } from './admin-generico.controller.js';
+import { puede } from '../models/permisos.model.js';
 import { crearLista, formulario, verDetalle, enlazarBoton } from './lista-api.controller.js';
 
 const ESTADOS = { P: 'Pendiente', A: 'Autorizada', M: 'Recibida parcialmente', R: 'Recibida completa', X: 'Anulada' };
@@ -50,3 +52,7 @@ enlazarBoton('[data-nueva-compra]', 'compras:gestionar', async () => {
   if (m) tabla?.recargar();
   return m;
 });
+
+// Pestaña de proveedores con el panel genérico (tabla proveedor); se oculta si el rol no puede leerla.
+if (puede(['compras:gestionar', 'tablas:leer', 'compras'])) iniciarPantalla({ raiz: '#pantalla-proveedor', tabla: 'proveedor', titulo: 'Proveedores', permisoEscritura: 'compras:gestionar', mensajeExito: 'Registro guardado.' });
+else document.querySelector('#pantalla-proveedor')?.setAttribute('hidden', '');

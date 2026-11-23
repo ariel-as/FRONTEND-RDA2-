@@ -22,7 +22,8 @@ const nombreProducto = (id) => productos.find((p) => String(p.id) === String(id)
 const lotes = crearLista({
   raiz: '#pantalla-lotes', filtros: '#filtros-lotes', caption: 'Lotes de productos',
   cargar: (p) => inventarioModel.lotes(p),
-  columnas: [['Lote', (l) => txt(l.id)], ['Producto', (l) => txt(l.producto?.nombre || l.producto || nombreProducto(l.productoId))], ['Ingreso', (l) => fecha(l.fechaIngreso)], ['Caducidad', (l) => fecha(l.fechaCaducidad)],
+  extraer: (r) => (Array.isArray(r) ? r : (r?.data || [])).sort((a, b) => String(a.producto?.nombre || nombreProducto(a.productoId)).localeCompare(String(b.producto?.nombre || nombreProducto(b.productoId)), 'es') || String(a.fechaCaducidad || '9999').localeCompare(String(b.fechaCaducidad || '9999'))),
+  columnas: [['Lote', (l) => txt(l.id)], ['Producto', (l) => txt(l.producto?.nombre || l.producto || nombreProducto(l.productoId))], ['Ingreso', (l) => fecha(l.fechaIngreso)], ['Caducidad', (l) => (l.fechaCaducidad ? fecha(l.fechaCaducidad) : txt('No caduca'))],
     ['Disponible', (l) => txt(`${l.cantidadDisponible ?? ''} de ${l.cantidadInicial ?? ''}`)], ['Costo unitario', (l) => dinero(l.costoUnit)], ['Estado', (l) => estado(ESTADOS_LOTE, l.estado)]],
   acciones: (l) => [
     l.estado !== 'C' && { texto: l.estado === 'I' ? 'Desbloquear' : 'Bloquear', permiso: 'inventario:gestionar', etiqueta: `${l.estado === 'I' ? 'Desbloquear' : 'Bloquear'} el lote ${l.id}`,

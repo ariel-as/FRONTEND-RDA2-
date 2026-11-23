@@ -41,23 +41,23 @@
     </div></div>
   </section>
   <section class="row g-3 my-1" aria-labelledby="titulo-indicadores" data-indicadores-adm><h2 id="titulo-indicadores" class="visually-hidden">Indicadores</h2>
-    <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small">Productos a la venta</p><p class="display-6 fw-bold mb-0" data-total-productos>0</p></div></div></div>
-    <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small">Bajo stock mínimo</p><p class="display-6 fw-bold mb-0" data-total-bajo-stock>0</p></div></div></div>
-    <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small">Pedidos por atender</p><p class="display-6 fw-bold mb-0" data-total-pedidos>0</p></div></div></div>
-    <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small">Clientes activos</p><p class="display-6 fw-bold mb-0" data-total-clientes>0</p></div></div></div>
-    <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small">Planes web por cobrar</p><p class="display-6 fw-bold mb-0" data-total-inscripciones>0</p></div></div></div>
-    <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small">Mensajes sin responder</p><p class="display-6 fw-bold mb-0" data-total-mensajes>0</p></div></div></div>
+    <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small"><a class="stretched-link pf-enlace-indicador" href="productos.html">Productos a la venta</a></p><p class="display-6 fw-bold mb-0" data-total-productos>0</p></div></div></div>
+    <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small"><a class="stretched-link pf-enlace-indicador" href="inventario.html">Bajo stock mínimo</a></p><p class="display-6 fw-bold mb-0" data-total-bajo-stock>0</p></div></div></div>
+    <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small"><a class="stretched-link pf-enlace-indicador" href="pedidos.html?estado=R">Pedidos por atender</a></p><p class="display-6 fw-bold mb-0" data-total-pedidos>0</p></div></div></div>
+    <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small"><a class="stretched-link pf-enlace-indicador" href="clientes.html?estado=A">Clientes activos</a></p><p class="display-6 fw-bold mb-0" data-total-clientes>0</p></div></div></div>
+    <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small"><a class="stretched-link pf-enlace-indicador" href="inscripciones.html?estado=P&amp;canal=W">Planes web por cobrar</a></p><p class="display-6 fw-bold mb-0" data-total-inscripciones>0</p></div></div></div>
+    <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small"><a class="stretched-link pf-enlace-indicador" href="mensajes.html?estado=P">Mensajes sin responder</a></p><p class="display-6 fw-bold mb-0" data-total-mensajes>0</p></div></div></div>
   </section>
+  <section class="mt-4" aria-labelledby="titulo-recientes" data-indicadores-adm><div class="card shadow-sm"><div class="card-body"><h2 id="titulo-recientes" class="h5">Pedidos recientes</h2>
+    <div class="table-responsive"><table class="table table-sm align-middle"><caption class="visually-hidden">Últimos pedidos</caption><thead class="table-light"><tr><th scope="col">#</th><th scope="col">Cliente</th><th scope="col">Fecha</th><th scope="col">Estado</th><th scope="col">Total</th><th scope="col">Acción</th></tr></thead><tbody data-tabla-pedidos-recientes></tbody></table></div>
+    <a href="pedidos.html" class="btn btn-outline-primary btn-sm">Ir a pedidos</a>
+  </div></div></section>
   <section class="mt-4" aria-labelledby="titulo-accesos">
     <div class="card shadow-sm"><div class="card-body">
       <h2 id="titulo-accesos" class="h5">Accesos directos</h2>
       <div class="row g-3" data-accesos-directos></div>
     </div></div>
   </section>
-  <section class="mt-4" aria-labelledby="titulo-recientes" data-indicadores-adm><div class="card shadow-sm"><div class="card-body"><h2 id="titulo-recientes" class="h5">Pedidos recientes</h2>
-    <div class="table-responsive"><table class="table table-sm align-middle"><caption class="visually-hidden">Últimos pedidos</caption><thead class="table-light"><tr><th scope="col">#</th><th scope="col">Cliente</th><th scope="col">Fecha</th><th scope="col">Estado</th><th scope="col">Total</th><th scope="col">Acción</th></tr></thead><tbody data-tabla-pedidos-recientes></tbody></table></div>
-    <a href="pedidos.html" class="btn btn-outline-primary btn-sm">Ir a pedidos</a>
-  </div></div></section>
 </main>
 <footer class="border-top py-4 mt-5"><p class="container text-center text-body-secondary mb-0">© <span data-anio>2026</span> Planeta Fitness</p></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

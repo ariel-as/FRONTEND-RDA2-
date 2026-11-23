@@ -2081,6 +2081,12 @@ html[data-bs-theme="dark"] .pf-admin .btn-outline-primary { --bs-btn-color: #fde
   .pf-tabla-apilable .pf-celda-acciones { flex-wrap: wrap; justify-content: flex-end; }
 }
 
+/* ---------- Correcciones de diseño: pantallas ---------- */
+
+.pf-aforo-barra { border: 1px solid var(--bs-border-color); background-color: var(--bs-secondary-bg); }
+.pf-enlace-indicador { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.pf-enlace-indicador:focus-visible { outline: 3px solid var(--pf-amarillo); outline-offset: 2px; }
+
 /* ---------- Respeta a quien prefiere reducir el movimiento ---------- */
 
 @media (prefers-reduced-motion: reduce) {

@@ -25,7 +25,9 @@ export function tablaHtml({ caption, columnas, filas, acciones }) {
   return `<div class="table-responsive"><table class="table table-hover align-middle pf-tabla-apilable"><caption class="visually-hidden">${escapar(caption)}</caption><thead class="table-light">${head}</thead><tbody>${cuerpo}</tbody></table></div>`;
 }
 
-const ETIQUETA = (k) => String(k).replace(/([a-z])([A-Z])/g, '$1 $2').replace(/Id$/, '').replace(/^./, (c) => c.toUpperCase());
+// Títulos en español para las claves de los detalles y reportes.
+const TITULOS = { dias: 'Días', dia: 'Día', hora: 'Hora', porVencer: 'Por vencer', vencidos: 'Vencidos', activos: 'Activos', total: 'Total', cantidad: 'Cantidad', monto: 'Monto', ingresos: 'Ingresos', egresos: 'Egresos', producto: 'Producto', productos: 'Productos', plan: 'Plan', planes: 'Planes', ganancia: 'Ganancia', costo: 'Costo', valor: 'Valor', bajoMinimo: 'Bajo mínimo', porCaducar: 'Por caducar', valorizado: 'Valorizado', cuadres: 'Cuadres', cierres: 'Cierres', comisiones: 'Comisiones', entradas: 'Entradas', aforo: 'Aforo', local: 'Local', web: 'Web' };
+const ETIQUETA = (k) => TITULOS[k] || String(k).replace(/Id$/, '').replace(/([a-z])([A-Z])/g, (_, a, b) => `${a} ${b.toLowerCase()}`).replace(/^./, (c) => c.toUpperCase());
 const esFecha = (k, v) => typeof v === 'string' && /^(fecha|hora|created|updated)/i.test(k) && !Number.isNaN(Date.parse(v));
 const valor = (k, v) => (v === null || v === undefined || v === '' ? vacioTxt : esFecha(k, v) ? fecha(v, /T\d\d:\d\d/.test(v) && !/T00:00:00/.test(v)) : escapar(typeof v === 'boolean' ? (v ? 'Sí' : 'No') : v));
 

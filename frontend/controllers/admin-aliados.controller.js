@@ -2,6 +2,8 @@ import './admin.controller.js';
 import { aliadosModel, lista as extraer } from '../models/fase2.model.js';
 import { adminModel } from '../models/admin.model.js';
 import { txt, dinero, fecha } from '../views/lista-api.view.js';
+import { iniciarPantalla } from './admin-generico.controller.js';
+import { puede } from '../models/permisos.model.js';
 import { crearLista, formulario, enlazarBoton } from './lista-api.controller.js';
 
 const tabla = crearLista({
@@ -33,3 +35,7 @@ enlazarBoton('[data-cobrar-comision]', 'aliados:cobrar', async () => {
   if (m) tabla?.recargar();
   return m;
 });
+
+// Pestaña de profesionales aliados con el panel genérico (tabla profesional_aliado); se oculta si el rol no puede leerla.
+if (puede(['aliados:editar', 'tablas:leer', 'aliados'])) iniciarPantalla({ raiz: '#pantalla-profesional_aliado', tabla: 'profesional_aliado', titulo: 'Profesionales aliados', permisoEscritura: 'aliados:editar', mensajeExito: 'Registro guardado.' });
+else document.querySelector('#pantalla-profesional_aliado')?.setAttribute('hidden', '');

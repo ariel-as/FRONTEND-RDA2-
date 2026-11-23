@@ -26,7 +26,7 @@ const lista = crearLista({
   filtros: '#filtros-clientes',
   caption: 'Clientes registrados',
   cargar: (p) => clientesModel.listar(p),
-  columnas: [['Cédula', (c) => txt(c.cedula || c.id)], ['Nombre', (c) => txt(nombrePersona(c))], ['Teléfono', (c) => txt(c.telefono)], ['Correo', (c) => txt(c.correo)], ['Nivel', (c) => txt(c.nivel || c.nivelId)], ['Estado', (c) => txt(c.estado === 'A' ? 'Activo' : 'Inactivo')]],
+  columnas: [['Cédula', (c) => txt(c.cedula || c.id)], ['Nombre', (c) => txt(nombrePersona(c))], ['Teléfono', (c) => txt(c.telefono)], ['Correo', (c) => txt(c.correo)], ['Nivel', (c) => txt(String(c.cedula || c.id) === CONSUMIDOR_FINAL ? 'No aplica' : (c.nivel || c.nivelId || 'Sin nivel'))], ['Estado', (c) => txt(c.estado === 'A' ? 'Activo' : 'Inactivo')]],
   acciones: (c) => {
     const id = c.cedula || c.id;
     const nombre = nombrePersona(c);

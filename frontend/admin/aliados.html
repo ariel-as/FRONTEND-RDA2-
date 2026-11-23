@@ -28,13 +28,18 @@
 </div></nav></header>
 <main id="contenido" class="container py-4">
   <h1 class="h3">Aliados y comisiones</h1>
-  <p class="text-body-secondary">La lista de profesionales aliados se administra en Otras tablas (tabla profesional_aliado).</p>
+  <p class="text-body-secondary">Profesionales aliados y sus comisiones.</p>
   <p data-mensaje class="pf-mensaje" role="status" aria-live="polite" hidden></p>
   <div class="mb-3"><button type="button" class="btn btn-primary" data-cobrar-comision hidden>Cobrar comisión</button></div>
   <section class="card shadow-sm" id="pantalla-comisiones" aria-labelledby="titulo-pantalla-comisiones"><div class="card-body">
     <h2 id="titulo-pantalla-comisiones" class="h5">Comisiones por periodo</h2>
     <form id="filtros-pantalla-comisiones" class="d-flex flex-wrap gap-2 align-items-end mb-2"><div><label class="form-label" for="comisiones-desde">Desde</label><input class="form-control" type="date" id="comisiones-desde" name="desde" ></div><div><label class="form-label" for="comisiones-hasta">Hasta</label><input class="form-control" type="date" id="comisiones-hasta" name="hasta" ></div><div><label class="form-label" for="comisiones-cedula">Cédula del aliado</label><input class="form-control" type="search" id="comisiones-cedula" name="cedula" inputmode="numeric" maxlength="10"></div></form>
     <div data-lista aria-busy="false"></div>
+  </div></section>
+  <section class="card shadow-sm" id="pantalla-profesional_aliado" data-tabla="profesional_aliado" aria-labelledby="titulo-profesional_aliado"><div class="card-body">
+    <div class="pf-cabecera-bloque"><h2 id="titulo-profesional_aliado" class="h5 mb-0">Profesionales aliados</h2><button type="button" class="btn btn-primary" data-nuevo hidden>Nuevo</button></div>
+    <p data-mensaje class="pf-mensaje" role="status" aria-live="polite" hidden></p>
+    <div class="table-responsive"><table class="table table-hover align-middle"><caption class="visually-hidden">Profesionales aliados</caption><thead data-tabla-head></thead><tbody data-tabla-body></tbody></table></div><div data-paginacion></div>
   </div></section>
 </main>
 <footer class="border-top py-4 mt-5"><p class="container text-center text-body-secondary mb-0">© <span data-anio>2026</span> Planeta Fitness</p></footer>

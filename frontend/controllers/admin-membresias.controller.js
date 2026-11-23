@@ -11,6 +11,7 @@ iniciarPantalla({
   titulo: 'Planes',
   columnas: ['id', 'nombre', 'tipo', 'duracion', 'numIngresos', 'numPersonas', 'precio', 'pagaIva', 'publicarWeb', 'estado'],
   etiquetas: { id: 'Código', numPersonas: 'Personas', numIngresos: 'Ingresos', publicarWeb: 'Web' },
+  formatoCelda: { numIngresos: (valor, fila) => (fila.tipo === 'T' ? 'No aplica' : (valor ?? 'No aplica')) },
   defaults: { tipo: 'T', pagaIva: 'S', incluyeRutina: 'S', esEstudiantil: 'N', publicarWeb: 'S', estado: 'A', numPersonas: 1 },
   opcionesFijas: {
     tipo: { T: 'Por tiempo: diario, mensual, anual', I: 'Por ingresos: tarjeta de 30 ingresos' },

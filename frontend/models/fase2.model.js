@@ -34,6 +34,15 @@ export const cajaModel = {
   cierre: (body) => post('/admin/caja/cierres', body),
   cierres: (p) => get('/admin/caja/cierres', p)
 };
+// Turno abierto hoy: primero se mira la lista del día y solo si hay uno abierto se pide el detalle (sin 404 cuando no hay turno).
+export async function turnoAbierto() {
+  const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Guayaquil' });
+  const r = await cajaModel.turnos({ desde: hoy, hasta: hoy, limit: 100 });
+  const abiertos = (Array.isArray(r) ? r : (r?.data || [])).filter((c) => (c.efectivoContado === null || c.efectivoContado === undefined) && !c.cierreCajaId);
+  if (!abiertos.length) return null;
+  const actual = await cajaModel.actual();
+  return actual?.data ?? actual;
+}
 export const clientesModel = {
   listar: (p) => get('/admin/clientes', p),
   crear: (body) => post('/admin/clientes', body),

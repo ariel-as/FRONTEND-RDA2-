@@ -5,6 +5,7 @@ import { formatearPrecio } from '../models/carrito.model.js';
 import { mostrarMensaje } from './validacion.controller.js';
 import { abrirDialogo, confirmarAccion } from './dialogo.controller.js';
 import { crearPagos } from './pagos.controller.js';
+import { ofrecerFactura } from './factura.controller.js';
 import { escapar } from '../views/componentes.view.js';
 import { paginacionAdmin } from '../views/admin.view.js';
 
@@ -35,6 +36,8 @@ export async function iniciarPedidosAdmin() {
     pagina = Number(boton.dataset.page) || 1;
     listar();
   });
+  const estadoUrl = new URLSearchParams(location.search).get('estado');
+  if (estadoUrl && s('#filtro-estado')) s('#filtro-estado').value = estadoUrl;
   sincronizarFiltroRapido();
   await listar();
 }
@@ -48,8 +51,8 @@ function acciones(p) {
   const id = escapar(p.id);
   const lista = [];
   const conversion = funcionDisponible('pedidosConversion');
-  if (p.estado === 'P' && puede('pedidos:gestionar')) lista.push(`<button type="button" class="btn btn-sm btn-outline-primary" data-reportar="${id}" aria-label="Reportar pago del pedido número ${id}">Reportar pago</button>`);
-  if (p.estado === 'P' && conversion && puede('pedidos:gestionar')) lista.push(`<button type="button" class="btn btn-sm btn-primary" data-convertir="${id}" aria-label="Cobrar en efectivo y convertir en venta el pedido número ${id}">Cobrar y convertir en venta</button>`);
+  if (p.estado === 'P' && p.metodoPago === 'TR' && puede('pedidos:gestionar')) lista.push(`<button type="button" class="btn btn-sm btn-outline-primary" data-reportar="${id}" aria-label="Reportar pago del pedido número ${id}">Reportar pago</button>`);
+  if (p.estado === 'P' && p.metodoPago !== 'TR' && conversion && puede('pedidos:gestionar')) lista.push(`<button type="button" class="btn btn-sm btn-primary" data-convertir="${id}" aria-label="Cobrar en efectivo y convertir en venta el pedido número ${id}">Cobrar y convertir en venta</button>`);
   if (p.estado === 'R' && conversion && puede('pedidos:gestionar')) lista.push(`<button type="button" class="btn btn-sm btn-primary" data-convertir="${id}" aria-label="Ver comprobante, verificar y convertir en venta el pedido número ${id}">Verificar y convertir en venta</button>`);
   if (p.estado === 'C' && conversion && puede('pedidos:gestionar')) lista.push(`<button type="button" class="btn btn-sm btn-success" data-entregar="${id}" aria-label="Marcar entregado el pedido número ${id}">Marcar entregado</button>`);
   if ((p.estado === 'P' || p.estado === 'R') && puede('pedidos:gestionar')) lista.push(`<button type="button" class="btn btn-sm btn-outline-danger" data-cancelar="${id}" aria-label="Cancelar el pedido número ${id}">Cancelar</button>`);
@@ -71,7 +74,7 @@ async function listar() {
       const det = (p.detalles || []).map((d) => `${escapar(d.nombre || d.productoId)} x${escapar(d.cantidad)}`).join('<br>');
       const comprobante = p.refTransferencia ? `<div class="small">Comprobante: ${escapar(p.refTransferencia)}</div>` : '';
       const estadoTexto = ESTADOS_PEDIDO[p.estado] || p.estadoNombre || p.estado || 'vacío';
-      return `<tr><th scope="row">${id}</th><td>${escapar(p.usuario?.login || p.userId || '')}</td><td>${escapar(new Date(p.createdAt || Date.now()).toLocaleString('es-EC'))}</td><td>${escapar(PAGOS[p.metodoPago] || p.metodoPago || 'vacío')}${comprobante}</td><td><details><summary>Ver productos</summary><div class="small mt-1">${det || 'vacío'}</div></details></td><td>${formatearPrecio(p.total)}</td><td><span class="pf-estado" data-estado="${escapar(p.estado)}">${escapar(estadoTexto)}</span></td><td class="text-nowrap">${acciones(p)}</td></tr>`;
+      return `<tr><th scope="row">${id}</th><td>${escapar(p.usuario?.login || p.userId || '')}</td><td>${escapar(new Date(p.createdAt || Date.now()).toLocaleString('es-EC'))}</td><td>${escapar(PAGOS[p.metodoPago] || p.metodoPago || 'vacío')}${comprobante}</td><td><details><summary>${escapar((p.detalles || []).reduce((a, d) => a + Number(d.cantidad || 0), 0))} producto${(p.detalles || []).reduce((a, d) => a + Number(d.cantidad || 0), 0) === 1 ? '' : 's'}</summary><div class="small mt-1">${det || 'vacío'}</div></details></td><td>${formatearPrecio(p.total)}</td><td><span class="pf-estado" data-estado="${escapar(p.estado)}">${escapar(estadoTexto)}</span></td><td class="text-nowrap">${acciones(p)}</td></tr>`;
     }).join('') : '<tr><td colspan="8" class="text-center text-body-secondary">No hay pedidos.</td></tr>';
     const cont = s('[data-paginacion-pedidos]');
     if (cont) cont.innerHTML = paginacionAdmin({ page: pagina, totalPages: paginacion.totalPages || 1 });
@@ -116,7 +119,11 @@ async function convertir(p) {
     alFallar: (fallo, _, nodo) => pagos?.ajustarDesdeError(fallo, nodo),
     alConfirmar: () => adminModel.cambiarEstadoPedido(p.id, { estado: 'C', ...(pagos ? { pagos: pagos.obtener() } : {}) })
   });
-  if (respuesta) await terminar(`Pedido ${p.id} convertido en venta.`);
+  if (!respuesta) return;
+  await terminar(`Pedido ${p.id} convertido en venta.`);
+  const r = respuesta.resultado?.data ?? respuesta.resultado;
+  const ventaId = r?.ventaId ?? r?.venta?.id ?? r?.ventas?.id;
+  if (ventaId) { const m = await ofrecerFactura({ ventaId }); if (m) mostrarMensaje(region(), m, 'exito'); }
 }
 
 async function entregar(p) {

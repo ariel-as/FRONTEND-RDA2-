@@ -28,13 +28,18 @@
 </div></nav></header>
 <main id="contenido" class="container py-4">
   <h1 class="h3">Compras</h1>
-  <p class="text-body-secondary">Los proveedores se administran en Otras tablas (tabla proveedor).</p>
+  <p class="text-body-secondary">Órdenes de compra y proveedores.</p>
   <p data-mensaje class="pf-mensaje" role="status" aria-live="polite" hidden></p>
   <div class="mb-3"><button type="button" class="btn btn-primary" data-nueva-compra hidden>Nueva orden de compra</button></div>
   <section class="card shadow-sm" id="pantalla-compras" aria-labelledby="titulo-pantalla-compras"><div class="card-body">
     <h2 id="titulo-pantalla-compras" class="h5">Órdenes de compra</h2>
     <form id="filtros-pantalla-compras" class="d-flex flex-wrap gap-2 align-items-end mb-2"><div><label class="form-label" for="compras-estado">Estado</label><select class="form-select" id="compras-estado" name="estado"><option value="">Todas</option><option value="P">Pendiente</option><option value="A">Autorizada</option><option value="M">Recibida parcialmente</option><option value="R">Recibida completa</option><option value="X">Anulada</option></select></div></form>
     <div data-lista aria-busy="false"></div>
+  </div></section>
+  <section class="card shadow-sm" id="pantalla-proveedor" data-tabla="proveedor" aria-labelledby="titulo-proveedor"><div class="card-body">
+    <div class="pf-cabecera-bloque"><h2 id="titulo-proveedor" class="h5 mb-0">Proveedores</h2><button type="button" class="btn btn-primary" data-nuevo hidden>Nuevo</button></div>
+    <p data-mensaje class="pf-mensaje" role="status" aria-live="polite" hidden></p>
+    <div class="table-responsive"><table class="table table-hover align-middle"><caption class="visually-hidden">Proveedores</caption><thead data-tabla-head></thead><tbody data-tabla-body></tbody></table></div><div data-paginacion></div>
   </div></section>
 </main>
 <footer class="border-top py-4 mt-5"><p class="container text-center text-body-secondary mb-0">© <span data-anio>2026</span> Planeta Fitness</p></footer>

@@ -18,6 +18,8 @@ export function crearLista(opciones) {
   const cont = raiz.querySelector('[data-lista]') || raiz;
   const region = raiz.querySelector('[data-mensaje]') || document.querySelector('[data-mensaje]');
   const filtros = opciones.filtros ? document.querySelector(opciones.filtros) : null;
+  // Los parámetros de la URL (?estado=R&canal=W) llenan los filtros con el mismo nombre.
+  new URLSearchParams(location.search).forEach((valor, clave) => { const c = filtros?.querySelector(`[name="${CSS.escape(clave)}"]`); if (c && c.type !== 'checkbox') c.value = valor; });
   let pagina = 1;
   let filas = [];
   let accionesFila = [];

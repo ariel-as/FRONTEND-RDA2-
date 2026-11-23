@@ -1,5 +1,6 @@
 import './admin.controller.js';
-import { ventasModel, facturasModel } from '../models/fase2.model.js';
+import { ventasModel, facturasModel, clientesModel } from '../models/fase2.model.js';
+import { ofrecerFactura, mostrarFactura } from './factura.controller.js';
 import { adminModel } from '../models/admin.model.js';
 import { puede } from '../models/permisos.model.js';
 import { formatearPrecio } from '../models/carrito.model.js';
@@ -30,14 +31,15 @@ const estimado = () => lineas.reduce((a, l) => a + centavos(precio(l.producto)) 
 
 function pintarLineas() {
   const cont = document.querySelector('[data-lineas]');
-  cont.innerHTML = lineas.length ? tablaHtml({
+  // La tabla y el resumen se ven desde el inicio, aunque no haya líneas.
+  cont.innerHTML = tablaHtml({
     caption: 'Líneas de la venta',
     columnas: [['Producto', (l) => txt(l.producto.nombre)], ['Precio', (l) => dinero(precio(l.producto))],
       ['Cantidad', (l) => `<label class="visually-hidden" for="cant-${escapar(l.producto.id)}">Cantidad de ${escapar(l.producto.nombre)}</label><input class="form-control form-control-sm" style="max-width:6rem" type="number" min="1" step="1" id="cant-${escapar(l.producto.id)}" data-cantidad="${escapar(l.producto.id)}" value="${l.cantidad}">`],
       ['Descuento', (l) => dinero(l.descuento)]],
     filas: lineas,
     acciones: (l) => `<button type="button" class="btn btn-sm btn-outline-danger" data-quitar-linea="${escapar(l.producto.id)}" aria-label="Quitar ${escapar(l.producto.nombre)}">Quitar</button>`
-  }) + `<p class="fw-bold">Total estimado: ${formatearPrecio(estimado())} <span class="fw-normal small">(el servidor calcula el total definitivo con IVA)</span></p>` : '<p class="text-body-secondary mb-0">Agrega productos para empezar la venta.</p>';
+  }) + `<p class="fw-bold">Total estimado: ${formatearPrecio(estimado())} <span class="fw-normal small">(el servidor calcula el total definitivo con IVA y el cobro se ajusta si lo corrige)</span></p>`;
   document.querySelector('[data-cobrar-venta]').disabled = !lineas.length;
 }
 
@@ -60,9 +62,8 @@ async function cobrar() {
   mostrarMensaje(region, `Venta ${venta.id ?? ''} registrada por ${formatearPrecio(venta.total)}.`, 'exito');
   lista?.recargar();
   cargarProductos();
-  if (puede('facturas:generar') && await confirmarAccion({ titulo: 'Generar factura', mensaje: '¿Generar la factura de esta venta?', textoConfirmar: 'Generar factura', tono: 'primario', alConfirmar: () => facturasModel.generar({ ventaId: venta.id }) })) {
-    mostrarMensaje(region, 'Factura generada. Registra su número en Facturación.', 'exito');
-  }
+  const factura = await ofrecerFactura({ ventaId: venta.id });
+  if (factura) mostrarMensaje(region, factura, 'exito');
 }
 
 const desde = document.querySelector('#ventas-desde');
@@ -74,7 +75,7 @@ const lista = crearLista({
   columnas: [['N.º', (v) => txt(v.id)], ['Fecha', (v) => fecha(v.fecha, true)], ['Cliente', (v) => txt(v.cliente?.nombre || v.cliente || v.clienteId)], ['Canal', (v) => txt(v.canal === 'W' ? 'Web' : 'Local')], ['Total', (v) => dinero(v.total)], ['Estado', (v) => estado(ESTADOS, v.estado)]],
   acciones: (v) => [
     { texto: 'Detalle', permiso: 'ventas:leer', etiqueta: `Detalle de la venta ${v.id}`, ejecutar: () => verDetalle(`Venta ${v.id}`, () => ventasModel.detalle(v.id)) },
-    v.estado !== 'X' && { texto: 'Generar factura', permiso: 'facturas:generar', etiqueta: `Generar factura de la venta ${v.id}`, ejecutar: async () => (await confirmarAccion({ titulo: 'Generar factura', mensaje: `¿Generar la factura de la venta ${v.id}?`, textoConfirmar: 'Generar', tono: 'primario', alConfirmar: () => facturasModel.generar({ ventaId: v.id }) }) ? 'Factura generada.' : null) },
+    v.estado !== 'X' && { texto: 'Generar factura', permiso: 'facturas:generar', etiqueta: `Generar factura de la venta ${v.id}`, ejecutar: () => ofrecerFactura({ ventaId: v.id }) },
     v.estado !== 'X' && { texto: 'Anular venta', permiso: 'ventas:anular', tono: 'btn-outline-danger', etiqueta: `Anular la venta ${v.id}`, ejecutar: () => formulario({
       titulo: `Anular la venta ${v.id}`, mensaje: 'Se devuelve el stock, los pagos pasan a devolución y la factura queda por anular en el SRI. No se puede deshacer.', tono: 'peligro', textoConfirmar: 'Anular venta',
       campos: [{ nombre: 'motivo', etiqueta: 'Motivo', tipo: 'textarea', requerido: true, maxlength: 200 }],
@@ -86,6 +87,25 @@ const formLinea = document.querySelector('#form-linea');
 if (formLinea && puede('ventas:crear') && document.body.dataset.sinAcceso !== 'true') {
   cargarProductos();
   pintarLineas();
+  // Buscador: filtra la lista de productos por nombre o código y elige el primero que coincide.
+  document.querySelector('#venta-buscar')?.addEventListener('input', (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    const select = formLinea.producto;
+    [...select.options].forEach((o) => { if (o.value) o.hidden = Boolean(q) && !o.textContent.toLowerCase().includes(q) && !o.value.toLowerCase().includes(q); });
+    const primero = [...select.options].find((o) => o.value && !o.hidden);
+    if (q && primero) select.value = primero.value;
+  });
+  // Nombre del cliente al escribir la cédula.
+  const nombreCliente = document.querySelector('[data-nombre-cliente]');
+  formLinea.cliente.addEventListener('change', async () => {
+    const ced = formLinea.cliente.value.trim();
+    if (!ced || ced === '9999999999') { nombreCliente.textContent = 'CONSUMIDOR FINAL'; return; }
+    try {
+      const r = await clientesModel.listar({ buscar: ced, limit: 1 });
+      const c = (r?.data || r || [])[0];
+      nombreCliente.textContent = c ? `${c.nombre || ''} ${c.apellido || ''}`.trim() : 'Cliente no registrado: regístralo en Clientes o usa CONSUMIDOR FINAL.';
+    } catch { nombreCliente.textContent = ''; }
+  });
   formLinea.addEventListener('submit', (e) => {
     e.preventDefault();
     const producto = productos.find((p) => String(p.id) === formLinea.producto.value);

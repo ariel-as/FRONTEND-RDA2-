@@ -10,6 +10,8 @@ import { crearLista, formulario } from './lista-api.controller.js';
 
 const ROLES = [['ADM', 'Administrador'], ['REC', 'Recepcionista'], ['ENT', 'Entrenador'], ['CON', 'Contadora']];
 const NOMBRE_ROL = Object.fromEntries(ROLES);
+// Qué acceso da cada rol (los permisos van por rol, según server/config/permisos.js).
+const PERMITE = { ADM: 'Todo el panel, incluidas anulaciones, usuarios y configuración.', REC: 'Recepción: entradas, inscripciones, clientes, ventas, pedidos, caja y mensajes.', ENT: 'Rutinas de sus clientes, clases, aforo y su asistencia.', CON: 'Contabilidad: facturas y SRI, cuadres y cierres, reportes y lectura de otras tablas.' };
 const mensaje = document.querySelector('#mensaje-pantalla');
 const form = document.querySelector('#form-nuevo-usuario');
 const yo = usuarioActual();
@@ -36,7 +38,7 @@ const lista = crearLista({
   columnas: [
     ['Correo', (u) => txt(u.login)],
     ['Empleado', (u) => txt(u.empleado?.nombre || u.cliente?.nombre)],
-    ['Roles', (u) => txt((u.roles || []).map((r) => NOMBRE_ROL[r] || r).join(', ') || 'Sin roles activos')],
+    ['Roles', (u) => ((u.roles || []).length ? txt(u.roles.map((r) => NOMBRE_ROL[r] || r).join(', ')) : '<span class="text-danger fw-semibold">Sin roles</span>')],
     ['Último acceso', (u) => fecha(u.ultimoAcceso, true)],
     ['Estado', (u) => txt(u.estado === 'A' ? 'Activa' : 'Inactiva')]
   ],
@@ -52,7 +54,7 @@ const lista = crearLista({
     // Antes era el diálogo "dialogo-roles" sobre usuario_rol; ahora usa PUT /admin/usuarios/:id/roles con casillas.
     { texto: 'Roles', permiso: 'usuarios:gestionar', etiqueta: `Roles de ${u.login}`, ejecutar: () => formulario({
       titulo: `Roles de ${u.login}`, mensaje: 'Marca los roles activos. Debe quedar al menos uno.',
-      contenido: `<fieldset><legend class="fs-6">Roles activos</legend>${ROLES.map(([c, t]) => `<div class="form-check"><input class="form-check-input" type="checkbox" name="rol-${c}" id="rol-${u.id}-${c}" value="${c}" ${(u.roles || []).includes(c) ? 'checked' : ''} ${String(u.id) === String(yo?.id) && c === 'ADM' ? 'disabled' : ''}><label class="form-check-label" for="rol-${u.id}-${c}">${t}${String(u.id) === String(yo?.id) && c === 'ADM' ? ' (no puedes quitártelo)' : ''}</label></div>`).join('')}</fieldset>`,
+      contenido: `<fieldset><legend class="fs-6">Roles activos</legend>${ROLES.map(([c, t]) => `<div class="form-check"><input class="form-check-input" type="checkbox" name="rol-${c}" id="rol-${u.id}-${c}" value="${c}" ${(u.roles || []).includes(c) ? 'checked' : ''} ${String(u.id) === String(yo?.id) && c === 'ADM' ? 'disabled' : ''}><label class="form-check-label" for="rol-${u.id}-${c}">${t}${String(u.id) === String(yo?.id) && c === 'ADM' ? ' (no puedes quitártelo)' : ''}</label><p class="small text-body-secondary mb-2">${PERMITE[c]}</p></div>`).join('')}</fieldset>`,
       validarExtra: (f) => (f.querySelectorAll('input[type="checkbox"]:checked').length ? null : 'Marca al menos un rol.'),
       alConfirmar: (_, f) => usuariosModel.roles(u.id, [...f.querySelectorAll('input[type="checkbox"]:checked')].map((c) => c.value)),
       exito: 'Roles actualizados.' }) },

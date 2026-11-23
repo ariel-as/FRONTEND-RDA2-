@@ -10,7 +10,7 @@ import { escapar, mostrarAviso } from '../views/componentes.view.js';
 import { pintarMenuAdmin, pintarSinAcceso, pintarMigas } from '../views/menu.view.js';
 import { accesosDirectosHtml, indicadorHtml } from '../views/dashboard.view.js';
 import { iniciarCampana } from './campana.controller.js';
-import { entradasModel, cajaModel, inscripcionesModel, facturasModel, rutinasModel, asistenciaModel } from '../models/fase2.model.js';
+import { entradasModel, cajaModel, inscripcionesModel, facturasModel, rutinasModel, asistenciaModel, turnoAbierto } from '../models/fase2.model.js';
 import { iniciarAvisoServidor } from '../views/servidor.view.js';
 import { formatearPrecio } from '../models/carrito.model.js';
 
@@ -111,12 +111,12 @@ const INDICADORES_ROL = {
   REC: [
     { titulo: 'Aforo actual', clave: 'aforo', permiso: 'aforo:ver', enlace: 'entradas.html' },
     { titulo: 'Caja', clave: 'caja', permiso: 'caja:operar', enlace: 'caja.html' },
-    { titulo: 'Pedidos por verificar', clave: 'pedidosPorVerificar', permiso: 'pedidos:leer', enlace: 'pedidos.html' },
-    { titulo: 'Inscripciones web pendientes', clave: 'webPendientes', permiso: 'inscripciones:leer', enlace: 'inscripciones.html' }
+    { titulo: 'Pedidos por verificar', clave: 'pedidosPorVerificar', permiso: 'pedidos:leer', enlace: 'pedidos.html?estado=R' },
+    { titulo: 'Inscripciones web pendientes', clave: 'webPendientes', permiso: 'inscripciones:leer', enlace: 'inscripciones.html?estado=P&canal=W' }
   ],
   CON: [
     { titulo: 'Cuadres sin cierre semanal', clave: 'cuadresSinCerrar', permiso: 'caja:cierre', enlace: 'caja.html#cierres' },
-    { titulo: 'Facturas por registrar en el SRI', clave: 'facturasPendientes', permiso: 'facturas:leer', enlace: 'facturas.html' }
+    { titulo: 'Facturas por registrar en el SRI', clave: 'facturasPendientes', permiso: 'facturas:leer', enlace: 'facturas.html?estado=P' }
   ],
   ENT: [
     { titulo: 'Aforo actual', clave: 'aforo', permiso: 'aforo:ver', enlace: 'entradas.html' },
@@ -128,7 +128,7 @@ const totalDe = (r) => r?.pagination?.total ?? r?.total ?? (r?.data || r || []).
 async function valorIndicador(clave) {
   if (clave === 'pedidosPorVerificar') return totalDe(await adminModel.pedidos({ estado: 'R', limit: 1 }));
   if (clave === 'aforo') { const a = await entradasModel.aforo().then((r) => r?.data ?? r); return `${a.personasAdentro} de ${a.aforoMax}`; }
-  if (clave === 'caja') { try { const t = await cajaModel.actual().then((r) => r?.data ?? r); return `Abierta (${t.turno || t.turnoId})`; } catch (e) { if (e.status === 404) return 'Sin turno abierto'; throw e; } }
+  if (clave === 'caja') { const t = await turnoAbierto(); return t ? `Abierta (${t.turno || t.turnoId})` : 'Sin turno abierto'; }
   if (clave === 'webPendientes') return totalDe(await inscripcionesModel.listar({ estado: 'P', canal: 'W', limit: 1 }));
   if (clave === 'facturasPendientes') return totalDe(await facturasModel.listar({ estado: 'P', limit: 1 }));
   if (clave === 'rutinas') return totalDe(await rutinasModel.listar({ limit: 1 }));

@@ -37,6 +37,13 @@ const parametros = () => ({ ...(form.desde.value ? { desde: form.desde.value } :
 
 if (form && document.body.dataset.sinAcceso !== 'true') {
   form.tipo.innerHTML = REPORTES.map(([v, t]) => `<option value="${v}">${t}</option>`).join('');
+  const hoy = new Date();
+  const haceUnMes = new Date(hoy); haceUnMes.setMonth(hoy.getMonth() - 1);
+  if (!form.desde.value) form.desde.value = haceUnMes.toLocaleDateString('en-CA');
+  if (!form.hasta.value) form.hasta.value = hoy.toLocaleDateString('en-CA');
+  const botonCsv = document.querySelector('[data-csv]');
+  botonCsv.disabled = true;
+  form.tipo.addEventListener('change', () => { botonCsv.disabled = true; });
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (form.desde.value && form.hasta.value && form.desde.value > form.hasta.value) { mostrarMensaje(region, 'La fecha inicial debe ser anterior a la final.', 'error'); form.desde.focus(); return; }
@@ -49,6 +56,7 @@ if (form && document.body.dataset.sinAcceso !== 'true') {
       grafico.innerHTML = graficoHtml(datos, titulo);
       resultado.innerHTML = detalleHtml(datos);
       mostrarMensaje(region, `Reporte «${titulo}» cargado.`, 'exito');
+      botonCsv.disabled = false;
     } catch (error) { grafico.innerHTML = ''; resultado.innerHTML = ''; mostrarMensaje(region, error.mensaje || 'No se pudo cargar el reporte.', 'error'); }
     finally { resultado.setAttribute('aria-busy', 'false'); }
   });

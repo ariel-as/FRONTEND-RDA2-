@@ -5,6 +5,41 @@ import { escapar } from '../views/componentes.view.js';
 import { txt, fecha } from '../views/lista-api.view.js';
 import { mostrarMensaje, validarCedula } from './validacion.controller.js';
 import { crearLista } from './lista-api.controller.js';
+import { inscripcionesModel } from '../models/fase2.model.js';
+import { adminModel } from '../models/admin.model.js';
+import { crearPagos } from './pagos.controller.js';
+import { abrirDialogo } from './dialogo.controller.js';
+import { formatearPrecio } from '../models/carrito.model.js';
+
+// Plan diario: el plan activo de un solo día o un solo ingreso.
+async function planDiario() {
+  try {
+    const r = await adminModel.tablaFilas('membresia', { estado: 'A', limit: 100 });
+    const planes = r?.data || r || [];
+    return planes.find((p) => /diari|d[ií]a/i.test(p.nombre || '')) || planes.find((p) => p.unidadDuracion === 'D' && Number(p.duracion) === 1) || planes.find((p) => p.tipo === 'I' && Number(p.numIngresos) === 1) || null;
+  } catch { return null; }
+}
+
+// Cobrar pase diario en un solo paso: alta rápida si hace falta, inscripción con cobro y entrada.
+async function cobrarPaseDiario(cedula, existe) {
+  const plan = await planDiario();
+  if (!plan) { mostrarRechazo('No hay un plan diario activo. Créalo en Planes y promociones.'); return; }
+  let pagos = null;
+  const r = await abrirDialogo({
+    titulo: 'Cobrar pase diario', mensaje: `${plan.nombre}: total estimado ${formatearPrecio(plan.precio)} (el servidor confirma el total).`, textoConfirmar: 'Cobrar y registrar entrada',
+    campos: existe ? [] : [{ nombre: 'nombre', etiqueta: 'Nombres', requerido: true, maxlength: 60 }, { nombre: 'apellido', etiqueta: 'Apellidos', requerido: true, maxlength: 60 }],
+    contenido: '<div data-contenedor-pagos></div>',
+    alPreparar: (f) => { pagos = crearPagos(f.querySelector('[data-contenedor-pagos]'), { total: Number(plan.precio) || 0, id: 'pagos-pase' }); },
+    validarExtra: () => (pagos.validar() ? null : 'Revisa la forma de pago.'),
+    alFallar: (fallo, _, nodo) => pagos?.ajustarDesdeError(fallo, nodo),
+    alConfirmar: async (v) => {
+      if (!existe) await clientesModel.crear({ cedula, nombre: v.nombre.trim(), apellido: v.apellido.trim() });
+      const ins = await inscripcionesModel.crear({ clienteId: cedula, membresiaId: String(plan.id), pagos: pagos.obtener() }).then((x) => x?.data ?? x);
+      return ins;
+    }
+  });
+  if (r?.resultado?.id) await registrar({ clienteId: cedula, inscripcionId: r.resultado.id }, cedula);
+}
 
 const region = document.querySelector('[data-mensaje]');
 const rechazo = document.querySelector('[data-rechazo]');
@@ -59,7 +94,8 @@ async function consultar() {
     if (!ins.length) {
       acceso.innerHTML = '';
       mostrarRechazo(`${nombre} no tiene inscripciones activas.`);
-      acceso.innerHTML = `<a class="btn btn-outline-primary" href="inscripciones.html?cedula=${encodeURIComponent(cedula)}">Vender plan o pase diario</a>`;
+      acceso.innerHTML = `<div class="d-flex flex-wrap gap-2"><button type="button" class="btn btn-primary" data-pase-diario>Cobrar pase diario</button><a class="btn btn-outline-primary" href="inscripciones.html?cedula=${encodeURIComponent(cedula)}">Vender un plan</a><a class="btn btn-outline-secondary" href="inscripciones.html?estado=P&canal=W&clienteId=${encodeURIComponent(cedula)}">Ver inscripciones web pendientes</a></div>`;
+      acceso.querySelector('[data-pase-diario]').addEventListener('click', () => cobrarPaseDiario(cedula, true));
       return;
     }
     acceso.innerHTML = `<h3 class="h6">${escapar(nombre)}${r.cliente?.estado === 'I' ? ' (cliente inactivo)' : ''}</h3>` + ins.map((i, n) => `
@@ -80,7 +116,8 @@ async function consultar() {
     acceso.innerHTML = '';
     if (error.status === 404) {
       mostrarRechazo('La cédula no está registrada.');
-      acceso.innerHTML = `<div class="d-flex flex-wrap gap-2"><a class="btn btn-primary" href="clientes.html?cedula=${encodeURIComponent(cedula)}">Registrar cliente</a><a class="btn btn-outline-primary" href="inscripciones.html?cedula=${encodeURIComponent(cedula)}">Vender pase diario</a></div>`;
+      acceso.innerHTML = `<div class="d-flex flex-wrap gap-2"><button type="button" class="btn btn-primary" data-pase-diario>Cobrar pase diario</button><a class="btn btn-outline-primary" href="clientes.html?cedula=${encodeURIComponent(cedula)}">Registrar cliente</a></div>`;
+      acceso.querySelector('[data-pase-diario]').addEventListener('click', () => cobrarPaseDiario(cedula, false));
     } else mostrarRechazo(error.mensaje || 'No se pudo consultar la cédula.');
   }
 }
