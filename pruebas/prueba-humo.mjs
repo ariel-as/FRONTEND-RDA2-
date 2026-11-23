@@ -34,7 +34,9 @@ const USUARIOS = {
 const PEDIDOS = [
   { id: 11, estado: 'P', metodoPago: 'EF', total: 20, createdAt: '2026-11-20T10:00:00Z', usuario: { login: 'c@x' }, detalles: [] },
   { id: 12, estado: 'R', metodoPago: 'TR', refTransferencia: 'ABC123', total: 30, createdAt: '2026-11-20T10:00:00Z', usuario: { login: 'c@x' }, detalles: [] },
-  { id: 13, estado: 'C', metodoPago: 'TR', total: 40, createdAt: '2026-11-20T10:00:00Z', usuario: { login: 'c@x' }, detalles: [] }
+  { id: 13, estado: 'C', metodoPago: 'TR', total: 40, createdAt: '2026-11-20T10:00:00Z', usuario: { login: 'c@x' }, detalles: [] },
+  // Pendiente por transferencia: «Reportar pago» solo se ofrece en transferencia.
+  { id: 14, estado: 'P', metodoPago: 'TR', total: 25, createdAt: '2026-11-20T10:00:00Z', usuario: { login: 'c@x' }, detalles: [] }
 ];
 
 function respuestaSimulada(url, usuario) {
@@ -115,12 +117,12 @@ await visitar('ADM', 'admin/index.html', async (page) => (await page.locator('[d
 
 // 3. Pedidos: diálogo propio, validación del comprobante, Escape y foco de vuelta.
 await visitar('ADM', 'admin/pedidos.html', async (page, llamadas) => {
-  const boton = page.locator('[data-reportar="11"]');
+  const boton = page.locator('[data-reportar="14"]');
   await boton.click();
   const dentro = await page.evaluate(() => { const d = document.querySelector('dialog.pf-dialogo'); return Boolean(d?.open && d.contains(document.activeElement)); });
   await page.keyboard.press('Escape');
   await page.waitForTimeout(150);
-  const foco = await page.evaluate(() => !document.querySelector('dialog.pf-dialogo') && document.activeElement?.dataset.reportar === '11');
+  const foco = await page.evaluate(() => !document.querySelector('dialog.pf-dialogo') && document.activeElement?.dataset.reportar === '14');
   await boton.click();
   await page.fill('dialog input[name="refTransferencia"]', 'AB');
   await page.click('[data-dialogo-confirmar]');
@@ -128,7 +130,7 @@ await visitar('ADM', 'admin/pedidos.html', async (page, llamadas) => {
   await page.fill('dialog input[name="refTransferencia"]', 'ABCD-12');
   await page.click('[data-dialogo-confirmar]');
   await page.waitForTimeout(300);
-  return (dentro && foco && invalido === 1 && llamadas.includes('PATCH /pedidos/11/estado')) || `dentro=${dentro} foco=${foco} invalido=${invalido}`;
+  return (dentro && foco && invalido === 1 && llamadas.includes('PATCH /pedidos/14/estado')) || `dentro=${dentro} foco=${foco} invalido=${invalido}`;
 });
 
 // 4. Checkout: con transferencia el comprobante es obligatorio.
