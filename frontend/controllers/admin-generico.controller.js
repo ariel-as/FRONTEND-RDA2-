@@ -271,7 +271,7 @@ function asegurarModal(inst) {
       <div data-relaciones-form></div>
       <div data-detalle-form></div>
       <div class="mt-3 d-flex gap-2 justify-content-end">
-        <button type="button" class="btn btn-outline-secondary" data-cerrar-modal>Cancelar</button>
+        <button type="button" class="btn btn-outline-secondary" data-cerrar-modal formnovalidate>Cancelar</button>
         <button type="submit" class="btn btn-primary" data-guardar-modal>Guardar</button>
       </div>
     </form>
@@ -316,7 +316,8 @@ async function cargarFormulario(inst, clave, modo) {
   }
   const columnas = columnasMeta(inst);
   const idCampos = inst.meta?.idCampos || ['id'];
-  const titulo = inst.formulario.querySelector('[data-titulo-modal]');
+  // El título está en el diálogo, fuera del <form>.
+  const titulo = inst.modal.querySelector('[data-titulo-modal]');
   titulo.textContent = modo === 'ver' ? `Detalle de ${inst.config.titulo || inst.tabla}` : modo === 'editar' ? `Editar ${inst.config.titulo || inst.tabla}` : `Nuevo registro en ${inst.config.titulo || inst.tabla}`;
   const campos = inst.formulario.querySelector('[data-campos-form]');
   const fragmentos = [];

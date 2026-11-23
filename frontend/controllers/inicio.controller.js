@@ -84,6 +84,9 @@ export async function iniciarInicio(){
       requestAnimationFrame(() => {
         alinearConHash();
         document.documentElement.classList.remove('pf-posicion-pendiente');
+        // Las imágenes pueden terminar de cargar después: se realinea una vez más y se recalcula el enlace activo.
+        window.addEventListener('load', () => { alinearConHash(); window.dispatchEvent(new CustomEvent('pf:posicion-lista')); }, { once: true });
+        window.dispatchEvent(new CustomEvent('pf:posicion-lista'));
       });
     }
   }

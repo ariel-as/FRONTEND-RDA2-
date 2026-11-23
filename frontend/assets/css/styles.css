@@ -186,12 +186,12 @@ footer img[src*="logo-planeta.png"] {
 }
 
 .pf-admin-logo {
-  width: 2.75rem;
-  height: 2.5rem;
-  border-radius: 0.25rem;
+  width: auto;
+  height: 2.6rem;
+  border-radius: 0;
   object-fit: contain;
-  background-color: #0a0a0a;
-  padding: 2px;
+  background-color: transparent;
+  padding: 0;
 }
 
 /* ---------- Hero: cartel siempre oscuro ---------- */
@@ -1801,7 +1801,7 @@ html[data-bs-theme="dark"] .pf-admin h3 {
 
 /* ---------- Fase 2: menú agrupado, permisos y aviso de servidor ---------- */
 
-.pf-admin .navbar .dropdown-toggle.nav-link {
+.pf-admin .navbar .dropdown-toggle.nav-link:not(.active) {
   background: none;
   border: 0;
   min-height: 24px;
@@ -2000,6 +2000,31 @@ html[data-bs-theme="dark"] .pf-dif-cero { color: #75d6a6; }
   .pf-admin header, .pf-admin footer, .pf-admin .btn, .pf-admin [data-mensaje], .pf-no-imprimir { display: none !important; }
   .pf-factura-impresa { display: block !important; color: #000; }
 }
+
+/* ---------- Correcciones de diseño: menú de cuenta del sitio ---------- */
+
+.pf-cuenta { position: relative; display: inline-block; }
+.pf-cuenta-boton { display: inline-flex; align-items: center; justify-content: center; min-width: 2.5rem; min-height: 2.5rem; padding: 0.4rem; }
+.pf-cuenta-panel { position: absolute; right: 0; top: calc(100% + 0.5rem); z-index: 1500; min-width: 14rem; padding: 0.75rem; border-radius: 0.75rem; background: #111111; color: #f5f5f5; border: 1px solid #3f3f46; box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.45); }
+.pf-cuenta-saludo { margin: 0 0 0.5rem; font-weight: 700; }
+.pf-cuenta-lista { list-style: none; margin: 0; padding: 0; }
+.pf-cuenta-opcion { display: block; width: 100%; min-height: 2.25rem; padding: 0.4rem 0.6rem; border: 0; border-radius: 0.5rem; background: transparent; color: inherit; text-align: left; text-decoration: none; }
+.pf-cuenta-opcion:hover, .pf-cuenta-opcion:focus-visible, .pf-cuenta-opcion[aria-current="page"] { background: rgba(250, 204, 21, 0.18); color: #ffffff; }
+html[data-tema="claro"] .pf-cuenta-panel { background: #ffffff; color: #111111; border-color: #d4d4d8; }
+html[data-tema="claro"] .pf-cuenta-opcion:hover, html[data-tema="claro"] .pf-cuenta-opcion:focus-visible, html[data-tema="claro"] .pf-cuenta-opcion[aria-current="page"] { background: #fef3c7; color: #111111; }
+@media (max-width: 1023.98px) { .pf-cuenta-panel { position: static; margin-top: 0.5rem; box-shadow: none; } }
+.pf-campana-sitio { display: inline-flex; }
+
+/* ---------- Correcciones de diseño: grupo activo del menú del panel y migas ---------- */
+
+.pf-admin > header .nav-link.dropdown-toggle.active { color: #111111 !important; background-color: var(--pf-amarillo); font-weight: 700; border-radius: 999px; padding-inline: 0.85rem; border: 0; }
+.pf-admin > header .nav-link:not(.active):hover, .pf-admin > header .nav-link:not(.active):focus-visible { color: var(--pf-amarillo) !important; }
+.pf-admin .dropdown-menu .dropdown-item.active, .pf-admin .dropdown-menu .dropdown-item[aria-current="page"] { background-color: #fef3c7; color: #111111; font-weight: 700; }
+.pf-admin .dropdown-menu .dropdown-item:focus-visible { outline: 3px solid var(--pf-amarillo); outline-offset: -3px; }
+html[data-bs-theme="dark"] .pf-admin .dropdown-menu .dropdown-item.active, html[data-bs-theme="dark"] .pf-admin .dropdown-menu .dropdown-item[aria-current="page"] { background-color: rgba(250, 204, 21, 0.22); color: #ffffff; }
+.pf-migas { margin: -0.25rem 0 1rem; font-size: 0.9rem; }
+.pf-migas .breadcrumb { margin: 0; }
+.pf-migas .breadcrumb-item.active { color: inherit; font-weight: 600; }
 
 /* ---------- Respeta a quien prefiere reducir el movimiento ---------- */
 

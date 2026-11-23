@@ -37,10 +37,21 @@ async function main(){
       case 'mi-cuenta': await iniciarMiCuenta(); break;
       default: break;
     }
+    // Solo el inicio espera al catálogo para alinear el hash; en las demás páginas se muestra de inmediato.
+    if (pagina !== 'inicio') mostrarDestinoDelHash();
   } catch (e){
     console.error(e);
     mostrarAviso('No se pudo iniciar la página.', 'error');
   }
+}
+
+function mostrarDestinoDelHash() {
+  document.documentElement.classList.remove('pf-posicion-pendiente');
+  const destino = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (!destino) return;
+  const alto = document.querySelector('.pf-encabezado')?.offsetHeight || 0;
+  window.scrollTo({ top: Math.max(window.scrollY + destino.getBoundingClientRect().top - alto, 0), left: 0, behavior: 'instant' });
+  destino.querySelector('input:not([type="hidden"]), select, textarea')?.focus({ preventScroll: true });
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', main); else main();

@@ -50,7 +50,7 @@ export function crearDialogoHtml({ titulo, mensaje = '', campos = [], contenido 
     <p class="pf-mensaje" data-dialogo-region role="status" aria-live="polite" hidden></p>
     <p class="pf-dialogo-error" data-dialogo-error role="alert" hidden></p>
     <div class="d-flex flex-wrap gap-2 justify-content-end mt-3 pf-dialogo-acciones">
-      <button type="button" class="${clasesBoton('secundario')}" data-dialogo-cancelar>${escapar(textoCancelar)}</button>
+      <button type="button" class="${clasesBoton('secundario')}" data-dialogo-cancelar formnovalidate>${escapar(textoCancelar)}</button>
       <button type="submit" class="${clasesBoton(tono)}" data-dialogo-confirmar>${escapar(textoConfirmar)}</button>
     </div>
   </form>`;

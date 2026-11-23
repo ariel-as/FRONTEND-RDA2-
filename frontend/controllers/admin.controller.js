@@ -7,7 +7,7 @@ import { esAdm, puede } from '../models/permisos.model.js';
 import { INICIO_PANEL, entradaDePagina, menuVisible } from '../models/menu.model.js';
 import { construirValidador, mostrarMensaje } from './validacion.controller.js';
 import { escapar, mostrarAviso } from '../views/componentes.view.js';
-import { pintarMenuAdmin, pintarSinAcceso } from '../views/menu.view.js';
+import { pintarMenuAdmin, pintarSinAcceso, pintarMigas } from '../views/menu.view.js';
 import { accesosDirectosHtml, indicadorHtml } from '../views/dashboard.view.js';
 import { iniciarCampana } from './campana.controller.js';
 import { entradasModel, cajaModel, inscripcionesModel, facturasModel, rutinasModel, asistenciaModel } from '../models/fase2.model.js';
@@ -36,6 +36,8 @@ export function accesoPagina() {
 }
 
 export function pintarMenu() {
+  const entrada = entradaDePagina(paginaActual().archivo);
+  if (entrada?.grupo && accesoPagina()) pintarMigas(select('main'), entrada);
   pintarMenuAdmin(select('[data-menu-admin]'), { inicio: INICIO_PANEL, grupos: menuVisible((permiso) => puede(permiso)), actual: paginaActual() });
 }
 
@@ -52,9 +54,11 @@ export function iniciarSesionAdminUI(){
   const u = usuarioActual();
   const codigos = codigosRol(u);
   const rolAdm = esAdm(u);
-  const TIPOS = { ADM: 'Administrador general', REC: 'Recepcionista', ENT: 'Entrenador', CON: 'Contador' };
-  const tipo = codigos.map((c)=>TIPOS[c]).find(Boolean) || (u?.rol === 'admin' ? 'Administrador general' : 'Administrador');
-  selectAll('[data-admin-tipo]').forEach(n=> { n.textContent = tipo; });
+  // La cabecera muestra el rol de la cuenta y el menú de usuario, el nombre de la persona.
+  const TIPOS = { ADM: 'Administrador', REC: 'Recepción', ENT: 'Entrenador', CON: 'Contabilidad' };
+  const tipo = (rolAdm ? 'Administrador' : codigos.map((c)=>TIPOS[c]).find(Boolean)) || 'Personal';
+  selectAll('.pf-admin > header .navbar-brand > span').forEach(n=> { n.textContent = tipo; });
+  selectAll('[data-admin-tipo]').forEach(n=> { n.textContent = u?.nombre ? `${u.nombre} · ${tipo}` : tipo; });
   document.querySelector('.pf-admin-usuario')?.setAttribute('aria-label', `Opciones de ${tipo}`);
   selectAll('[data-solo-adm]').forEach(n=> { n.hidden = !rolAdm; });
   selectAll('[data-permiso]').forEach(n=> { n.hidden = !puede(n.dataset.permiso.split(',').map((p) => p.trim())); });

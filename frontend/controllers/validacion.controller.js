@@ -160,7 +160,11 @@ export function construirValidador(formulario, opciones = {}) {
   const tocados = new WeakSet();
   let bloqueando = false;
   const validarSiCorresponde = (campo) => { if (!esCampo(campo)) return; if (tocados.has(campo) || campo.getAttribute('aria-invalid') === 'true') validarCampo(campo); };
-  formulario.addEventListener('blur', (e)=>{ if(!esCampo(e.target)||bloqueando) return; tocados.add(e.target); validarCampo(e.target); }, true);
+  // Cancelar cierra sin validar: si el foco va a un botón de cancelar, no se valida ni se inserta ningún error que mueva el botón.
+  const esCancelar = (nodo) => Boolean(nodo?.closest?.('[formnovalidate], [data-cerrar-modal], [data-dialogo-cancelar]'));
+  let cancelando = false;
+  formulario.addEventListener('pointerdown', (e)=>{ if (esCancelar(e.target)) cancelando = true; }, true);
+  formulario.addEventListener('blur', (e)=>{ if(!esCampo(e.target)||bloqueando) return; if (cancelando || esCancelar(e.relatedTarget)) { cancelando = false; return; } tocados.add(e.target); validarCampo(e.target); }, true);
   formulario.addEventListener('input', (e)=>{ validarSiCorresponde(e.target); });
   formulario.addEventListener('change', (e)=>{ validarSiCorresponde(e.target); });
   formulario.addEventListener('focusin', (e)=>{

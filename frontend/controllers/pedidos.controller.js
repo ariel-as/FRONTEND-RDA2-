@@ -1,4 +1,4 @@
-﻿import { haySesion } from '../models/sesion.model.js';
+﻿import { haySesion, esAdministrador } from '../models/sesion.model.js';
 import { misPedidos, misInscripciones, cancelarPedido } from '../models/pedido.model.js';
 import { tarjetaPedido, tarjetaInscripcion, paginacion } from '../views/pedidos.view.js';
 import { raizSitio } from '../models/storage.model.js';
@@ -18,8 +18,18 @@ function mostrarErrorCarga(contenedor, mensaje) {
 const select = s => document.querySelector(s);
 let paginaActual = 1;
 
+// Las cuentas del personal no tienen pedidos ni planes de cliente: se les ofrece ir al panel sin consultar la API.
+function esCuentaDePersonal(){
+  if (!esAdministrador()) return false;
+  const main = document.querySelector('main');
+  main?.querySelectorAll('section').forEach((s) => { s.hidden = true; });
+  main?.insertAdjacentHTML('beforeend', `<div class="pf-tarjeta mt-6 p-6"><p class="m-0">Esta es el área de clientes. Tu cuenta es del personal del gimnasio.</p><a class="pf-boton pf-boton-primario mt-4 inline-block" href="${new URL('admin/index.html', raizSitio()).href}">Ir al panel administrativo</a></div>`);
+  return true;
+}
+
 export async function iniciarMisPedidos(){
   if (!haySesion()){ window.location.href = new URL('cliente/login.html?origen=mis-pedidos', raizSitio()).href; return; }
+  if (esCuentaDePersonal()) return;
   await cargar();
   document.addEventListener('click', async (e)=>{
     const btnPage = e.target.closest('[data-page]'); if (btnPage && !btnPage.disabled){ paginaActual = Number(btnPage.dataset.page)||1; await cargarPedidos(); }
@@ -38,6 +48,7 @@ async function cargar(){ await Promise.all([cargarPedidos(), cargarInscripciones
 // Mi cuenta: inscripciones (fecha de fin y total de ingresos), rutina vigente y notificaciones.
 export async function iniciarMiCuenta(){
   if (!haySesion()){ window.location.href = new URL('cliente/login.html?origen=mi-cuenta', raizSitio()).href; return; }
+  if (esCuentaDePersonal()) return;
   await Promise.all([cargarInscripciones(), cargarRutina(), cargarNotificaciones()]);
 }
 

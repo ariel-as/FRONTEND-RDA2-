@@ -1,9 +1,10 @@
 import { aplicarTema } from '../views/tema.view.js';
 import { iniciarAvisoServidor } from '../views/servidor.view.js';
 import { iniciarCampana } from './campana.controller.js';
+import { cabeceraSitioHtml } from '../views/cabecera.view.js';
 import { actualizarContadorCarrito, actualizarEstadoSesion } from '../views/componentes.view.js';
 import { carrito } from '../models/carrito.model.js';
-import { usuarioActual, cerrarSesion, tienePendencia } from '../models/sesion.model.js';
+import { usuarioActual, cerrarSesion, tienePendencia, esAdministrador } from '../models/sesion.model.js';
 import { CLAVES, leerCookie, escribirCookie, raizSitio } from '../models/storage.model.js';
 
 const select = (s) => document.querySelector(s);
@@ -63,42 +64,81 @@ export function iniciarEncabezadoFijo() {
 }
 
 export function iniciarNavegacionSecciones() {
-  const enlaces = [...document.querySelectorAll('#menu-principal a[href^="#"]')];
-  const secciones = enlaces.map((enlace) => document.getElementById(decodeURIComponent(enlace.hash.slice(1)))).filter(Boolean);
+  const enlaces = [...document.querySelectorAll('#menu-principal a[href*="#"]')].filter((a) => a.pathname === location.pathname && a.hash);
+  const secciones = [...new Set(enlaces.map((enlace) => document.getElementById(decodeURIComponent(enlace.hash.slice(1)))).filter(Boolean))];
   if (!enlaces.length || !secciones.length) return;
+  const reducido = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const altoCabecera = () => select('.pf-encabezado')?.offsetHeight || 0;
+  let fijado = null; // { id, y }: enlace pulsado; se respeta hasta que el usuario vuelva a desplazarse
+  let programado = false;
 
+  // Un solo enlace activo a la vez.
   const activar = (id) => enlaces.forEach((enlace) => {
-    const activa = enlace.hash === `#${id}`;
+    const activa = Boolean(id) && enlace.hash === `#${id}`;
     enlace.classList.toggle('pf-enlace-activo', activa);
     if (activa) enlace.setAttribute('aria-current', 'location');
     else enlace.removeAttribute('aria-current');
   });
+
+  // La sección activa es la última cuyo inicio ya pasó la línea fija (cabecera + 30 % de la ventana); al final, la última.
+  const calcular = () => {
+    programado = false;
+    if (fijado) {
+      if (fijado.y === null || Math.abs(window.scrollY - fijado.y) < 24) return;
+      fijado = null;
+    }
+    const linea = altoCabecera() + window.innerHeight * 0.3;
+    const alFinal = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+    let activa = alFinal ? secciones[secciones.length - 1] : null;
+    if (!activa) secciones.forEach((seccion) => { if (seccion.getBoundingClientRect().top <= linea) activa = seccion; });
+    activar(activa?.id || null);
+  };
+  window.addEventListener('scroll', () => { if (programado) return; programado = true; requestAnimationFrame(calcular); }, { passive: true });
+  window.addEventListener('resize', () => requestAnimationFrame(calcular));
+
+  // Saltos lejanos sin recorrer toda la página: directo si la distancia supera una pantalla y media o si se pide menos movimiento.
   const desplazar = (destino, actualizarHistorial) => {
     if (actualizarHistorial && location.hash !== `#${destino.id}`) history.pushState(null, '', `#${encodeURIComponent(destino.id)}`);
-    const encabezado = select('.pf-encabezado');
-    const top = Math.max(window.scrollY + destino.getBoundingClientRect().top - (encabezado?.offsetHeight || 0), 0);
-    window.scrollTo({ top, left: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    const top = Math.max(window.scrollY + destino.getBoundingClientRect().top - altoCabecera(), 0);
+    const lejos = Math.abs(top - window.scrollY) > window.innerHeight * 1.5;
+    fijado = { id: destino.id, y: null };
     activar(destino.id);
+    const terminar = () => { if (fijado?.id === destino.id) fijado.y = window.scrollY; };
+    window.scrollTo({ top, left: 0, behavior: reducido() || lejos ? 'instant' : 'smooth' });
+    if (reducido() || lejos) requestAnimationFrame(terminar);
+    else { window.addEventListener('scrollend', terminar, { once: true }); window.setTimeout(terminar, 900); }
   };
 
+  // Enlaces del menú y del pie que apuntan a una sección de esta misma página.
   document.addEventListener('click', (evento) => {
-    const enlace = evento.target.closest('#menu-principal a[href^="#"]');
-    if (!enlace || evento.defaultPrevented || evento.button !== 0 || evento.metaKey || evento.ctrlKey || evento.shiftKey || evento.altKey) return;
+    const enlace = evento.target.closest('a[href*="#"]');
+    if (!enlace || enlace.pathname !== location.pathname || !enlace.hash || evento.defaultPrevented || evento.button !== 0 || evento.metaKey || evento.ctrlKey || evento.shiftKey || evento.altKey) return;
     const destino = document.getElementById(decodeURIComponent(enlace.hash.slice(1)));
-    if (!destino) return;
+    if (!destino || !secciones.includes(destino)) return;
     evento.preventDefault();
     desplazar(destino, true);
   });
-
-  const observador = new IntersectionObserver((entradas) => {
-    const visibles = entradas.filter((entrada) => entrada.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-    if (visibles[0]) activar(visibles[0].target.id);
-  }, { rootMargin: '-20% 0px -60% 0px', threshold: [0, 0.1, 0.25, 0.5] });
-  secciones.forEach((seccion) => observador.observe(seccion));
   window.addEventListener('popstate', () => {
     const destino = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
     if (destino) desplazar(destino, false);
   });
+  window.addEventListener('pf:posicion-lista', calcular);
+  calcular();
+}
+
+// Cabecera única del sitio: se genera igual en index.html y en todas las páginas de cliente/.
+export function iniciarCabecera() {
+  const header = select('header.pf-encabezado');
+  if (!header) return;
+  const usuario = usuarioActual();
+  header.innerHTML = cabeceraSitioHtml({ prefijo: location.pathname.includes('/cliente/') ? '../' : '', pagina: document.body.dataset.pagina || '', usuario, esPersonal: Boolean(usuario) && esAdministrador() });
+  const boton = header.querySelector('[data-cuenta-boton]');
+  const panel = header.querySelector('[data-cuenta-panel]');
+  if (!boton || !panel) return;
+  const abrir = (valor) => { boton.setAttribute('aria-expanded', String(valor)); panel.hidden = !valor; };
+  boton.addEventListener('click', () => abrir(boton.getAttribute('aria-expanded') !== 'true'));
+  header.querySelector('[data-cuenta]').addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) { abrir(false); boton.focus(); } });
+  document.addEventListener('click', (e) => { if (!e.target.closest('[data-cuenta]')) abrir(false); });
 }
 
 export function iniciarSesionUI() {
@@ -112,6 +152,7 @@ export function iniciarSesionUI() {
 function selectTodos(s){ return [...document.querySelectorAll(s)]; }
 
 export function iniciarComunes() {
+  iniciarCabecera();
   iniciarTema();
   iniciarAvisoServidor();
   iniciarAvisoCookies();
@@ -119,7 +160,7 @@ export function iniciarComunes() {
   iniciarEncabezadoFijo();
   iniciarNavegacionSecciones();
   iniciarSesionUI();
-  if (usuarioActual()) iniciarCampana(select('[data-sesion="activa"]'), { id: 'campana-cliente' });
+  if (usuarioActual()) iniciarCampana(select('[data-campana-sitio]'), { id: 'campana-cliente' });
   actualizarContadorCarrito(carrito.contar());
   const anio = select('[data-anio]'); if (anio) anio.textContent = new Date().getFullYear();
 }
