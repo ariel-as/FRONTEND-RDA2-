@@ -1,11 +1,14 @@
 import './admin.controller.js';
 import { inventarioModel } from '../models/fase2.model.js';
 import { adminModel } from '../models/admin.model.js';
+import { puede } from '../models/permisos.model.js';
 import { escapar } from '../views/componentes.view.js';
 import { txt, dinero, fecha, estado } from '../views/lista-api.view.js';
 import { confirmarAccion } from './dialogo.controller.js';
 import { crearLista, formulario, enlazarBoton } from './lista-api.controller.js';
 
+// Costos solo para quien gestiona inventario o compras, o ve todos los reportes (recepción no los ve).
+const VER_COSTOS = puede(['inventario:gestionar', 'compras', 'reportes:todos']);
 const ESTADOS_LOTE = { D: 'Disponible', I: 'Bloqueado', C: 'Caducado o dado de baja' };
 let productos = [];
 
@@ -24,7 +27,7 @@ const lotes = crearLista({
   cargar: (p) => inventarioModel.lotes(p),
   extraer: (r) => (Array.isArray(r) ? r : (r?.data || [])).sort((a, b) => String(a.producto?.nombre || nombreProducto(a.productoId)).localeCompare(String(b.producto?.nombre || nombreProducto(b.productoId)), 'es') || String(a.fechaCaducidad || '9999').localeCompare(String(b.fechaCaducidad || '9999'))),
   columnas: [['Lote', (l) => txt(l.id)], ['Producto', (l) => txt(l.producto?.nombre || l.producto || nombreProducto(l.productoId))], ['Ingreso', (l) => fecha(l.fechaIngreso)], ['Caducidad', (l) => (l.fechaCaducidad ? fecha(l.fechaCaducidad) : txt('No caduca'))],
-    ['Disponible', (l) => txt(`${l.cantidadDisponible ?? ''} de ${l.cantidadInicial ?? ''}`)], ['Costo unitario', (l) => dinero(l.costoUnit)], ['Estado', (l) => estado(ESTADOS_LOTE, l.estado)]],
+    ['Disponible', (l) => txt(`${l.cantidadDisponible ?? ''} de ${l.cantidadInicial ?? ''}`)], ...(VER_COSTOS ? [['Costo unitario', (l) => dinero(l.costoUnit)]] : []), ['Estado', (l) => estado(ESTADOS_LOTE, l.estado)]],
   acciones: (l) => [
     l.estado !== 'C' && { texto: l.estado === 'I' ? 'Desbloquear' : 'Bloquear', permiso: 'inventario:gestionar', etiqueta: `${l.estado === 'I' ? 'Desbloquear' : 'Bloquear'} el lote ${l.id}`,
       ejecutar: async () => (await confirmarAccion({ titulo: `${l.estado === 'I' ? 'Desbloquear' : 'Bloquear'} lote ${l.id}`, mensaje: l.estado === 'I' ? 'El lote volverá a usarse en las ventas.' : 'El lote no se usará en las ventas mientras esté bloqueado.', textoConfirmar: l.estado === 'I' ? 'Desbloquear' : 'Bloquear', tono: 'primario',
@@ -40,8 +43,8 @@ const selectKardex = document.querySelector('#kardex-producto');
 const kardex = crearLista({
   raiz: '#pantalla-kardex', caption: 'Kárdex del producto',
   cargar: (p) => (selectKardex?.value ? inventarioModel.kardex(selectKardex.value, p) : Promise.resolve([])),
-  columnas: [['Fecha', (k) => fecha(k.fecha, true)], ['Movimiento', (k) => txt(k.tipoMovimiento || k.tipoMovimientoId)], ['Lote', (k) => txt(k.loteProductoId)], ['Cantidad', (k) => txt(k.cantidad)], ['Costo unitario', (k) => dinero(k.costoUnit)],
-    ['Saldo cantidad', (k) => txt(k.saldoCantidad)], ['Costo promedio', (k) => dinero(k.costoPromedio)], ['Saldo valor', (k) => dinero(k.saldoValor)], ['Observación', (k) => txt(k.observacion)]]
+  columnas: [['Fecha', (k) => fecha(k.fecha, true)], ['Movimiento', (k) => txt(k.tipoMovimiento || k.tipoMovimientoId)], ['Lote', (k) => txt(k.loteProductoId)], ['Cantidad', (k) => txt(k.cantidad)], ...(VER_COSTOS ? [['Costo unitario', (k) => dinero(k.costoUnit)]] : []),
+    ['Saldo cantidad', (k) => txt(k.saldoCantidad)], ...(VER_COSTOS ? [['Costo promedio', (k) => dinero(k.costoPromedio)], ['Saldo valor', (k) => dinero(k.saldoValor)]] : []), ['Observación', (k) => txt(k.observacion)]]
 });
 selectKardex?.addEventListener('change', () => kardex?.recargar());
 

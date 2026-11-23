@@ -30,7 +30,7 @@
   <div class="d-flex flex-wrap gap-2 align-items-center"><h1 class="h3 mb-0 me-auto">Productos</h1><button type="button" class="btn btn-primary" data-nuevo-producto>Nuevo producto</button></div>
   <p id="mensaje-productos" class="pf-mensaje mt-2" role="status" aria-live="polite" hidden></p>
   <div class="row g-4 mt-1">
-    <section class="col-12 col-xl-4"><div class="card shadow-sm"><div class="card-body"><h2 id="titulo-form" class="h5">Agregar producto</h2><p class="small text-body-secondary">Los campos con * son obligatorios.</p>
+    <section class="col-12 col-xl-4" data-permiso="inventario:gestionar"><div class="card shadow-sm"><div class="card-body"><h2 id="titulo-form" class="h5">Agregar producto</h2><p class="small text-body-secondary">Los campos con * son obligatorios.</p>
       <form id="formulario-producto" data-modo="crear" class="row g-2">
         <div class="col-12"><label class="form-label" for="id">Código</label><input class="form-control" id="id" name="id" maxlength="13"></div>
         <div class="col-12"><label class="form-label" for="nombre">Nombre *</label><input class="form-control" id="nombre" name="nombre" required maxlength="100"></div>

@@ -4,9 +4,12 @@ import { txt, nombrePersona } from '../views/lista-api.view.js';
 import { validarCedula, validarTelefono } from './validacion.controller.js';
 import { confirmarAccion } from './dialogo.controller.js';
 import { crearLista, formulario, verDetalle, enlazarBoton } from './lista-api.controller.js';
+import { puede } from '../models/permisos.model.js';
 
 const NIVELES = [{ valor: '', texto: 'Sin nivel' }, { valor: 'PRI', texto: 'Principiante' }, { valor: 'INT', texto: 'Intermedio' }, { valor: 'AVA', texto: 'Avanzado' }];
 const CONSUMIDOR_FINAL = '9999999999';
+// El entrenador no necesita el contacto de los clientes (sección 5).
+const VER_CONTACTO = puede(['clientes:editar', 'reportes:clientes', 'reportes:todos']);
 
 function camposCliente(c = {}) {
   return [
@@ -26,7 +29,7 @@ const lista = crearLista({
   filtros: '#filtros-clientes',
   caption: 'Clientes registrados',
   cargar: (p) => clientesModel.listar(p),
-  columnas: [['Cédula', (c) => txt(c.cedula || c.id)], ['Nombre', (c) => txt(nombrePersona(c))], ['Teléfono', (c) => txt(c.telefono)], ['Correo', (c) => txt(c.correo)], ['Nivel', (c) => txt(String(c.cedula || c.id) === CONSUMIDOR_FINAL ? 'No aplica' : (c.nivel || c.nivelId || 'Sin nivel'))], ['Estado', (c) => txt(c.estado === 'A' ? 'Activo' : 'Inactivo')]],
+  columnas: [['Cédula', (c) => txt(c.cedula || c.id)], ['Nombre', (c) => txt(nombrePersona(c))], ...(VER_CONTACTO ? [['Teléfono', (c) => txt(c.telefono)], ['Correo', (c) => txt(c.correo)]] : []), ['Nivel', (c) => txt(String(c.cedula || c.id) === CONSUMIDOR_FINAL ? 'No aplica' : (c.nivel || c.nivelId || 'Sin nivel'))], ['Estado', (c) => txt(c.estado === 'A' ? 'Activo' : 'Inactivo')]],
   acciones: (c) => {
     const id = c.cedula || c.id;
     const nombre = nombrePersona(c);

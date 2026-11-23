@@ -8,9 +8,13 @@ import { confirmarAccion } from './dialogo.controller.js';
 import { crearPagos } from './pagos.controller.js';
 import { ofrecerFactura } from './factura.controller.js';
 import { adminModel } from '../models/admin.model.js';
+import { puede } from '../models/permisos.model.js';
+function puedeVerDinero() { return puede(['inscripciones:gestionar', 'ventas', 'caja', 'facturas', 'reportes:todos']); }
 import { clientesModel } from '../models/fase2.model.js';
 import { crearLista, formulario, verDetalle, enlazarBoton } from './lista-api.controller.js';
 
+// El entrenador solo lee inscripciones: no ve montos (sección 5).
+const VER_DINERO = puedeVerDinero();
 export const ESTADOS_INSCRIPCION = { P: 'Pendiente de pago', A: 'Activa', V: 'Vencida o sin ingresos', S: 'Suspendida', X: 'Anulada' };
 const CEDULA = '[0-9]{10}';
 let planes = [];
@@ -58,7 +62,7 @@ const tabla = crearLista({
   caption: 'Inscripciones',
   cargar: (p) => inscripcionesModel.listar(p),
   columnas: [['N.º', (i) => txt(i.id)], ['Plan', (i) => txt(i.plan || i.membresiaId)], ['Titular', (i) => txt(i.titular?.nombre || i.titular?.clienteId)], ['Inicio', (i) => fecha(i.fechaInicio)], ['Fin', (i) => fecha(i.fechaFin)], ['Ingresos', (i) => txt(i.ingresosTotal ?? 'Ilimitados')],
-    ['Canal', (i) => txt(i.canal === 'W' ? 'Web' : 'Local')], ['Total', (i) => dinero(i.total)], ['Estado', (i) => estado(ESTADOS_INSCRIPCION, i.estado)]],
+    ['Canal', (i) => txt(i.canal === 'W' ? 'Web' : 'Local')], ...(VER_DINERO ? [['Total', (i) => dinero(i.total)]] : []), ['Estado', (i) => estado(ESTADOS_INSCRIPCION, i.estado)]],
   acciones: (i) => [
     { texto: 'Detalle', permiso: 'inscripciones:leer', etiqueta: `Detalle de la inscripción ${i.id}`, ejecutar: () => verDetalle(`Inscripción ${i.id}`, () => inscripcionesModel.detalle(i.id)) },
     i.estado === 'P' && { texto: 'Cobrar', permiso: 'inscripciones:gestionar', tono: 'btn-primary', etiqueta: `Cobrar la inscripción ${i.id}`, ejecutar: () => dialogoConPagos({
