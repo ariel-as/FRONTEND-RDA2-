@@ -2026,6 +2026,16 @@ html[data-bs-theme="dark"] .pf-admin .dropdown-menu .dropdown-item.active, html[
 .pf-migas .breadcrumb { margin: 0; }
 .pf-migas .breadcrumb-item.active { color: inherit; font-weight: 600; }
 
+/* ---------- Correcciones de diseño: sitio público ---------- */
+
+.pf-foto-entrenador { width: 100%; aspect-ratio: 4 / 5; height: auto; object-fit: cover; object-position: top; }
+.pf-iniciales { display: flex; align-items: center; justify-content: center; background: #1f1f1f; color: var(--pf-amarillo); font-size: 3rem; font-weight: 800; }
+html[data-tema="claro"] .pf-iniciales { background: #f4f4f5; color: #92400e; }
+@media (max-width: 639.98px) {
+  .pf-hero { min-height: 0; }
+  .pf-hero > .relative { padding-top: 6.5rem; padding-bottom: 3rem; }
+}
+
 /* ---------- Respeta a quien prefiere reducir el movimiento ---------- */
 
 @media (prefers-reduced-motion: reduce) {

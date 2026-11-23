@@ -10,3 +10,6 @@ export const API_TIMEOUT_MS = 10000;
 export const API_TIMEOUT_DESPERTAR_MS = 60000;
 // Tiempo de espera antes de anunciar que el servidor se está despertando.
 export const API_AVISO_DESPERTAR_MS = 2500;
+// Cuenta para transferencias que se muestra en el checkout. La API no la expone: el equipo debe completarla.
+// Mientras los campos estén vacíos, el checkout pide confirmar la cuenta en recepción.
+export const CUENTA_TRANSFERENCIA = { banco: '', tipo: '', numero: '', titular: '', ruc: '' };

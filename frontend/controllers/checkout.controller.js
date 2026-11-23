@@ -4,6 +4,8 @@ import { confirmarCompra } from '../models/pedido.model.js';
 import { pintarResumenCheckout, pintarClienteReadonly, pintarConfirmacion } from '../views/checkout.view.js';
 import { construirValidador, mostrarMensaje } from './validacion.controller.js';
 import { raizSitio } from '../models/storage.model.js';
+import { CUENTA_TRANSFERENCIA } from '../models/config.js';
+import { escapar } from '../views/componentes.view.js';
 
 const select = s => document.querySelector(s);
 
@@ -22,6 +24,7 @@ export async function iniciarCheckout(){
     pintarClienteReadonly(select('[data-checkout-cliente]'), usuario);
   } catch (e){ if(e.status===401){ window.location.href = new URL('cliente/login.html?origen=checkout', raizSitio()).href; return; } }
   configurarPago();
+  pintarAyudasPago(items);
   const form = select('#formulario-checkout'); if(!form) return;
   const region = select('#mensaje-checkout');
   construirValidador(form, { alEnviar: async ()=>{
@@ -50,6 +53,30 @@ export async function iniciarCheckout(){
       return false;
     } finally { boton.disabled=false; form.removeAttribute('aria-busy'); }
   }});
+}
+
+// Datos de la cuenta para transferir (models/config.js) y textos distintos para planes y productos.
+function pintarAyudasPago(items){
+  const cuenta = select('[data-cuenta-transferencia]');
+  if (cuenta) {
+    const c = CUENTA_TRANSFERENCIA;
+    cuenta.innerHTML = c.numero
+      ? `<p class="m-0 font-semibold text-white">Transfiere a esta cuenta:</p><p class="m-0">${escapar(c.banco)} · ${escapar(c.tipo)} N.º ${escapar(c.numero)}</p><p class="m-0">Titular: ${escapar(c.titular)} · RUC ${escapar(c.ruc)}</p>`
+      : '<p class="m-0">Pide en recepción o por el teléfono del gimnasio los datos de la cuenta para transferir.</p>';
+  }
+  const planes = items.filter((i) => i.tipo === 'plan');
+  const productos = items.filter((i) => i.tipo !== 'plan');
+  const aviso = select('[data-aviso-planes]');
+  const pago = select('#formulario-checkout fieldset');
+  if (aviso && planes.length) {
+    aviso.hidden = false;
+    aviso.textContent = productos.length
+      ? 'Los planes se pagan en recepción (efectivo o transferencia en el gimnasio) y se activan cuando recepción cobra. La forma de pago de abajo es solo para los productos.'
+      : 'Pagas en recepción, en efectivo o por transferencia en el gimnasio. Tu plan se activa cuando recepción registra el cobro.';
+  }
+  if (pago && planes.length && !productos.length) pago.hidden = true;
+  const botonConfirmar = select('#formulario-checkout [type="submit"]');
+  if (botonConfirmar && planes.length && !productos.length) botonConfirmar.textContent = 'Reservar plan y pagar en recepción';
 }
 
 function configurarPago(){

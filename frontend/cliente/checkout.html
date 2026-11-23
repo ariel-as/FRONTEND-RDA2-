@@ -115,6 +115,7 @@
         <form id="formulario-checkout" class="mt-4 space-y-4" novalidate>
           <div data-checkout-cliente class="mb-4"></div>
 
+          <p class="pf-mensaje" data-aviso-planes hidden></p>
           <fieldset class="rounded-xl border border-pf-linea p-4">
             <legend class="px-2 font-bold text-white">Forma de pago</legend>
             <div class="mt-2 space-y-2">
@@ -122,6 +123,7 @@
               <label class="flex items-center gap-2"><input type="radio" name="metodoPago" value="TR" aria-label="Transferencia bancaria"> <span>Transferencia bancaria</span></label>
             </div>
             <div class="mt-3" data-campo-transferencia hidden>
+              <div class="mb-3 rounded-lg border border-pf-linea p-3 text-sm" data-cuenta-transferencia></div>
               <label class="block font-semibold text-white" for="refTransferencia">Número de referencia de la transferencia</label>
               <input class="mt-1 w-full rounded-lg border border-pf-linea p-2" type="text" id="refTransferencia" name="refTransferencia" maxlength="30" pattern="(?:[A-Za-z0-9]|-){4,30}" data-mensaje-patron="La referencia debe tener de 4 a 30 letras, números o guion." aria-describedby="ayuda-ref" disabled>
               <p id="ayuda-ref" class="text-sm text-neutral-400">Obligatorio con transferencia. 4 a 30 letras, números o guion. Un empleado verificará el pago antes de aprobarlo.</p>

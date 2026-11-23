@@ -8,10 +8,12 @@ import { rutinasModel } from '../models/fase2.model.js';
 import { notificacionesModel } from '../models/notificaciones.model.js';
 import { tarjetaRutina, tarjetasNotificaciones } from '../views/pedidos.view.js';
 
-function mostrarErrorCarga(contenedor, mensaje) {
+function mostrarErrorCarga(contenedor, mensaje, error) {
   const aviso = document.createElement('p');
   aviso.className = 'pf-mensaje';
-  aviso.textContent = mensaje;
+  // Cuenta sin ficha de cliente: se explica qué hacer en lugar de mostrar el error del servidor.
+  aviso.textContent = error?.status === 403 && /vinculada/i.test(error?.mensaje || '') ? 'Acércate a recepción para vincular tu cuenta con tu ficha de cliente.' : mensaje;
+  if (aviso.textContent !== mensaje) aviso.dataset.tipo = 'info';
   contenedor.replaceChildren(aviso);
 }
 
@@ -66,7 +68,7 @@ async function cargarNotificaciones(){
       const lista = await notificacionesModel.listar({ limit: 20 });
       cont.innerHTML = tarjetasNotificaciones(lista);
       const n = select('[data-mis-no-leidas]'); if (n) n.textContent = lista.noLeidas ? `${lista.noLeidas} notificaci${lista.noLeidas === 1 ? 'ón' : 'ones'} sin leer` : 'No tienes notificaciones sin leer.';
-    } catch (e){ mostrarErrorCarga(cont, e.mensaje || 'No se pudieron cargar las notificaciones.'); }
+    } catch (e){ mostrarErrorCarga(cont, e.mensaje || 'No se pudieron cargar las notificaciones.', e); }
     finally { cont.setAttribute('aria-busy', 'false'); }
   };
   cont.addEventListener('click', async (e) => {
@@ -83,7 +85,10 @@ async function cargarPedidos(){
     const res = await misPedidos(paginaActual, 10);
     const lista = res?.data || res?.pedidos || res || [];
     const pagination = res?.pagination || { page: paginaActual, totalPages: 1 };
-    cont.innerHTML = lista.length ? lista.map(p=>tarjetaPedido(p)).join('') : '<p class="pf-mensaje">No tienes pedidos todavía.</p>';
+    // Orden propio de la lista (el más reciente primero) además del número único del sistema.
+    const total = Number(pagination.total) || lista.length;
+    const desde = ((Number(pagination.page) || paginaActual) - 1) * 10;
+    cont.innerHTML = lista.length ? lista.map((p, i) => tarjetaPedido(p, { orden: total - desde - i, total })).join('') : '<p class="pf-mensaje">No tienes pedidos todavía.</p>';
     if (pag) pag.innerHTML = paginacion(pagination);
   } catch (e){ if(e.status===401){ window.location.href=new URL('cliente/login.html?origen=mis-pedidos', raizSitio()).href; return; } mostrarErrorCarga(cont, e.mensaje || 'No se pudieron cargar los pedidos.'); }
 }
@@ -94,5 +99,5 @@ async function cargarInscripciones(){
     const res = await misInscripciones();
     const lista = Array.isArray(res) ? res : (res?.data || res?.inscripciones || []);
     cont.innerHTML = lista.length ? lista.map(tarjetaInscripcion).join('') : '<p class="pf-mensaje">No tienes planes registrados.</p>';
-  } catch (e){ mostrarErrorCarga(cont, e.mensaje || 'No se pudieron cargar los planes.'); }
+  } catch (e){ mostrarErrorCarga(cont, e.mensaje || 'No se pudieron cargar los planes.', e); }
 }

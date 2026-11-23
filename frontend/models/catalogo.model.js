@@ -50,6 +50,7 @@ export function obtenerPlanes() {
     precio: Number(m.precioConIva ?? m.precio),
     porcentajeIva: Number(m.porcentajeIva ?? 0),
     personas: m.personas ?? m.numPersonas ?? 1,
+    incluyeRutina: m.incluyeRutina === true || m.incluyeRutina === 'S',
     beneficios: m.beneficios || [],
     imagen: rutaImagen(imagenPlan(m.id)),
     tipo: 'plan'
@@ -67,12 +68,12 @@ export function obtenerClases() {
 
 export function obtenerEntrenadores() {
   return cargarColeccion('entrenadores', '/entrenadores', (e) => {
-    const pres = presentacionEntrenador(e.id);
+    const pres = presentacionEntrenador(e.id, e.especialidad);
     return {
       ...e,
       id: String(e.id),
       nombre: e.nombre || `${e.nombres || ''} ${e.apellidos || ''}`.trim(),
-      imagen: rutaImagen(pres.imagen),
+      imagen: pres.imagen ? rutaImagen(pres.imagen) : null,
       descripcion: pres.descripcion || e.descripcion || '',
       claseIds: e.claseIds || []
     };
@@ -90,7 +91,7 @@ export async function obtenerGimnasio() {
 }
 
 export async function obtenerNiveles() {
-  try { return await api.get('/niveles'); } catch { return []; }
+  try { const r = await api.get('/niveles'); return Array.isArray(r) ? r : (r?.data || []); } catch { return []; }
 }
 export async function obtenerAliados() {
   try { return await api.get('/aliados'); } catch { return []; }

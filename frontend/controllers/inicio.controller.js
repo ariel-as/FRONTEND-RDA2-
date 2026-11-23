@@ -1,4 +1,5 @@
-﻿import { obtenerProductos, obtenerPlanes, obtenerClases, obtenerEntrenadores, obtenerGimnasio, enviarContacto } from '../models/catalogo.model.js';
+﻿import { obtenerProductos, obtenerPlanes, obtenerClases, obtenerEntrenadores, obtenerGimnasio, enviarContacto, obtenerNiveles } from '../models/catalogo.model.js';
+import { DESCRIPCION_SERVICIO } from '../models/presentacion.model.js';
 import { carrito } from '../models/carrito.model.js';
 import { escapar, mostrarAviso, renderizar, vacio, tarjetaProducto, tarjetaPlan, tarjetaClase, tarjetaEntrenador, tarjetaServicio, seccionCategoriaTienda } from '../views/componentes.view.js';
 import { construirValidador, mostrarMensaje, mostrarErroresServidor } from './validacion.controller.js';
@@ -71,6 +72,8 @@ export async function iniciarInicio(){
     pintarClases(clases, entrenadores.datos || []);
     pintarEntrenadores(entrenadores);
     pintarServicios(gimnasio);
+    pintarContacto(gimnasio);
+    pintarRutinas(planes);
     anunciarOrigenDatos([productos, planes, clases, entrenadores, gimnasio]);
     if (!contactoIniciado) { iniciarContacto(); contactoIniciado = true; }
   } catch (e) {
@@ -130,11 +133,37 @@ function pintarClases(resultado, entrenadores){
 function pintarEntrenadores(resultado){
   const cont = select('[data-entrenadores]'); if(!cont) return;
   if (!resultado.datos.length){ cont.innerHTML = vacio('No hay entrenadores disponibles por ahora.'); return; }
-  renderizar(cont, resultado.datos.map(tarjetaEntrenador));
+  const ordenados = [...resultado.datos].sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), 'es'));
+  renderizar(cont, ordenados.map(tarjetaEntrenador));
 }
 function pintarServicios(gimnasio){
   const cont = select('[data-servicios]'); if(!cont || !gimnasio?.servicios?.length) return;
-  renderizar(cont, gimnasio.servicios.map(tarjetaServicio));
+  renderizar(cont, gimnasio.servicios.map((s) => tarjetaServicio({ ...s, descripcion: s.descripcion || DESCRIPCION_SERVICIO[s.id] || '' })));
+}
+// Rutinas: niveles con lo que se ofrece y planes que incluyen rutina personalizada.
+const DETALLE_NIVEL = {
+  PRI: 'Técnica básica, adaptación y rutinas de cuerpo completo para empezar con seguridad.',
+  INT: 'Rutinas divididas por grupos musculares y más volumen para seguir progresando.',
+  AVA: 'Planificación exigente de fuerza e hipertrofia con seguimiento del entrenador.'
+};
+async function pintarRutinas(planes){
+  const cont = select('[data-niveles]'); if(!cont) return;
+  const orden = { PRI: 1, INT: 2, AVA: 3 };
+  const niveles = (await obtenerNiveles()).sort((a, b) => (orden[a.id] || 9) - (orden[b.id] || 9));
+  const conRutina = (planes?.datos || []).filter((p) => p.incluyeRutina).map((p) => p.nombre);
+  cont.innerHTML = niveles.map((n) => `<li class="pf-tarjeta p-5"><h3 class="m-0 text-lg font-bold text-white">${escapar(n.descripcion || n.id)}</h3><p class="mt-2 text-sm text-neutral-300">${escapar(DETALLE_NIVEL[n.id] || '')}</p></li>`).join('');
+  const texto = conRutina.length ? `Incluyen rutina personalizada: ${conRutina.join(', ')}.` : 'Consulta en recepción qué planes incluyen rutina personalizada.';
+  select('[data-planes-rutina]')?.remove();
+  cont.insertAdjacentHTML('afterend', `<p class="mt-4 text-neutral-300" data-planes-rutina>${escapar(texto)} <a href="#planes" class="font-semibold text-pf-amarillo underline">Ver planes</a></p>`);
+}
+// Contacto: horarios de atención y teléfono del gimnasio.
+function pintarContacto(gimnasio){
+  const lista = select('[data-gimnasio-horarios]');
+  if (lista && gimnasio?.horarios?.length) {
+    lista.innerHTML = gimnasio.horarios.map((h) => `<li class="text-neutral-300"><span class="font-semibold text-white">${escapar(h.dia)}:</span> ${h.abierto === 'N' ? 'Cerrado' : `${escapar(String(h.horaApertura || '').slice(0, 5))} a ${escapar(String(h.horaCierre || '').slice(0, 5))}`}</li>`).join('');
+  }
+  if (!gimnasio?.telefono) return;
+  document.querySelectorAll('[data-gimnasio-telefono]').forEach((n) => { n.textContent = gimnasio.telefono; n.setAttribute('href', `tel:${gimnasio.telefono}`); });
 }
 
 function iniciarContacto(){

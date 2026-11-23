@@ -34,14 +34,29 @@ export function imagenServicio(id) {
 }
 
 const ENTRENADORES = {
-  '1700000019': { imagen: 'entrenadores/entrenador-1.jpg', descripcion: 'Especialista en boxeo, enfocado en técnica y acondicionamiento físico.' },
-  '1700000027': { imagen: 'entrenadores/entrenador-2.jpg', descripcion: 'Instructora de bailoterapia con rutinas dinámicas y de alta energía.' },
-  '1700000035': { imagen: 'entrenadores/entrenador-3.jpg', descripcion: 'Entrenador de rutinas personalizadas según tu nivel y objetivos.' }
+  '1700000019': { imagen: 'clases/boxeo.jpg', descripcion: 'Especialista en boxeo, enfocado en técnica y acondicionamiento físico.' },
+  '1700000027': { imagen: 'clases/bailoterapia.jpg', descripcion: 'Instructora de bailoterapia con rutinas dinámicas y de alta energía.' },
+  '1700000035': { imagen: 'gimnasio/pesas.jpg', descripcion: 'Entrenador de rutinas personalizadas según tu nivel y objetivos.' }
 };
+// Imagen acorde a la especialidad mientras no haya fotos reales; sin coincidencia no se presta la foto de otro entrenador.
+const POR_ESPECIALIDAD = [[/box/i, 'clases/boxeo.jpg'], [/bail|danza|baile/i, 'clases/bailoterapia.jpg'], [/rutin|pesa|fuerza|muscul/i, 'gimnasio/pesas.jpg'], [/cardio/i, 'gimnasio/cardio.jpg'], [/nutri/i, 'gimnasio/nutricion.jpg']];
 
-export function presentacionEntrenador(id) {
-  return ENTRENADORES[String(id)] || { imagen: 'entrenadores/entrenador-1.jpg', descripcion: '' };
+export function presentacionEntrenador(id, especialidad = '') {
+  const fijo = ENTRENADORES[String(id)];
+  if (fijo) return fijo;
+  const imagen = POR_ESPECIALIDAD.find(([r]) => r.test(String(especialidad)))?.[1] || null;
+  return { imagen, descripcion: '' };
 }
+
+// Descripciones de respaldo cuando la API solo envía el nombre del servicio.
+export const DESCRIPCION_SERVICIO = {
+  PES: 'Zona de pesas con máquinas y peso libre para trabajar fuerza en todos los niveles.',
+  CAR: 'Equipos de cardio para mejorar tu resistencia y quemar calorías a tu ritmo.',
+  BOX: 'Clases de boxeo para aprender técnica, ganar condición física y liberar estrés.',
+  BAI: 'Bailoterapia con música y coreografías sencillas, ideal para moverte y divertirte.',
+  RUT: 'Rutinas personalizadas según tu nivel y objetivos, ajustadas por nuestros entrenadores.',
+  NUT: 'Asesoría nutricional con profesionales aliados para complementar tu entrenamiento.'
+};
 
 export function rutaImagen(relativa) {
   return `assets/img/${relativa}`;

@@ -5,14 +5,14 @@ import { formatearPrecio } from '../models/carrito.model.js';
 const ESTADOS_PEDIDO = { P:'Pendiente de pago', R:'Pago reportado: estamos verificándolo', C:'Pagado: listo para retirar en el gimnasio', E:'Entregado', X:'Cancelado' };
 const METODOS = { EF: 'Efectivo al retirar', TR: 'Transferencia' };
 
-export function tarjetaPedido(pedido, onCancelar) {
+export function tarjetaPedido(pedido, { orden, total } = {}) {
   const estadoTexto = ESTADOS_PEDIDO[pedido.estado] || pedido.estadoNombre || pedido.estado || '';
   const puedeCancelar = pedido.estado === 'P';
   const lineas = (pedido.detalles || []).map(d=>`<li class="flex justify-between text-sm"><span>${escapar(d.nombre || d.productoId)} x ${d.cantidad}</span><span>${formatearPrecio(d.subtotal ?? 0)}</span></li>`).join('');
   return `
   <article class="pf-tarjeta p-5">
     <div class="flex flex-wrap items-start justify-between gap-2">
-      <div><h3 class="m-0 text-lg font-bold text-white">Pedido #${escapar(pedido.id)}</h3><p class="m-0 text-sm text-neutral-400">${new Date(pedido.createdAt || pedido.fecha || Date.now()).toLocaleString('es-EC')}</p></div>
+      <div><h3 class="m-0 text-lg font-bold text-white">Pedido N.º ${escapar(pedido.id)}</h3><p class="m-0 text-sm text-neutral-400">${orden ? `Tu pedido ${escapar(orden)} de ${escapar(total)} · ` : ''}${new Date(pedido.createdAt || pedido.fecha || Date.now()).toLocaleString('es-EC')}</p></div>
       <p class="m-0 text-sm"><span class="text-neutral-400">Estado:</span> <span class="pf-etiqueta">${escapar(estadoTexto)}</span></p>
     </div>
     <p class="mt-2 text-sm text-neutral-300">Pago: ${escapar(METODOS[pedido.metodoPago] || pedido.metodoPago || '')} ${pedido.refTransferencia ? `(comprobante ${escapar(pedido.refTransferencia)})` : ''}</p>
@@ -41,6 +41,8 @@ export function tarjetaInscripcion(ins) {
 }
 
 export function paginacion({ page, totalPages }, baseAttr) {
+  // Con una sola página no se muestran Anterior ni Siguiente.
+  if ((Number(totalPages) || 1) <= 1) return '';
   return `<nav aria-label="Paginación" class="mt-4 flex items-center justify-center gap-3" ${baseAttr||''}>
     <button type="button" class="pf-boton pf-boton-secundario" data-page="${page-1}" ${page<=1?'disabled':''}>Anterior</button>
     <span aria-live="polite">Página ${page} de ${totalPages || 1}</span>

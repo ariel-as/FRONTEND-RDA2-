@@ -130,7 +130,9 @@ export function tarjetaEntrenador(entrenador) {
   const nombre = entrenador.nombre || `${entrenador.nombres || ''} ${entrenador.apellidos || ''}`.trim();
   return `
     <article class="pf-tarjeta h-full flex flex-col overflow-hidden" data-entrenador="${escapar(entrenador.id)}">
-      ${imagenConWebp(entrenador.imagen, `class="pf-imagen-tarjeta object-cover" alt="${escapar(nombre)} de Planeta Fitness" loading="lazy" width="560" height="747"`)}
+      ${entrenador.imagen
+        ? imagenConWebp(entrenador.imagen, `class="pf-imagen-tarjeta pf-foto-entrenador" alt="${escapar(nombre)} de Planeta Fitness" loading="lazy" width="560" height="700"`)
+        : `<div class="pf-foto-entrenador pf-iniciales" role="img" aria-label="${escapar(nombre)}, sin foto"><span aria-hidden="true">${escapar(nombre.split(/\s+/).map((p) => p[0] || '').join('').slice(0, 2).toUpperCase())}</span></div>`}
       <div class="flex flex-col gap-2 p-5 flex-1">
         <h4 class="text-lg font-bold text-white">${escapar(nombre)}</h4>
         <p class="pf-etiqueta self-start">${escapar(entrenador.especialidad || 'Entrenador')}</p>

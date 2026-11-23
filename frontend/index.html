@@ -264,7 +264,7 @@
           <p class="mt-6 rounded-lg border border-pf-linea bg-pf-grafito p-4 text-sm font-semibold text-neutral-200">
             El precio de la asesoría nutricional se consulta en el gimnasio. No se muestra un precio fijo.
           </p>
-          <a href="cliente/nutricion.html" class="pf-boton pf-boton-primario mt-6">Solicitar cita</a>
+          <a href="cliente/nutricion.html" class="pf-boton pf-boton-primario mt-6">Solicitar información</a>
         </div>
         <figure>
           <picture>
@@ -275,7 +275,7 @@
               class="rounded-xl border border-pf-linea"
               width="1200" height="817" loading="lazy">
           </picture>
-          <figcaption class="mt-2 text-sm text-neutral-400">La asesoría nutricional se agenda con hora previa.</figcaption>
+          <figcaption class="mt-2 text-sm text-neutral-400">Asesoría nutricional con profesionales aliados del gimnasio.</figcaption>
         </figure>
       </div>
     </section>
@@ -294,6 +294,10 @@
           <p class="mt-3 text-neutral-300">
             <span class="font-semibold text-white">Dirección:</span>
             <span data-gimnasio-direccion>Avenida San Rio de Janeiro y Panamá, Quito, Ecuador</span>
+          </p>
+          <p class="mt-2 text-neutral-300">
+            <span class="font-semibold text-white">Teléfono:</span>
+            <a href="tel:0990000000" data-gimnasio-telefono class="text-pf-amarillo underline">0990000000</a>
           </p>
           <p class="mt-2 text-neutral-300">
             <span class="font-semibold text-white">Correo:</span>
@@ -328,10 +332,10 @@
             </div>
 
             <div>
-              <label class="block font-semibold text-white" for="telefono">Teléfono *</label>
+              <label class="block font-semibold text-white" for="telefono">Teléfono (opcional)</label>
               <input
                 class="mt-1 w-full rounded-lg border p-2"
-                type="tel" id="telefono" name="telefono" required inputmode="numeric" autocomplete="tel"
+                type="tel" id="telefono" name="telefono" inputmode="numeric" autocomplete="tel"
                 pattern="^09\d{8}$"
                 data-mensaje-patron="El teléfono debe tener 10 dígitos y empezar por 09."
                 aria-describedby="ayuda-telefono">
