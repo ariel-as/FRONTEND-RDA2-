@@ -50,13 +50,20 @@ export function presentacionEntrenador(id, especialidad = '') {
 
 // Descripciones de respaldo cuando la API solo envía el nombre del servicio.
 export const DESCRIPCION_SERVICIO = {
-  PES: 'Zona de pesas con máquinas y peso libre para trabajar fuerza en todos los niveles.',
-  CAR: 'Equipos de cardio para mejorar tu resistencia y quemar calorías a tu ritmo.',
-  BOX: 'Clases de boxeo para aprender técnica, ganar condición física y liberar estrés.',
-  BAI: 'Bailoterapia con música y coreografías sencillas, ideal para moverte y divertirte.',
-  RUT: 'Rutinas personalizadas según tu nivel y objetivos, ajustadas por nuestros entrenadores.',
-  NUT: 'Asesoría nutricional con profesionales aliados para complementar tu entrenamiento.'
+  PES: 'Zona de pesas con máquinas y área libre de entrenamiento.',
+  CAR: 'Máquinas de cardio para trabajar resistencia.',
+  BOX: 'Clase dirigida en el segundo piso del gimnasio.',
+  BAI: 'Clase de baile que se realiza con entrenador.',
+  RUT: 'Rutinas indicadas según nivel: principiante, intermedio o avanzado.',
+  NUT: 'Evaluación, análisis personalizado y asesoría nutricional mediante cita.'
 };
+
+export function descripcionServicio(servicio = {}) {
+  const descripcion = String(servicio.descripcion ?? '').trim();
+  const nombre = String(servicio.nombre ?? '').trim();
+  if (descripcion && descripcion.toLocaleLowerCase('es') !== nombre.toLocaleLowerCase('es')) return descripcion;
+  return DESCRIPCION_SERVICIO[servicio.id ?? servicio.codigo] || '';
+}
 
 export function rutaImagen(relativa) {
   return `assets/img/${relativa}`;

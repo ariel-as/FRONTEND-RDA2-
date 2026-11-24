@@ -89,3 +89,31 @@ Decisiones aplicadas (opción por defecto):
 - **Sección 3 (Playwright):** 51 comprobaciones; la única marcada es la paginación de Usuarios, que es correcta porque hay 3 páginas. Las 22 pantallas a 375 y 768 px no tienen desborde horizontal.
 - **Sección 8 (Playwright):** sitio público (inicio, las 5 páginas de cliente y el login del panel) a 375 y 768 px sin desbordes. Las 22 pantallas sin nombres internos, sin «vacío» y sin encabezados repetidos. axe sin violaciones en las cuatro páginas pedidas. Pase diario y factura imprimible comprobados.
 - **Roles:** con REC, ENT y CON, las 22 páginas sin fallas, sin respuestas 4xx/5xx y sin errores de consola.
+
+## 5. Tanda `1_FRONTEND_CORRECCIONES.md` (rama `correcciones-2`)
+
+Base: `correcciones-diseno`. Se aplicaron las secciones 1 a 6 en orden, sin tocar el backend. Restricciones cumplidas: búsquedas en vez de lecturas completas, un solo archivo de estilos (`assets/css/styles.css`), foco visible, textos además de colores y contraste AA en los dos temas.
+
+| Sección | Resultado | Puntos clave |
+|---|---|---|
+| 1. Errores | Hecho | El cliente ve «Tu pedido N.º 68» también en la confirmación del checkout y en Mis pedidos. |
+| 2. Sitio público | Hecho | 6 servicios con descripción; entrenadores ordenados (Uno, Dos, Tres, Cuatro); portada legible a 1440 y 375 px sin desborde. |
+| 3. Panel | Hecho | Rectángulo translúcido y texto blanco en el hero; enlaces subrayados en amarillo; tarjetas de entrenadores a la misma altura con foto 4:5. |
+| 4. Facturación | Hecho | Vista con estado claro, `Factura N.º`, aviso de ambiente simulado, `Corregir datos del SRI`, y botón «Generar factura» desde ventas e inscripciones. |
+| 5. Estados | Hecho | Ya no aparece «En proceso» ni el filtro «Sin número del SRI»; el indicador CON usa «Facturas emitidas». |
+| 6. Aviso al backend | Anotado abajo | El backend todavía no devuelve número ni clave de comprobante. |
+
+**Sección 7 (Playwright, Chromium sin interfaz, contra backend local):** 8 comprobaciones, 0 fallos y 0 errores de consola, sin capturas de fallo:
+
+- `servicios_con_descripcion`: 6 servicios con descripción.
+- `entrenadores_ordenados`: Entrenador Uno, Dos, Tres y Cuatro.
+- `correo_legible_1440`: alfa `0.82`, texto blanco y sin desborde.
+- `correo_legible_375`: visible y sin desborde a 375 px.
+- `numero_pedido_cliente`: «Tu pedido N.º 69».
+- `numero_pedido_mis_pedidos`: número visible.
+- `factura_desde_venta`: factura 22 generada desde la venta pendiente, con aviso simulado.
+- `facturas_listado_estado`: factura 22 en el listado y sin «En proceso».
+
+**Aviso para el backend:** `POST /api/v1/admin/facturas` responde `numComprobante: null`, `claveAcceso: null` y `estado: "P"`. El frontend lo muestra como «Pendiente de número» y nunca como «En proceso»; para ver un número/clave simulados y el estado «Emitida» debe cambiar el backend. No se modificó el contrato ni el servidor.
+
+**CI local final:** sintaxis correcta en 90 archivos con Node 24; `verificar-frontend`, HTMLHint, nueve pruebas estáticas, seguridad, dependencias (con red), contrato de API y prueba de humo con Playwright: 0 fallos. No se corrió CodeQL/Gitleaks en local; los ejecuta GitHub Actions.

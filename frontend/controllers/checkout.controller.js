@@ -1,6 +1,6 @@
 ﻿import { carrito } from '../models/carrito.model.js';
 import { haySesion, refrescarPerfil, consumirPendencia } from '../models/sesion.model.js';
-import { confirmarCompra } from '../models/pedido.model.js';
+import { confirmarCompra, numeroPedidoCliente } from '../models/pedido.model.js';
 import { pintarResumenCheckout, pintarClienteReadonly, pintarConfirmacion } from '../views/checkout.view.js';
 import { construirValidador, mostrarMensaje } from './validacion.controller.js';
 import { raizSitio } from '../models/storage.model.js';
@@ -38,7 +38,14 @@ export async function iniciarCheckout(){
       (resultado.confirmadas||[]).forEach(id => carrito.eliminar(id));
       pintarResumenCheckout(select('[data-checkout-resumen]'), carrito.obtener(), carrito.total());
       const conf = select('[data-checkout-confirmacion]');
-      if (conf){ pintarConfirmacion(select('[data-confirmacion-resumen]'), resultado); conf.hidden=false; conf.querySelector('h2')?.focus?.(); }
+      if (conf){
+        let numeroPedido = null;
+        if (resultado.pedido){ try { numeroPedido = await numeroPedidoCliente(resultado.pedido.id); } catch { numeroPedido = null; } }
+        const tituloConfirmacion = conf.querySelector('h2');
+        if (tituloConfirmacion && resultado.pedido) tituloConfirmacion.textContent = numeroPedido ? `Tu pedido N.º ${numeroPedido}` : 'Tu pedido registrado';
+        pintarConfirmacion(select('[data-confirmacion-resumen]'), { ...resultado, numeroPedido });
+        conf.hidden=false; tituloConfirmacion?.focus?.();
+      }
       if (resultado.errores?.length){ mostrarMensaje(region, resultado.errores.map(e=>e.mensaje).join(' '), 'error'); }
       else { mostrarMensaje(region, 'Pedido registrado correctamente.', 'exito'); }
       if ((resultado.confirmadas || []).length) {

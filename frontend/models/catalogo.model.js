@@ -1,7 +1,7 @@
 ﻿import { api } from './api.model.js';
 import { guardarCatalogo, leerCatalogo } from './indexeddb.model.js';
 import { registrarActualizacion } from './storage.model.js';
-import { imagenProducto, imagenPlan, imagenClase, imagenServicio, presentacionEntrenador, productoDestacado, rutaImagen } from './presentacion.model.js';
+import { imagenProducto, imagenPlan, imagenClase, imagenServicio, presentacionEntrenador, productoDestacado, rutaImagen, descripcionServicio } from './presentacion.model.js';
 
 function es404(error) { return error?.status === 404; }
 function debeUsarRespaldo(error) { return error?.status === 0 || error?.status >= 500; }
@@ -83,7 +83,7 @@ export function obtenerEntrenadores() {
 export async function obtenerGimnasio() {
   try {
     const data = await api.get('/gimnasio');
-    const servicios = (data?.servicios || []).map((s) => ({ ...s, imagen: rutaImagen(imagenServicio(s.id || s.codigo)) }));
+    const servicios = (data?.servicios || []).map((s) => ({ ...s, descripcion: descripcionServicio(s), imagen: rutaImagen(imagenServicio(s.id || s.codigo)) }));
     return { ...data, servicios };
   } catch (error) {
     return { error: true, mensaje: error.mensaje, servicios: [], horarios: [] };

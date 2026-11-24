@@ -21,17 +21,18 @@ export function pintarClienteReadonly(contenedor, usuario) {
   contenedor.innerHTML = `<div class="rounded-lg border border-pf-linea p-4"><p class="m-0 text-sm text-neutral-400">Cliente</p><p class="m-0 font-bold text-white">${escapar(nombre)}</p><p class="m-0 text-sm text-neutral-300">${escapar(usuario?.correo || usuario?.login || '')}</p></div>`;
 }
 
-export function pintarConfirmacion(contenedor, { pedido, inscripciones }) {
+export function pintarConfirmacion(contenedor, { pedido, inscripciones, numeroPedido }) {
   if (!contenedor) return;
   const partes = [];
   if (pedido) {
     const lineas = (pedido.detalles || pedido.items || []).map((d)=>`<li class="flex justify-between py-1"><span>${escapar(d.nombre || d.productoId)} x ${d.cantidad}</span><span>${formatearPrecio(d.subtotal ?? (d.cantidad * d.precioUnitario))}</span></li>`).join('');
-    partes.push(`<div class="mb-4"><p class="font-bold text-white">Pedido #${escapar(pedido.id)}</p><p class="text-sm text-neutral-300">Estado: ${escapar(pedido.estadoNombre || pedido.estado || '')}</p><ul class="list-none p-0 mt-2">${lineas}</ul><p class="mt-2 font-bold pf-precio">Total: ${formatearPrecio(pedido.total)}</p></div>`);
+    const titulo = numeroPedido ? `Tu pedido N.º ${escapar(numeroPedido)}` : 'Tu pedido registrado';
+    partes.push(`<div class="mb-4"><p class="font-bold text-white">${titulo}</p><p class="text-sm text-neutral-300">Estado: ${escapar(pedido.estadoNombre || pedido.estado || '')}</p><ul class="list-none p-0 mt-2">${lineas}</ul><p class="mt-2 font-bold pf-precio">Total: ${formatearPrecio(pedido.total)}</p></div>`);
   }
   (inscripciones || []).forEach((ins)=>{
     const plan = ins.plan || ins.membresia?.nombre || ins.membresiaId || 'Plan';
     const total = ins.totalCobrar ?? ins.valor ?? ins.precio ?? 0;
     partes.push(`<div class="mb-4 rounded border border-pf-linea p-3"><p class="font-bold text-white">${escapar(plan)}</p><p class="text-sm text-neutral-300">Inscripción registrada por separado de los pedidos de productos. Pendiente de pago en recepción.</p><p class="pf-precio font-semibold">Valor: ${formatearPrecio(total)}</p></div>`);
   });
-  contenedor.innerHTML = partes.join('') || '<p>Pedido registrado.</p>';
+  contenedor.innerHTML = partes.join('') || '<p>Tu pedido registrado.</p>';
 }

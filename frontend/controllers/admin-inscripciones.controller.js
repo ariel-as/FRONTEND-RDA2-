@@ -6,7 +6,7 @@ import { txt, dinero, fecha, estado } from '../views/lista-api.view.js';
 import { validarCedula } from './validacion.controller.js';
 import { confirmarAccion } from './dialogo.controller.js';
 import { crearPagos } from './pagos.controller.js';
-import { ofrecerFactura } from './factura.controller.js';
+import { ofrecerFactura, idsSinFactura } from './factura.controller.js';
 import { adminModel } from '../models/admin.model.js';
 import { puede } from '../models/permisos.model.js';
 function puedeVerDinero() { return puede(['inscripciones:gestionar', 'ventas', 'caja', 'facturas', 'reportes:todos']); }
@@ -56,7 +56,16 @@ async function dialogoConPagos({ titulo, mensaje, campos, totalInicial, idPagos,
 }
 const opcionesPlanes = () => [{ valor: '', texto: 'Selecciona el plan' }, ...planes.map((p) => ({ valor: p.id, texto: `${p.nombre} (${formatearPrecio(p.precioConIva ?? p.precio)})` }))];
 
-const tabla = crearLista({
+let sinFactura = new Set();
+let tabla = null;
+const actualizarSinFactura = async () => {
+  try { sinFactura = await idsSinFactura(); }
+  catch { sinFactura = new Set(); }
+  return sinFactura;
+};
+await actualizarSinFactura();
+
+tabla = crearLista({
   raiz: '#pantalla-inscripciones',
   filtros: '#filtros-inscripciones',
   caption: 'Inscripciones',
@@ -67,7 +76,7 @@ const tabla = crearLista({
     { texto: 'Detalle', permiso: 'inscripciones:leer', etiqueta: `Detalle de la inscripción ${i.id}`, ejecutar: () => verDetalle(`Inscripción ${i.id}`, () => inscripcionesModel.detalle(i.id)) },
     i.estado === 'P' && { texto: 'Cobrar', permiso: 'inscripciones:gestionar', tono: 'btn-primary', etiqueta: `Cobrar la inscripción ${i.id}`, ejecutar: () => dialogoConPagos({
       titulo: `Cobrar la inscripción ${i.id}`, mensaje: `${i.plan || ''} · Titular: ${i.titular?.nombre || ''}`, campos: [], totalInicial: i.total, idPagos: `pagos-ins-${i.id}`,
-      alConfirmar: (_, pagos) => inscripcionesModel.cobrar(i.id, pagos), exito: 'Inscripción cobrada.' }).then(async (m) => { if (m) { const f = await ofrecerFactura({ inscripcionId: i.id }); return f ? `${m} ${f}` : m; } return m; }) },
+      alConfirmar: (_, pagos) => inscripcionesModel.cobrar(i.id, pagos), exito: 'Inscripción cobrada.' }).then(async (m) => { if (m) { const f = await ofrecerFactura({ inscripcionId: i.id }); if (f) { await actualizarSinFactura(); tabla.recargar(); } return f ? `${m} ${f}` : m; } return m; }) },
     ['A', 'P'].includes(i.estado) && { texto: 'Agregar acompañante', permiso: 'inscripciones:gestionar', etiqueta: `Agregar acompañante a la inscripción ${i.id}`, ejecutar: () => formulario({
       titulo: 'Agregar acompañante', campos: [{ nombre: 'clienteId', etiqueta: 'Cédula del acompañante', requerido: true, maxlength: 10 }], reglas: { clienteId: validarCedula },
       alConfirmar: (v) => inscripcionesModel.agregarIntegrante(i.id, v.clienteId.trim()), exito: 'Acompañante agregado.' }) },
@@ -88,9 +97,7 @@ const tabla = crearLista({
       titulo: 'Anular suspensión', mensaje: 'El número de suspensión aparece en el detalle de la inscripción.', tono: 'peligro', textoConfirmar: 'Anular suspensión',
       campos: [{ nombre: 'suspensionId', etiqueta: 'Número de suspensión', tipo: 'number', paso: '1', min: 1, requerido: true }, { nombre: 'motivo', etiqueta: 'Motivo', tipo: 'textarea', requerido: true, maxlength: 200 }],
       alConfirmar: (v) => inscripcionesModel.anularSuspension(v.suspensionId, v.motivo.trim()), exito: 'Suspensión anulada.' }) },
-    i.estado !== 'X' && { texto: 'Generar factura', permiso: 'facturas:generar', etiqueta: `Generar factura de la inscripción ${i.id}`, ejecutar: async () => (await confirmarAccion({
-      titulo: 'Generar factura', mensaje: `Se generará la factura de la inscripción ${i.id} a nombre del titular. Para facturar a otra persona usa Facturación.`, textoConfirmar: 'Generar', tono: 'primario',
-      alConfirmar: () => facturasModel.generar({ inscripcionId: i.id }) }) ? 'Factura generada. Registra su número en Facturación.' : null) },
+    i.estado !== 'X' && sinFactura?.has(`inscripcion:${i.id}`) && { texto: 'Generar factura', permiso: 'facturas:generar', secundaria: true, etiqueta: `Generar factura de la inscripción ${i.id}`, ejecutar: async () => { const m = await ofrecerFactura({ inscripcionId: i.id }); if (m) { await actualizarSinFactura(); tabla.recargar(); } return m; } },
     i.estado !== 'X' && { texto: 'Anular', permiso: 'inscripciones:anular', tono: 'btn-outline-danger', etiqueta: `Anular la inscripción ${i.id}`, ejecutar: () => formulario({
       titulo: `Anular la inscripción ${i.id}`, mensaje: 'Esta acción no se puede deshacer.', tono: 'peligro', textoConfirmar: 'Anular inscripción',
       campos: [{ nombre: 'motivo', etiqueta: 'Motivo', tipo: 'textarea', requerido: true, maxlength: 200 }],

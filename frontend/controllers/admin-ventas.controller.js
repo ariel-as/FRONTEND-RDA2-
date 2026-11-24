@@ -1,6 +1,6 @@
 import './admin.controller.js';
 import { ventasModel, facturasModel, clientesModel } from '../models/fase2.model.js';
-import { ofrecerFactura, mostrarFactura } from './factura.controller.js';
+import { ofrecerFactura, mostrarFactura, idsSinFactura } from './factura.controller.js';
 import { adminModel } from '../models/admin.model.js';
 import { puede } from '../models/permisos.model.js';
 import { formatearPrecio } from '../models/carrito.model.js';
@@ -63,19 +63,28 @@ async function cobrar() {
   lista?.recargar();
   cargarProductos();
   const factura = await ofrecerFactura({ ventaId: venta.id });
-  if (factura) mostrarMensaje(region, factura, 'exito');
+  if (factura) { await actualizarSinFactura(); mostrarMensaje(region, factura, 'exito'); }
 }
+
+let sinFactura = new Set();
+let lista = null;
+const actualizarSinFactura = async () => {
+  try { sinFactura = await idsSinFactura(); }
+  catch { sinFactura = new Set(); }
+  return sinFactura;
+};
+await actualizarSinFactura();
 
 const desde = document.querySelector('#ventas-desde');
 const hasta = document.querySelector('#ventas-hasta');
 if (desde && hasta) { desde.value = hoy; hasta.value = hoy; }
-const lista = crearLista({
+lista = crearLista({
   raiz: '#pantalla-ventas', filtros: '#filtros-ventas', caption: 'Ventas',
   cargar: (p) => ventasModel.listar(p),
   columnas: [['N.º', (v) => txt(v.id)], ['Fecha', (v) => fecha(v.fecha, true)], ['Cliente', (v) => txt(v.cliente?.nombre || v.cliente || v.clienteId)], ['Canal', (v) => txt(v.canal === 'W' ? 'Web' : 'Local')], ['Total', (v) => dinero(v.total)], ['Estado', (v) => estado(ESTADOS, v.estado)]],
   acciones: (v) => [
     { texto: 'Detalle', permiso: 'ventas:leer', etiqueta: `Detalle de la venta ${v.id}`, ejecutar: () => verDetalle(`Venta ${v.id}`, () => ventasModel.detalle(v.id)) },
-    v.estado !== 'X' && { texto: 'Generar factura', permiso: 'facturas:generar', etiqueta: `Generar factura de la venta ${v.id}`, ejecutar: () => ofrecerFactura({ ventaId: v.id }) },
+    v.estado !== 'X' && sinFactura?.has(`venta:${v.id}`) && { texto: 'Generar factura', permiso: 'facturas:generar', secundaria: true, etiqueta: `Generar factura de la venta ${v.id}`, ejecutar: async () => { const m = await ofrecerFactura({ ventaId: v.id }); if (m) { await actualizarSinFactura(); lista.recargar(); } return m; } },
     v.estado !== 'X' && { texto: 'Anular venta', permiso: 'ventas:anular', tono: 'btn-outline-danger', etiqueta: `Anular la venta ${v.id}`, ejecutar: () => formulario({
       titulo: `Anular la venta ${v.id}`, mensaje: 'Se devuelve el stock, los pagos pasan a devolución y la factura queda por anular en el SRI. No se puede deshacer.', tono: 'peligro', textoConfirmar: 'Anular venta',
       campos: [{ nombre: 'motivo', etiqueta: 'Motivo', tipo: 'textarea', requerido: true, maxlength: 200 }],

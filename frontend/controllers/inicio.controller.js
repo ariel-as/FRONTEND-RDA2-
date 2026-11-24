@@ -1,5 +1,5 @@
 ﻿import { obtenerProductos, obtenerPlanes, obtenerClases, obtenerEntrenadores, obtenerGimnasio, enviarContacto, obtenerNiveles } from '../models/catalogo.model.js';
-import { DESCRIPCION_SERVICIO } from '../models/presentacion.model.js';
+import { descripcionServicio } from '../models/presentacion.model.js';
 import { carrito } from '../models/carrito.model.js';
 import { escapar, mostrarAviso, renderizar, vacio, tarjetaProducto, tarjetaPlan, tarjetaClase, tarjetaEntrenador, tarjetaServicio, seccionCategoriaTienda } from '../views/componentes.view.js';
 import { construirValidador, mostrarMensaje, mostrarErroresServidor } from './validacion.controller.js';
@@ -130,15 +130,35 @@ function pintarClases(resultado, entrenadores){
     return tarjetaClase(c, ent);
   }));
 }
+const NUMEROS_NOMBRE = { uno: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10, once: 11, doce: 12 };
+function numeroDelNombre(entrenador) {
+  const texto = String(entrenador?.nombre || '').toLocaleLowerCase('es');
+  const encontrado = texto.match(/\b(?:uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|\d+)\b/);
+  if (!encontrado) return null;
+  const valor = encontrado[0];
+  return /^\d+$/.test(valor) ? Number(valor) : (NUMEROS_NOMBRE[valor] ?? null);
+}
+function fechaDeRegistro(entrenador) {
+  const valor = entrenador?.createdAt || entrenador?.fechaRegistro || entrenador?.fechaAlta || entrenador?.fechaIngreso || entrenador?.id;
+  const fecha = new Date(valor);
+  return Number.isNaN(fecha.getTime()) ? 0 : fecha.getTime();
+}
+function compararEntrenadores(a, b) {
+  const na = numeroDelNombre(a); const nb = numeroDelNombre(b);
+  if (na !== null && nb !== null && na !== nb) return na - nb;
+  if (na !== null && nb === null) return -1;
+  if (na === null && nb !== null) return 1;
+  return fechaDeRegistro(a) - fechaDeRegistro(b) || String(a.id).localeCompare(String(b.id), 'es');
+}
 function pintarEntrenadores(resultado){
   const cont = select('[data-entrenadores]'); if(!cont) return;
   if (!resultado.datos.length){ cont.innerHTML = vacio('No hay entrenadores disponibles por ahora.'); return; }
-  const ordenados = [...resultado.datos].sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), 'es'));
+  const ordenados = [...resultado.datos].sort(compararEntrenadores);
   renderizar(cont, ordenados.map(tarjetaEntrenador));
 }
 function pintarServicios(gimnasio){
   const cont = select('[data-servicios]'); if(!cont || !gimnasio?.servicios?.length) return;
-  renderizar(cont, gimnasio.servicios.map((s) => tarjetaServicio({ ...s, descripcion: s.descripcion || DESCRIPCION_SERVICIO[s.id] || '' })));
+  renderizar(cont, gimnasio.servicios.map((s) => tarjetaServicio({ ...s, descripcion: descripcionServicio(s) })));
 }
 // Rutinas: niveles con lo que se ofrece y planes que incluyen rutina personalizada.
 const DETALLE_NIVEL = {

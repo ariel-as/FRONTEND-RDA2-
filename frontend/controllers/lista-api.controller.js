@@ -48,8 +48,13 @@ export function crearLista(opciones) {
         acciones: conAcciones ? (f, i) => {
           const botones = accionesFila[i];
           const boton = (a, j) => `<button type="button" class="btn btn-sm ${a.tono || 'btn-outline-primary'} me-1 mb-1" data-fila="${i}" data-accion-lista="${j}"${a.etiqueta ? ` aria-label="${escapar(a.etiqueta)}"` : ''}>${escapar(a.texto)}</button>`;
-          if (botones.length <= 2) return botones.map(boton).join('');
-          return boton(botones[0], 0) + `<button type="button" class="btn btn-sm btn-outline-secondary mb-1" data-fila="${i}" data-mas-acciones aria-haspopup="dialog">Más acciones<span class="visually-hidden"> (${botones.length - 1})</span></button>`;
+          const indicePrincipal = botones.findIndex((a) => !a.secundaria);
+          const conSecundarias = botones.some((a) => a.secundaria);
+          if (botones.length <= 2 && !conSecundarias) return botones.map(boton).join('');
+          const enMenu = botones.map((a, j) => ({ a, j })).filter(({ a }) => indicePrincipal < 0 || a.secundaria);
+          const principal = indicePrincipal >= 0 ? boton(botones[indicePrincipal], indicePrincipal) : '';
+          if (!enMenu.length) return principal;
+          return principal + `<button type="button" class="btn btn-sm btn-outline-secondary mb-1" data-fila="${i}" data-mas-acciones aria-haspopup="dialog">Más acciones<span class="visually-hidden"> (${enMenu.length})</span></button>`;
         } : null
       }) + (opciones.paginar === false ? '' : paginacionAdmin({ page: respuesta?.pagination?.page || pagina, totalPages: respuesta?.pagination?.totalPages || 1 }));
       opciones.alCargar?.(respuesta, filas);
@@ -80,10 +85,12 @@ export function crearLista(opciones) {
   // Menú de acciones en un diálogo (no se recorta dentro de la tabla con desplazamiento).
   async function elegirAccion(i) {
     const botones = accionesFila[i] || [];
+    const indicePrincipal = botones.findIndex((a) => !a.secundaria);
+    const enMenu = botones.map((a, j) => ({ a, j })).filter(({ a }) => indicePrincipal < 0 || a.secundaria);
     let elegida = null;
     await abrirDialogo({
       titulo: 'Acciones', textoConfirmar: 'Cerrar', textoCancelar: 'Volver',
-      contenido: `<div class="d-grid gap-2">${botones.map((a, j) => `<button type="button" class="btn ${a.tono || 'btn-outline-primary'}" data-elegir="${j}">${escapar(a.texto)}</button>`).join('')}</div>`,
+      contenido: `<div class="d-grid gap-2">${enMenu.map(({ a, j }) => `<button type="button" class="btn ${a.tono || 'btn-outline-primary'}" data-elegir="${j}"${a.etiqueta ? ` aria-label="${escapar(a.etiqueta)}"` : ''}>${escapar(a.texto)}</button>`).join('')}</div>`,
       alPreparar: (form, dialogo) => form.querySelectorAll('[data-elegir]').forEach((b) => b.addEventListener('click', () => { elegida = botones[Number(b.dataset.elegir)]; dialogo.close(); }))
     });
     if (!elegida) return;

@@ -38,7 +38,7 @@ export async function iniciarMisPedidos(){
     const btnCancel = e.target.closest('[data-cancelar-pedido]');
     if (btnCancel){
       const id = btnCancel.dataset.cancelarPedido;
-      if (!await confirmarAccion({ titulo: 'Cancelar pedido', mensaje: `¿Cancelar el pedido #${id}? Esta acción no se puede deshacer.`, textoConfirmar: 'Cancelar pedido' })) return;
+      if (!await confirmarAccion({ titulo: 'Cancelar pedido', mensaje: `¿Cancelar tu pedido N.º ${btnCancel.dataset.ordenCliente || '—'}? Esta acción no se puede deshacer.`, textoConfirmar: 'Cancelar pedido' })) return;
       try { await cancelarPedido(id); mostrarAviso('Pedido cancelado.', 'exito'); await cargarPedidos(); }
       catch(err){ mostrarAviso(err.mensaje || 'No se pudo cancelar el pedido.', 'error'); }
     }

@@ -235,6 +235,21 @@ footer img[src*="logo-planeta.png"] {
   color: #0a0a0a;
 }
 
+.pf-hero > .relative {
+  background: rgba(0, 0, 0, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 1rem;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
+  padding-inline: clamp(1rem, 4vw, 2.5rem);
+}
+
+.pf-hero p, .pf-hero p > a { color: #ffffff; }
+body:not(.pf-admin) .pf-hero p > a.underline { color: #ffffff; }
+.pf-hero p > a { text-decoration-color: var(--pf-amarillo); text-decoration-thickness: 0.12em; text-underline-offset: 0.15em; }
+
+[data-entrenadores] .pf-tarjeta { height: 100%; }
+[data-entrenadores] .pf-foto-entrenador { aspect-ratio: 4 / 5; width: 100%; height: auto; object-fit: cover; }
+
 /* ---------- Base ---------- */
 
 /* El atributo hidden debe ganar siempre a las utilidades de Tailwind

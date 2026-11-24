@@ -39,6 +39,26 @@ export async function confirmarCompra(carritoItems, pago = {}) {
 export async function misPedidos(page = 1, limit = 10) {
   return api.get(`/pedidos/mis-pedidos?page=${page}&limit=${limit}`, { requiereSesion: true });
 }
+
+export async function numeroPedidoCliente(id) {
+  if (!id) return null;
+  const limite = 100;
+  let pagina = 1;
+  let totalPaginas = 1;
+  let vistos = 0;
+  while (pagina <= totalPaginas && pagina <= 50) {
+    const res = await misPedidos(pagina, limite);
+    const lista = res?.data || res?.pedidos || res || [];
+    if (!Array.isArray(lista)) return null;
+    const total = Number(res?.pagination?.total) || lista.length;
+    const indice = lista.findIndex((p) => String(p.id) === String(id));
+    if (indice !== -1) return total - vistos - indice;
+    totalPaginas = Number(res?.pagination?.totalPages) || 1;
+    vistos += lista.length;
+    pagina += 1;
+  }
+  return null;
+}
 export async function misInscripciones() {
   return api.get('/inscripciones/mis-inscripciones', { requiereSesion: true });
 }

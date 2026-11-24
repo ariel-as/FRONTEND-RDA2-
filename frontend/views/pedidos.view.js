@@ -12,13 +12,13 @@ export function tarjetaPedido(pedido, { orden, total } = {}) {
   return `
   <article class="pf-tarjeta p-5">
     <div class="flex flex-wrap items-start justify-between gap-2">
-      <div><h3 class="m-0 text-lg font-bold text-white">Pedido N.º ${escapar(pedido.id)}</h3><p class="m-0 text-sm text-neutral-400">${orden ? `Tu pedido ${escapar(orden)} de ${escapar(total)} · ` : ''}${new Date(pedido.createdAt || pedido.fecha || Date.now()).toLocaleString('es-EC')}</p></div>
+      <div><h3 class="m-0 text-lg font-bold text-white">Tu pedido N.º ${escapar(orden ?? '—')}</h3><p class="m-0 text-sm text-neutral-400">${new Date(pedido.createdAt || pedido.fecha || Date.now()).toLocaleString('es-EC')}</p></div>
       <p class="m-0 text-sm"><span class="text-neutral-400">Estado:</span> <span class="pf-etiqueta">${escapar(estadoTexto)}</span></p>
     </div>
     <p class="mt-2 text-sm text-neutral-300">Pago: ${escapar(METODOS[pedido.metodoPago] || pedido.metodoPago || '')} ${pedido.refTransferencia ? `(comprobante ${escapar(pedido.refTransferencia)})` : ''}</p>
     <ul class="mt-3 list-none p-0 space-y-1">${lineas}</ul>
     <p class="mt-3 font-bold pf-precio">Total: ${formatearPrecio(pedido.total)}</p>
-    ${puedeCancelar ? `<button type="button" class="pf-boton pf-boton-secundario mt-2" data-cancelar-pedido="${escapar(pedido.id)}" aria-label="Cancelar pedido ${escapar(pedido.id)}">Cancelar pedido</button>` : ''}
+    ${puedeCancelar ? `<button type="button" class="pf-boton pf-boton-secundario mt-2" data-cancelar-pedido="${escapar(pedido.id)}" data-orden-cliente="${escapar(orden ?? '')}" aria-label="Cancelar tu pedido N.º ${escapar(orden ?? '—')}">Cancelar pedido</button>` : ''}
   </article>`;
 }
 

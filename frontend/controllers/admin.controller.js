@@ -116,7 +116,7 @@ const INDICADORES_ROL = {
   ],
   CON: [
     { titulo: 'Cuadres sin cierre semanal', clave: 'cuadresSinCerrar', permiso: 'caja:cierre', enlace: 'caja.html#cierres' },
-    { titulo: 'Facturas por registrar en el SRI', clave: 'facturasPendientes', permiso: 'facturas:leer', enlace: 'facturas.html?estado=P' }
+    { titulo: 'Facturas emitidas', clave: 'facturasEmitidas', permiso: 'facturas:leer', enlace: 'facturas.html' }
   ],
   ENT: [
     { titulo: 'Aforo actual', clave: 'aforo', permiso: 'aforo:ver', enlace: 'entradas.html' },
@@ -130,7 +130,7 @@ async function valorIndicador(clave) {
   if (clave === 'aforo') { const a = await entradasModel.aforo().then((r) => r?.data ?? r); return `${a.personasAdentro} de ${a.aforoMax}`; }
   if (clave === 'caja') { const t = await turnoAbierto(); return t ? `Abierta (${t.turno || t.turnoId})` : 'Sin turno abierto'; }
   if (clave === 'webPendientes') return totalDe(await inscripcionesModel.listar({ estado: 'P', canal: 'W', limit: 1 }));
-  if (clave === 'facturasPendientes') return totalDe(await facturasModel.listar({ estado: 'P', limit: 1 }));
+  if (clave === 'facturasEmitidas') return totalDe(await facturasModel.listar({ limit: 1 }));
   if (clave === 'rutinas') return totalDe(await rutinasModel.listar({ limit: 1 }));
   if (clave === 'cuadresSinCerrar') { const r = await cajaModel.turnos({ limit: 100 }); return (r?.data || r || []).filter((c) => !c.cierreCajaId && c.efectivoContado !== null).length; }
   return null;
