@@ -117,3 +117,7 @@ Base: `correcciones-diseno`. Se aplicaron las secciones 1 a 6 en orden, sin toca
 **Aviso para el backend:** `POST /api/v1/admin/facturas` responde `numComprobante: null`, `claveAcceso: null` y `estado: "P"`. El frontend lo muestra como «Pendiente de número» y nunca como «En proceso»; para ver un número/clave simulados y el estado «Emitida» debe cambiar el backend. No se modificó el contrato ni el servidor.
 
 **CI local final:** sintaxis correcta en 90 archivos con Node 24; `verificar-frontend`, HTMLHint, nueve pruebas estáticas, seguridad, dependencias (con red), contrato de API y prueba de humo con Playwright: 0 fallos. No se corrió CodeQL/Gitleaks en local; los ejecuta GitHub Actions.
+
+## 6. Ajuste final de portada
+
+Se retiró el panel oscuro con borde y esquinas redondeadas que tapaba la foto de `index.html`. La imagen vuelve a ocupar toda la portada con el título encima; solo la línea de dirección y correo lleva un fondo oscuro pequeño y sombra de texto. Verificado a 1440 y 375 px: foto visible, sin recuadro, sin desborde y correo legible. Playwright: 8 comprobaciones, 0 fallos.

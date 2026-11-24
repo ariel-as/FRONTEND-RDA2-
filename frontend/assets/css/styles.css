@@ -235,12 +235,13 @@ footer img[src*="logo-planeta.png"] {
   color: #0a0a0a;
 }
 
-.pf-hero > .relative {
-  background: rgba(0, 0, 0, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 1rem;
-  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
-  padding-inline: clamp(1rem, 4vw, 2.5rem);
+.pf-hero > .relative > p:last-child {
+  display: inline-block;
+  max-width: 100%;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.5rem;
+  background: rgba(0, 0, 0, 0.55);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
 }
 
 .pf-hero p, .pf-hero p > a { color: #ffffff; }
