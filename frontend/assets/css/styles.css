@@ -2077,6 +2077,9 @@ html[data-tema="claro"] .pf-iniciales { background: #f4f4f5; color: #92400e; }
 .pf-admin .btn-primary { --bs-btn-bg: var(--pf-amarillo); --bs-btn-border-color: var(--pf-amarillo); --bs-btn-color: #111111; --bs-btn-hover-bg: #eab308; --bs-btn-hover-border-color: #eab308; --bs-btn-hover-color: #111111; --bs-btn-active-bg: #ca8a04; --bs-btn-active-border-color: #ca8a04; --bs-btn-active-color: #111111; --bs-btn-disabled-bg: #fde68a; --bs-btn-disabled-border-color: #fde68a; --bs-btn-disabled-color: #3f3f46; font-weight: 700; }
 .pf-admin .btn-outline-primary { --bs-btn-color: #854d0e; --bs-btn-border-color: #a16207; --bs-btn-hover-bg: var(--pf-amarillo); --bs-btn-hover-border-color: var(--pf-amarillo); --bs-btn-hover-color: #111111; --bs-btn-active-bg: #eab308; --bs-btn-active-border-color: #eab308; --bs-btn-active-color: #111111; }
 html[data-bs-theme="dark"] .pf-admin .btn-outline-primary { --bs-btn-color: #fde047; --bs-btn-border-color: #facc15; }
+html[data-bs-theme="light"] .pf-admin .nav-tabs .nav-link:not(.active) { color: #0a58ca; }
+html[data-bs-theme="dark"] .pf-admin .btn-outline-secondary { --bs-btn-color: #dee2e6; --bs-btn-border-color: #adb5bd; }
+html[data-bs-theme="dark"] .pf-admin .btn-outline-danger { --bs-btn-color: #ff8a95; --bs-btn-border-color: #f87171; }
 .pf-admin .btn-outline-primary[aria-pressed="true"] { background: var(--pf-amarillo); color: #111111; border-color: var(--pf-amarillo); }
 .pf-admin .progress-bar.bg-success { color: #ffffff; }
 

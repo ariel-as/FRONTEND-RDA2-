@@ -23,6 +23,11 @@ export function crearLista(opciones) {
   let pagina = 1;
   let filas = [];
   let accionesFila = [];
+  const ariaAccion = (a) => {
+    if (!a.etiqueta) return '';
+    const nombre = a.etiqueta.includes(a.texto) ? a.etiqueta : `${a.texto}: ${a.etiqueta}`;
+    return ` aria-label="${escapar(nombre)}"`;
+  };
 
   const parametros = () => {
     const p = { ...(opciones.fijos || {}) };
@@ -47,7 +52,7 @@ export function crearLista(opciones) {
         // Con más de dos acciones se muestra la primera y el resto queda en «Más acciones».
         acciones: conAcciones ? (f, i) => {
           const botones = accionesFila[i];
-          const boton = (a, j) => `<button type="button" class="btn btn-sm ${a.tono || 'btn-outline-primary'} me-1 mb-1" data-fila="${i}" data-accion-lista="${j}"${a.etiqueta ? ` aria-label="${escapar(a.etiqueta)}"` : ''}>${escapar(a.texto)}</button>`;
+          const boton = (a, j) => `<button type="button" class="btn btn-sm ${a.tono || 'btn-outline-primary'} me-1 mb-1" data-fila="${i}" data-accion-lista="${j}"${ariaAccion(a)}>${escapar(a.texto)}</button>`;
           const indicePrincipal = botones.findIndex((a) => !a.secundaria);
           const conSecundarias = botones.some((a) => a.secundaria);
           if (botones.length <= 2 && !conSecundarias) return botones.map(boton).join('');
@@ -90,7 +95,7 @@ export function crearLista(opciones) {
     let elegida = null;
     await abrirDialogo({
       titulo: 'Acciones', textoConfirmar: 'Cerrar', textoCancelar: 'Volver',
-      contenido: `<div class="d-grid gap-2">${enMenu.map(({ a, j }) => `<button type="button" class="btn ${a.tono || 'btn-outline-primary'}" data-elegir="${j}"${a.etiqueta ? ` aria-label="${escapar(a.etiqueta)}"` : ''}>${escapar(a.texto)}</button>`).join('')}</div>`,
+      contenido: `<div class="d-grid gap-2">${enMenu.map(({ a, j }) => `<button type="button" class="btn ${a.tono || 'btn-outline-primary'}" data-elegir="${j}"${ariaAccion(a)}>${escapar(a.texto)}</button>`).join('')}</div>`,
       alPreparar: (form, dialogo) => form.querySelectorAll('[data-elegir]').forEach((b) => b.addEventListener('click', () => { elegida = botones[Number(b.dataset.elegir)]; dialogo.close(); }))
     });
     if (!elegida) return;

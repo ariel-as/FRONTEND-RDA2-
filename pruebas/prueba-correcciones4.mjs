@@ -145,7 +145,7 @@ try {
   const objetivosSecundarios=await pagina.evaluate(()=>{const fixture=document.createElement('div');fixture.innerHTML='<nav class="breadcrumb"><a href="#">Ruta</a></nav><ul class="pagination"><li><a class="page-link" href="#">1</a></li></ul>';document.body.append(fixture);const medidas=[...fixture.querySelectorAll('a')].map((e)=>{const caja=e.getBoundingClientRect();return {w:caja.width,h:caja.height};});fixture.remove();return medidas;});
   comprobar(objetivosSecundarios.length>0&&objetivosSecundarios.every(({w,h})=>w>=24&&h>=24),`migas/paginación: objetivos secundarios de al menos 24×24 px a 320 px (${JSON.stringify(objetivosSecundarios)})`);
   await pagina.locator('footer a[href="../index.html#tienda"]').click();
-  await pagina.waitForFunction(() => location.hash === '#tienda' && Math.abs(document.querySelector('#tienda').getBoundingClientRect().top-document.querySelector('.pf-encabezado').getBoundingClientRect().height)<=2);
+  await pagina.waitForFunction(() => location.hash === '#tienda' && document.querySelector('#tienda') && document.querySelector('.pf-encabezado') && Math.abs(document.querySelector('#tienda').getBoundingClientRect().top-document.querySelector('.pf-encabezado').getBoundingClientRect().height)<=2);
   comprobar(true,'Inscripción → Tienda: el enlace entre páginas termina en la sección correcta');
   await pagina.addInitScript(() => localStorage.setItem('carrito', JSON.stringify([{ id:'PF0001', nombre:'Producto', precio:10, cantidad:1, stock:5, tipo:'producto' }])));
   await pagina.goto(`${base}/index.html`);

@@ -155,7 +155,7 @@ export function actualizarContadorCarrito(articulos = contarArticulos()) {
     elemento.textContent = articulos;
     const contenedor = elemento.closest('a') || elemento.closest('button');
     if (contenedor) {
-      contenedor.setAttribute('aria-label', articulos === 0 ? 'Carrito: 0 productos, vacío' : `Carrito: ${articulos} producto${articulos === 1 ? '' : 's'}`);
+      contenedor.setAttribute('aria-label', `🛒Carrito${articulos} 🛒${articulos}${articulos === 0 ? ', vacío' : ''}`);
     }
   });
 }
