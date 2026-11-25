@@ -17,14 +17,42 @@ const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Guayaqui
 let productos = [];
 let lineas = [];
 const centavos = (v) => Math.round(Number(v || 0) * 100);
+const stockDe = (producto) => (producto?.disponible === false ? 0 : Math.max(0, Number(producto?.stock ?? 0)));
+const cantidadEnLineas = (id) => lineas.filter((l) => String(l.producto.id) === String(id)).reduce((total, l) => total + l.cantidad, 0);
+
+function actualizarStockFormulario() {
+  const form = document.querySelector('#form-linea');
+  if (!form) return;
+  const producto = productos.find((p) => String(p.id) === String(form.producto.value));
+  const stock = stockDe(producto);
+  const enLinea = producto ? cantidadEnLineas(producto.id) : 0;
+  const cantidad = form.cantidad;
+  cantidad.max = String(Math.max(1, stock));
+  if (stock > 0 && Number(cantidad.value) > stock) cantidad.value = String(stock);
+  const completo = Boolean(producto) && stock > 0 && enLinea >= stock;
+  const texto = !producto
+    ? 'Selecciona un producto para ver cuántas unidades quedan.'
+    : stock <= 0
+      ? `Sin stock de ${producto.nombre}. No puedes agregarlo.`
+      : completo
+        ? `Ya agregaste todas las unidades disponibles de ${producto.nombre} (Quedan ${stock}).`
+        : `Quedan ${stock} unidades de ${producto.nombre}.`;
+  const aviso = document.querySelector('#venta-stock');
+  if (aviso) aviso.textContent = texto;
+  form.querySelector('button[type="submit"]').disabled = !producto || stock <= 0 || completo;
+}
 
 async function cargarProductos() {
   const select = document.querySelector('#venta-producto');
   try {
     const r = await adminModel.productos({ estado: 'A', limit: 100 });
-    productos = (r?.data || r || []).filter((p) => Number(p.stock ?? 1) > 0);
-    select.innerHTML = '<option value="">Selecciona un producto</option>' + productos.map((p) => `<option value="${escapar(p.id)}">${escapar(p.nombre)} · ${formatearPrecio(p.precioVenta ?? p.precio)} · stock ${escapar(p.stock ?? '')}</option>`).join('');
+    productos = r?.data || r || [];
+    select.innerHTML = '<option value="">Selecciona un producto</option>' + productos.map((p) => {
+      const stock = stockDe(p);
+      return `<option value="${escapar(p.id)}"${stock <= 0 ? ' disabled' : ''}>${escapar(p.nombre)} · ${formatearPrecio(p.precioVenta ?? p.precio)} · ${stock > 0 ? `Quedan ${stock}` : 'Sin stock'}</option>`;
+    }).join('');
   } catch (error) { select.innerHTML = `<option value="">${escapar(error.mensaje || 'No se pudieron cargar los productos')}</option>`; }
+  actualizarStockFormulario();
 }
 const precio = (p) => Number(p?.precioVenta ?? p?.precio ?? 0);
 const estimado = () => lineas.reduce((a, l) => a + centavos(precio(l.producto)) * l.cantidad - centavos(l.descuento), 0) / 100;
@@ -34,13 +62,14 @@ function pintarLineas() {
   // La tabla y el resumen se ven desde el inicio, aunque no haya líneas.
   cont.innerHTML = tablaHtml({
     caption: 'Líneas de la venta',
-    columnas: [['Producto', (l) => txt(l.producto.nombre)], ['Precio', (l) => dinero(precio(l.producto))],
-      ['Cantidad', (l) => `<label class="visually-hidden" for="cant-${escapar(l.producto.id)}">Cantidad de ${escapar(l.producto.nombre)}</label><input class="form-control form-control-sm" style="max-width:6rem" type="number" min="1" step="1" id="cant-${escapar(l.producto.id)}" data-cantidad="${escapar(l.producto.id)}" value="${l.cantidad}">`],
+    columnas: [['Producto', (l) => `${txt(l.producto.nombre)}<span class="small d-block">${stockDe(l.producto) > 0 ? `Quedan ${stockDe(l.producto)}` : 'Sin stock'}</span>`], ['Precio', (l) => dinero(precio(l.producto))],
+      ['Cantidad', (l) => `<label class="visually-hidden" for="cant-${escapar(l.producto.id)}">Cantidad de ${escapar(l.producto.nombre)}, máximo ${stockDe(l.producto)}</label><input class="form-control form-control-sm" style="max-width:6rem" type="number" min="1" step="1" max="${stockDe(l.producto)}" id="cant-${escapar(l.producto.id)}" data-cantidad="${escapar(l.producto.id)}" value="${l.cantidad}">`],
       ['Descuento', (l) => dinero(l.descuento)]],
     filas: lineas,
     acciones: (l) => `<button type="button" class="btn btn-sm btn-outline-danger" data-quitar-linea="${escapar(l.producto.id)}" aria-label="Quitar ${escapar(l.producto.nombre)}">Quitar</button>`
   }) + `<p class="fw-bold">Total estimado: ${formatearPrecio(estimado())} <span class="fw-normal small">(el servidor calcula el total definitivo con IVA y el cobro se ajusta si lo corrige)</span></p>`;
   document.querySelector('[data-cobrar-venta]').disabled = !lineas.length;
+  actualizarStockFormulario();
 }
 
 async function cobrar() {
@@ -96,6 +125,8 @@ const formLinea = document.querySelector('#form-linea');
 if (formLinea && puede('ventas:crear') && document.body.dataset.sinAcceso !== 'true') {
   cargarProductos();
   pintarLineas();
+  formLinea.producto.addEventListener('change', actualizarStockFormulario);
+  formLinea.cantidad.addEventListener('input', actualizarStockFormulario);
   // Buscador: filtra la lista de productos por nombre o código y elige el primero que coincide.
   document.querySelector('#venta-buscar')?.addEventListener('input', (e) => {
     const q = e.target.value.trim().toLowerCase();
@@ -121,14 +152,30 @@ if (formLinea && puede('ventas:crear') && document.body.dataset.sinAcceso !== 't
     const cantidad = Math.max(1, Math.floor(Number(formLinea.cantidad.value) || 1));
     const descuento = Math.max(0, Number(formLinea.descuento.value) || 0);
     if (!producto) { mostrarMensaje(region, 'Elige un producto.', 'error'); formLinea.producto.focus(); return; }
-    const existente = lineas.find((l) => l.producto.id === producto.id);
-    if (existente) { existente.cantidad += cantidad; existente.descuento += descuento; } else lineas.push({ producto, cantidad, descuento });
+    const stock = stockDe(producto);
+    if (stock <= 0) { mostrarMensaje(region, `Sin stock de ${producto.nombre}. No puedes agregarlo.`, 'error'); return; }
+    const enLinea = cantidadEnLineas(producto.id);
+    if (cantidad > stock - enLinea) {
+      mostrarMensaje(region, `Solo quedan ${Math.max(0, stock - enLinea)} unidades disponibles de ${producto.nombre}.`, 'error');
+      formLinea.cantidad.value = String(Math.max(1, stock - enLinea));
+      actualizarStockFormulario();
+      return;
+    }
+    const existente = lineas.find((l) => String(l.producto.id) === String(producto.id));
+    if (existente) { existente.cantidad = enLinea + cantidad; existente.descuento += descuento; } else lineas.push({ producto, cantidad, descuento });
     pintarLineas();
     formLinea.cantidad.value = '1'; formLinea.descuento.value = '0'; formLinea.producto.focus();
   });
   document.querySelector('[data-lineas]').addEventListener('change', (e) => {
     const l = lineas.find((x) => String(x.producto.id) === e.target.dataset.cantidad);
-    if (l) { l.cantidad = Math.max(1, Math.floor(Number(e.target.value) || 1)); pintarLineas(); }
+    if (l) {
+      const stock = stockDe(l.producto);
+      const solicitada = Math.max(1, Math.floor(Number(e.target.value) || 1));
+      if (solicitada > stock) mostrarMensaje(region, `Solo quedan ${stock} unidades de ${l.producto.nombre}.`, 'error');
+      l.cantidad = Math.min(stock, solicitada);
+      e.target.value = String(l.cantidad);
+      pintarLineas();
+    }
   });
   document.querySelector('[data-lineas]').addEventListener('click', (e) => {
     const id = e.target.closest('[data-quitar-linea]')?.dataset.quitarLinea;

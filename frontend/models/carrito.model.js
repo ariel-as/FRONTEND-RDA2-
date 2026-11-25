@@ -9,7 +9,7 @@ export function esPlan(linea) {
 function maximoDe(linea) {
   const base = esPlan(linea) ? CANTIDAD_MAXIMA_PLAN : CANTIDAD_MAXIMA;
   const stock = Number.isFinite(Number(linea?.stock)) ? Number(linea.stock) : base;
-  return Math.max(1, Math.min(base, stock));
+  return Math.max(0, Math.min(base, stock));
 }
 
 export function obtenerCarrito() {
@@ -39,10 +39,13 @@ export function agregarProducto(producto, cantidad = 1) {
     membresiaId: producto.membresiaId || (producto.tipo === 'plan' ? String(producto.id) : undefined),
     stock: producto.stock
   };
+  if (producto?.disponible === false || maximoDe(base) <= 0) return carrito;
   if (existente) {
     if (base.stock != null) existente.stock = base.stock;
     if (base.membresiaId) existente.membresiaId = base.membresiaId;
-    existente.cantidad = Math.min(maximoDe(existente), existente.cantidad + cantidad);
+    const limite = maximoDe(existente);
+    if (limite <= 0) return guardarCarrito(carrito.filter((item) => String(item.id) !== String(producto.id)));
+    existente.cantidad = Math.min(limite, existente.cantidad + cantidad);
   } else {
     carrito.push({ ...base, cantidad: Math.min(maximoDe(base), Math.max(1, cantidad)) });
   }

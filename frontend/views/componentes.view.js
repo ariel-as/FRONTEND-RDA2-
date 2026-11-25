@@ -44,15 +44,20 @@ function imagenConWebp(ruta, atributos) {
 }
 
 export function tarjetaProducto(producto) {
-  const disponible = producto.disponible !== false && Number(producto.stock ?? 0) > 0;
+  const stock = Number(producto.stock ?? 0);
+  const disponible = producto.disponible !== false && stock > 0;
+  const motivo = producto.disponible === false ? 'No disponible' : 'Agotado';
+  const insignias = !disponible
+    ? `<span class="ml-2 inline-block rounded-full border border-pf-linea px-2 py-0.5 text-xs font-bold text-pf-amarillo">${motivo}</span>`
+    : '';
   const boton = disponible
-    ? `<button type="button" class="pf-boton pf-boton-primario w-full" data-accion="agregar" data-id="${escapar(producto.id)}" aria-label="Agregar al carrito: ${escapar(producto.nombre)}, precio ${formatearPrecio(producto.precio)}">Agregar al carrito</button>`
-    : `<button type="button" class="pf-boton pf-boton-primario w-full" disabled aria-disabled="true">Agotado</button>`;
+    ? `<button type="button" class="pf-boton pf-boton-primario w-full" data-accion="agregar" data-id="${escapar(producto.id)}" aria-label="Agregar al carrito: ${escapar(producto.nombre)}, precio ${formatearPrecio(producto.precio)}, quedan ${stock}">Agregar al carrito</button>`
+    : `<button type="button" class="pf-boton pf-boton-primario w-full" disabled aria-disabled="true" aria-label="${motivo}: ${escapar(producto.nombre)}">${motivo}</button>`;
   return `
     <article class="pf-tarjeta h-full flex flex-col overflow-hidden" data-producto="${escapar(producto.id)}">
       ${imagenConWebp(producto.imagen, `class="pf-imagen-tarjeta" alt="${escapar(producto.nombre)} de Planeta Fitness" loading="lazy" width="600" height="600"`)}
       <div class="flex flex-col gap-3 p-5 flex-1">
-        <p class="pf-etiqueta">${escapar(producto.categoria || producto.categoriaId || '')}</p>
+        <p class="pf-etiqueta">${escapar(producto.categoria || producto.categoriaId || '')}${insignias}</p>
         <h4 class="text-lg font-bold text-white">${escapar(producto.nombre)}</h4>
         <p class="text-sm text-neutral-300 flex-1">${escapar(producto.descripcion || '')}</p>
         <div>

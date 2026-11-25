@@ -2,6 +2,7 @@
 import { mostrarMensaje } from './validacion.controller.js';
 import { confirmarAccion } from './dialogo.controller.js';
 import { escapar } from '../views/componentes.view.js';
+import { stockTexto } from '../views/lista-api.view.js';
 import { paginacionAdmin } from '../views/admin.view.js';
 
 const s = (x)=>document.querySelector(x);
@@ -63,8 +64,7 @@ async function listar(){
     totalPages = paginacion.totalPages || 1;
     pagina = paginacion.page || pagina;
     if(tbody) tbody.innerHTML = lista.length ? lista.map(p=>{
-      const bajo = Number(p.stock)<=Number(p.stockMin??p.stock_min??0);
-      return `<tr><th scope="row">${escapar(p.nombre)}<div class="small text-body-secondary">${escapar(p.id)}</div></th><td>${escapar(p.categoria?.descripcion||p.categoria||p.categoriaId||'')}</td><td>${money(p.precio)}</td><td>${money(p.precioConIva ?? p.precio)}</td><td>${escapar(p.stock ?? 0)}${bajo?' <span class="badge text-bg-warning">bajo mínimo</span>':''}</td><td>${p.estado==='A'?'A la venta':p.estado==='P'?'Pendiente':'Inactivo'}</td><td>${p.publicarWeb==='S'||p.publicarWeb===true?'Sí':'No'}</td><td class="text-nowrap"><button class="btn btn-outline-primary btn-sm" data-editar="${escapar(p.id)}" aria-label="Editar producto ${escapar(p.nombre)} (${escapar(p.id)})">Editar</button> <button class="btn btn-outline-danger btn-sm" data-desactivar="${escapar(p.id)}" aria-label="Desactivar producto ${escapar(p.nombre)} (${escapar(p.id)})" ${p.estado==='I'?'disabled':''}>Desactivar</button></td></tr>`;
+      return `<tr><th scope="row">${escapar(p.nombre)}<div class="small text-body-secondary">${escapar(p.id)}</div></th><td>${escapar(p.categoria?.descripcion||p.categoria||p.categoriaId||'')}</td><td>${money(p.precio)}</td><td>${money(p.precioConIva ?? p.precio)}</td><td>${stockTexto(p)}</td><td>${p.estado==='A'?'A la venta':p.estado==='P'?'Pendiente':'Inactivo'}</td><td>${p.publicarWeb==='S'||p.publicarWeb===true?'Sí':'No'}</td><td class="text-nowrap"><button class="btn btn-outline-primary btn-sm" data-editar="${escapar(p.id)}" aria-label="Editar producto ${escapar(p.nombre)} (${escapar(p.id)})">Editar</button> <button class="btn btn-outline-danger btn-sm" data-desactivar="${escapar(p.id)}" aria-label="Desactivar producto ${escapar(p.nombre)} (${escapar(p.id)})" ${p.estado==='I'?'disabled':''}>Desactivar</button></td></tr>`;
     }).join('') : '<tr><td colspan="8" class="text-center text-body-secondary">No hay productos.</td></tr>';
     const cont = s('[data-paginacion-productos]');
     if (cont) cont.innerHTML = paginacionAdmin({ page: pagina, totalPages });

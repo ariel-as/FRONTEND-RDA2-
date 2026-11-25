@@ -46,9 +46,18 @@ export async function iniciarCheckout(){
         pintarConfirmacion(select('[data-confirmacion-resumen]'), { ...resultado, numeroPedido });
         conf.hidden=false; tituloConfirmacion?.focus?.();
       }
-      if (resultado.errores?.length){ mostrarMensaje(region, resultado.errores.map(e=>e.mensaje).join(' '), 'error'); }
+      const constConflictos = Boolean(resultado.errores?.some((e) => e.ajustes?.length));
+      if (resultado.errores?.length){
+        const textos = resultado.errores.map((e) => {
+          if (!e.ajustes?.length) return e.mensaje || 'No se pudo registrar parte del pedido.';
+          return e.ajustes.map((a) => a.disponible > 0
+            ? `Solo quedan ${a.disponible} unidades de ${a.nombre}; ajustamos tu carrito.`
+            : `${a.nombre} ya no está disponible; lo quitamos del carrito.`).join(' ');
+        });
+        mostrarMensaje(region, textos.join(' '), 'error');
+      }
       else { mostrarMensaje(region, 'Pedido registrado correctamente.', 'exito'); }
-      if ((resultado.confirmadas || []).length) {
+      if ((resultado.confirmadas || []).length && !constConflictos) {
         form.hidden = true;
         if (bloqueResumen) bloqueResumen.hidden = true;
         consumirPendencia('checkout');

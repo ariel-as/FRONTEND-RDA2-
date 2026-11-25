@@ -10,6 +10,14 @@ let focoAnteriorModal = null;
 
 function alternarCapa(nodo, visible){ if(!nodo) return; nodo.dataset.visible=String(visible); nodo.setAttribute('aria-hidden', String(!visible)); nodo.inert = !visible; }
 function estaAbierto(nodo){ return nodo?.dataset.visible === 'true'; }
+function avisoCarrito(mensaje){
+  const nodo = document.querySelector('[data-aviso-carrito]');
+  if (!nodo) { mostrarAviso(mensaje, 'info'); return; }
+  nodo.textContent = mensaje;
+  nodo.hidden = false;
+  window.clearTimeout(nodo.dataset.timer);
+  nodo.dataset.timer = window.setTimeout(() => { nodo.hidden = true; }, 4000);
+}
 function enfocarEnDialogo(elemento, intentos=40){ if(!elemento) return; let restantes=intentos; const intentar=()=>{ elemento.focus(); if(document.activeElement===elemento||restantes<=1) return; restantes-=1; requestAnimationFrame(intentar); }; requestAnimationFrame(intentar); }
 
 function abrirPanel(){ const panel=document.querySelector('[data-panel-carrito]'); if(!panel) return; focoAnteriorPanel=document.activeElement; pintarPanelCarrito(); alternarCapa(panel,true); alternarCapa(document.querySelector('[data-capa-carrito]'),true); document.body.classList.add('pf-bloquea-scroll'); document.querySelectorAll('[data-abrir-carrito]').forEach(b=>b.setAttribute('aria-expanded','true')); enfocarEnDialogo(panel.querySelector('[data-cerrar-carrito]')); }
@@ -33,7 +41,7 @@ export function iniciarPanelCarrito(){
   document.querySelector('[data-capa-acceso]')?.addEventListener('click', ()=>cerrarModalAcceso());
   document.querySelector('[data-panel-lineas]')?.addEventListener('click', (evento)=>{
     const sumar = evento.target.closest('[data-sumar]'); const restar = evento.target.closest('[data-restar]'); const quitar = evento.target.closest('[data-quitar]');
-    if (sumar){ const id=sumar.dataset.sumar; const item=carrito.obtener().find(l=>String(l.id)===id); if(item && item.cantidad >= (item.stock ?? CANTIDAD_MAXIMA)) { mostrarAviso('No hay más unidades disponibles.', 'info'); return; } carrito.cambiar(id, (item?.cantidad||0)+1); return; }
+    if (sumar){ const id=sumar.dataset.sumar; const item=carrito.obtener().find(l=>String(l.id)===id); const limite=Number.isFinite(Number(item?.stock)) ? Math.max(0, Math.min(CANTIDAD_MAXIMA, Number(item.stock))) : CANTIDAD_MAXIMA; if(item && item.cantidad >= limite) { avisoCarrito('No hay más unidades disponibles.'); return; } carrito.cambiar(id, (item?.cantidad||0)+1); return; }
     if (restar){ const id=restar.dataset.restar; const item=carrito.obtener().find(l=>String(l.id)===id); if(!item) return; if(item.cantidad<=1){ carrito.eliminar(id); } else { carrito.cambiar(id, item.cantidad-1); } return; }
     if (quitar){ carrito.eliminar(quitar.dataset.quitar); }
   });
