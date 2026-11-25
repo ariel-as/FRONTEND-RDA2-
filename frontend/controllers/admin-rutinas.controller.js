@@ -9,7 +9,7 @@ const campos = (r = {}) => [
   ...(r.id ? [] : [{ nombre: 'clienteId', etiqueta: 'Cédula del cliente', requerido: true, maxlength: 10 }]),
   { nombre: 'nivelId', etiqueta: 'Nivel', tipo: 'select', requerido: true, opciones: NIVELES, valor: r.nivelId || 'PRI' },
   { nombre: 'objetivo', etiqueta: 'Objetivo', requerido: true, maxlength: 100, valor: r.objetivo },
-  { nombre: 'detalle', etiqueta: 'Detalle de la rutina', tipo: 'textarea', requerido: true, maxlength: 2000, valor: r.detalle },
+  { nombre: 'detalle', etiqueta: 'Detalle de la rutina', tipo: 'textarea', requerido: true, maxlength: 2000, valor: r.detalle, ayuda: 'Escribe una línea por día, por ejemplo: Lunes: pecho y tríceps.' },
   { nombre: 'fechaInicio', etiqueta: 'Desde', tipo: 'date', requerido: true, valor: String(r.fechaInicio || '').slice(0, 10) },
   { nombre: 'fechaFin', etiqueta: 'Hasta', tipo: 'date', requerido: true, valor: String(r.fechaFin || '').slice(0, 10) }
 ];

@@ -50,11 +50,49 @@ export function paginacion({ page, totalPages }, baseAttr) {
   </nav>`;
 }
 
+const ORDEN_DIAS = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+const SIN_TILDES = (texto) => String(texto || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+function nombreDia(valor) {
+  const clave = SIN_TILDES(valor);
+  const nombres = { lunes: 'Lunes', martes: 'Martes', miercoles: 'Miércoles', jueves: 'Jueves', viernes: 'Viernes', sabado: 'Sábado', domingo: 'Domingo' };
+  return nombres[clave] || String(valor || 'Día').trim();
+}
+
+function diasDeRutina(rutina) {
+  const entregados = [].concat(rutina?.dias || rutina?.rutinaDias || rutina?.detallesPorDia || []);
+  if (entregados.length) {
+    return entregados.map((dia) => ({
+      dia: nombreDia(dia.dia || dia.nombre || dia.diaSemana || dia.fecha),
+      detalle: String(dia.detalle || dia.descripcion || dia.ejercicios || '').trim()
+    })).filter((dia) => dia.detalle);
+  }
+  const grupos = [];
+  String(rutina?.detalle || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean).forEach((linea) => {
+    const coincide = linea.match(/^(lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)\s*:\s*(.*)$/i);
+    if (coincide) {
+      grupos.push({ dia: nombreDia(coincide[1]), lineas: [coincide[2].trim()].filter(Boolean) });
+      return;
+    }
+    const grupo = grupos[grupos.length - 1] || { dia: 'Día', lineas: [] };
+    if (!grupos.length) grupos.push(grupo);
+    grupo.lineas.push(linea.replace(/^[-•]\s*/, ''));
+  });
+  return grupos.map((grupo) => ({ dia: grupo.dia, detalle: grupo.lineas.join('\n') })).filter((grupo) => grupo.detalle);
+}
+
 export function tarjetaRutina(r, error = '') {
   if (!r) return `<p class="pf-mensaje">${escapar(error || 'Todavía no tienes una rutina vigente. Pídela a tu entrenador si tu plan la incluye.')}</p>`;
+  const porDia = diasDeRutina(r).sort((a, b) => ORDEN_DIAS.indexOf(SIN_TILDES(a.dia)) - ORDEN_DIAS.indexOf(SIN_TILDES(b.dia)));
+  const semana = porDia.length
+    ? `<h4 class="mt-4 text-sm font-bold uppercase tracking-wide text-pf-amarillo">Mi semana</h4><div class="mt-2 grid gap-3 sm:grid-cols-2" data-mi-semana>${porDia.map((dia, indice) => {
+      const id = `rutina-dia-${SIN_TILDES(dia.dia).replace(/[^a-z]/g, '')}-${indice}`;
+      return `<section class="rounded-lg border border-pf-linea p-3" aria-labelledby="${id}"><h5 id="${id}" class="m-0 font-bold text-white">${escapar(dia.dia)}</h5><p class="mt-1 whitespace-pre-line text-sm text-neutral-300">${escapar(dia.detalle)}</p></section>`;
+    }).join('')}</div>`
+    : `<p class="mt-2 whitespace-pre-line text-sm">${escapar(r.detalle || '')}</p>`;
   return `<article class="pf-tarjeta p-5"><h3 class="m-0 text-lg font-bold text-white">${escapar(r.objetivo || 'Rutina')}</h3>
     <p class="text-sm text-neutral-300">Nivel: ${escapar(r.nivel || r.nivelId || '-')} · Del ${escapar(fechaCorta(r.fechaInicio))} al ${escapar(fechaCorta(r.fechaFin))}${r.entrenador || r.empleado ? ` · Entrenador: ${escapar(r.entrenador?.nombre || r.entrenador || r.empleado?.nombre || r.empleado)}` : ''}</p>
-    <p class="mt-2 whitespace-pre-line text-sm">${escapar(r.detalle || '')}</p></article>`;
+    ${semana}</article>`;
 }
 
 export function tarjetasNotificaciones(lista) {
