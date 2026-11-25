@@ -24,12 +24,13 @@ async function planDiario() {
 async function cobrarPaseDiario(cedula, existe) {
   const plan = await planDiario();
   if (!plan) { mostrarRechazo('No hay un plan diario activo. Créalo en Planes y promociones.'); return; }
+  const totalPlan = Number(plan.precioConIva ?? plan.precio ?? 0) || 0;
   let pagos = null;
   const r = await abrirDialogo({
-    titulo: 'Cobrar pase diario', mensaje: `${plan.nombre}: total estimado ${formatearPrecio(plan.precio)} (el servidor confirma el total).`, textoConfirmar: 'Cobrar y registrar entrada',
+    titulo: 'Cobrar pase diario', mensaje: `${plan.nombre}: total estimado ${formatearPrecio(totalPlan)} (el servidor confirma el total).`, textoConfirmar: 'Cobrar y registrar entrada',
     campos: existe ? [] : [{ nombre: 'nombre', etiqueta: 'Nombres', requerido: true, maxlength: 60 }, { nombre: 'apellido', etiqueta: 'Apellidos', requerido: true, maxlength: 60 }],
     contenido: '<div data-contenedor-pagos></div>',
-    alPreparar: (f) => { pagos = crearPagos(f.querySelector('[data-contenedor-pagos]'), { total: Number(plan.precio) || 0, id: 'pagos-pase' }); },
+    alPreparar: (f) => { pagos = crearPagos(f.querySelector('[data-contenedor-pagos]'), { total: totalPlan, id: 'pagos-pase' }); },
     validarExtra: () => (pagos.validar() ? null : 'Revisa la forma de pago.'),
     alFallar: (fallo, _, nodo) => pagos?.ajustarDesdeError(fallo, nodo),
     alConfirmar: async (v) => {

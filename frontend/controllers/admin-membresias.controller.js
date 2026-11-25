@@ -1,5 +1,6 @@
 import './admin.controller.js';
 import { iniciarPantalla } from './admin-generico.controller.js';
+import { formatearPrecio } from '../models/carrito.model.js';
 
 const SI_NO = { S: 'Sí', N: 'No' };
 const ESTADO_PLAN = { A: 'Activo', I: 'Inactivo' };
@@ -11,7 +12,9 @@ iniciarPantalla({
   titulo: 'Planes',
   columnas: ['id', 'nombre', 'tipo', 'duracion', 'numIngresos', 'numPersonas', 'precio', 'pagaIva', 'publicarWeb', 'estado'],
   etiquetas: { id: 'Código', numPersonas: 'Personas', numIngresos: 'Ingresos', publicarWeb: 'Web' },
-  formatoCelda: { numIngresos: (valor, fila) => (fila.tipo === 'T' ? 'No aplica' : (valor ?? 'No aplica')) },
+  ayudas: { precio: 'Escribe el precio sin IVA. La tabla muestra el precio con IVA calculado.' },
+  formatoCelda: { numIngresos: (valor, fila) => (fila.tipo === 'T' ? 'No aplica' : (valor ?? 'No aplica')),
+    precio: (valor, fila) => `${formatearPrecio(fila.precioConIva ?? valor)} (con IVA)` },
   defaults: { tipo: 'T', pagaIva: 'S', incluyeRutina: 'S', esEstudiantil: 'N', publicarWeb: 'S', estado: 'A', numPersonas: 1 },
   opcionesFijas: {
     tipo: { T: 'Por tiempo: diario, mensual, anual', I: 'Por ingresos: tarjeta de 30 ingresos' },
