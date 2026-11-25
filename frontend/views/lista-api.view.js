@@ -18,6 +18,53 @@ export function fecha(v, conHora = false) {
 export const estado = (mapa, v) => `<span class="pf-estado" data-estado="${escapar(v ?? '')}">${escapar(mapa[v] || v || 'Sin estado')}</span>`;
 export const nombrePersona = (p) => (p ? [p.nombre, p.apellido].filter(Boolean).join(' ') || p.id || '' : '');
 
+export function esFefo(registro) {
+  const controla = registro?.controlaCaducidad ?? registro?.producto?.controlaCaducidad;
+  return controla === 'S' || controla === true || registro?.tipoInventario === 'FEFO' || Boolean(registro?.fechaCaducidad);
+}
+
+export function tipoInventarioTexto(registro) {
+  return esFefo(registro)
+    ? 'FEFO: sale primero lo que caduca antes'
+    : 'FIFO: sale primero lo que entró antes';
+}
+
+export function diasParaCaducar(fechaCaducidad) {
+  if (!fechaCaducidad) return null;
+  const fin = new Date(`${String(fechaCaducidad).slice(0, 10)}T00:00:00`);
+  if (Number.isNaN(fin.getTime())) return null;
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  return Math.round((fin - hoy) / 86400000);
+}
+
+export function situacionCaducidad(fechaCaducidad) {
+  const dias = diasParaCaducar(fechaCaducidad);
+  if (dias === null) return 'No caduca';
+  if (dias < 0) return 'Caducado';
+  if (dias === 0) return 'Caduca hoy';
+  return dias === 1 ? 'Caduca en 1 día' : `Caduca en ${dias} días`;
+}
+
+export function caducidadHtml(fechaCaducidad) {
+  if (!fechaCaducidad) return txt('No caduca');
+  return `${fecha(fechaCaducidad)}<span class="small d-block">${escapar(situacionCaducidad(fechaCaducidad))}</span>`;
+}
+
+export function proximaCaducidad(productoId, lotes = []) {
+  const candidatos = lotes.filter((l) => String(l.productoId) === String(productoId) && l.fechaCaducidad && Number(l.cantidadDisponible ?? l.cantidad ?? 0) > 0)
+    .sort((a, b) => String(a.fechaCaducidad).localeCompare(String(b.fechaCaducidad)));
+  return candidatos[0]?.fechaCaducidad || null;
+}
+
+export function stockTexto(producto) {
+  const stock = Number(producto?.stock ?? producto?.cantidadDisponible ?? 0);
+  const minimo = Number(producto?.stockMin ?? producto?.stock_min ?? 0);
+  if (stock <= 0) return '<span class="badge text-bg-secondary">Sin stock</span>';
+  if (minimo > 0 && stock <= minimo) return `<span class="badge text-bg-warning">${stock} · Stock mínimo</span>`;
+  return `<span class="pf-num">${stock}</span>`;
+}
+
 export function tablaHtml({ caption, columnas, filas, acciones }) {
   const head = `<tr>${columnas.map(([t]) => `<th scope="col">${escapar(t)}</th>`).join('')}${acciones ? '<th scope="col">Acciones</th>' : ''}</tr>`;
   const cuerpo = filas.length ? filas.map((f, i) => `<tr>${columnas.map(([t, fn], j) => (j === 0 ? `<th scope="row" data-label="${escapar(t)}">${fn(f)}</th>` : `<td data-label="${escapar(t)}">${fn(f)}</td>`)).join('')}${acciones ? `<td class="pf-celda-acciones" data-label="Acciones">${acciones(f, i) || '<span class="text-body-secondary">Sin acciones</span>'}</td>` : ''}</tr>`).join('')

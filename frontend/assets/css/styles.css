@@ -2038,9 +2038,10 @@ html[data-tema="claro"] .pf-cuenta-opcion:hover, html[data-tema="claro"] .pf-cue
 .pf-admin .dropdown-menu .dropdown-item.active, .pf-admin .dropdown-menu .dropdown-item[aria-current="page"] { background-color: #fef3c7; color: #111111; font-weight: 700; }
 .pf-admin .dropdown-menu .dropdown-item:focus-visible { outline: 3px solid var(--pf-amarillo); outline-offset: -3px; }
 html[data-bs-theme="dark"] .pf-admin .dropdown-menu .dropdown-item.active, html[data-bs-theme="dark"] .pf-admin .dropdown-menu .dropdown-item[aria-current="page"] { background-color: rgba(250, 204, 21, 0.22); color: #ffffff; }
-.pf-migas { margin: -0.25rem 0 1rem; font-size: 0.9rem; }
+.pf-migas { display: block; width: 100%; flex-basis: 100%; margin: 0 0 0.75rem; font-size: 0.9rem; text-align: left; }
 .pf-migas .breadcrumb { margin: 0; }
 .pf-migas .breadcrumb-item.active { color: inherit; font-weight: 600; }
+main > div.d-flex > h1 { margin-bottom: 0; }
 
 /* ---------- Correcciones de diseño: sitio público ---------- */
 

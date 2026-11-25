@@ -48,6 +48,15 @@
     <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small"><a class="stretched-link pf-enlace-indicador" href="inscripciones.html?estado=P&amp;canal=W">Planes web por cobrar</a></p><p class="display-6 fw-bold mb-0" data-total-inscripciones>0</p></div></div></div>
     <div class="col-6 col-lg-4 col-xl-2"><div class="card h-100 shadow-sm"><div class="card-body"><p class="text-body-secondary small"><a class="stretched-link pf-enlace-indicador" href="mensajes.html?estado=P">Mensajes sin responder</a></p><p class="display-6 fw-bold mb-0" data-total-mensajes>0</p></div></div></div>
   </section>
+  <section class="mt-4" aria-labelledby="titulo-alertas-inventario" data-indicadores-adm><div class="card shadow-sm"><div class="card-body">
+    <h2 id="titulo-alertas-inventario" class="h5">Alertas de inventario</h2>
+    <p id="mensaje-alertas-inventario" class="pf-mensaje" role="alert" aria-live="assertive" hidden></p>
+    <div class="row g-2" data-alertas-inventario>
+      <div class="col-6 col-lg-4"><a class="d-block p-2 rounded pf-enlace-indicador" href="inventario.html?pestana=lotes&amp;porCaducar=S"><span class="small d-block">Lotes por caducar</span><strong class="h4 mb-0" data-alerta-por-caducar>0</strong></a></div>
+      <div class="col-6 col-lg-4"><a class="d-block p-2 rounded pf-enlace-indicador" href="inventario.html?pestana=alertas&amp;alerta=caducados"><span class="small d-block">Caducados con unidades</span><strong class="h4 mb-0" data-alerta-caducados>0</strong></a></div>
+      <div class="col-6 col-lg-4"><a class="d-block p-2 rounded pf-enlace-indicador" href="inventario.html?pestana=alertas&amp;alerta=sinStock"><span class="small d-block">Sin stock o stock mínimo</span><strong class="h4 mb-0" data-alerta-sin-stock>0</strong></a></div>
+    </div>
+  </div></div></section>
   <section class="mt-4" aria-labelledby="titulo-recientes" data-indicadores-adm><div class="card shadow-sm"><div class="card-body"><h2 id="titulo-recientes" class="h5">Pedidos recientes</h2>
     <div class="table-responsive"><table class="table table-sm align-middle"><caption class="visually-hidden">Últimos pedidos</caption><thead class="table-light"><tr><th scope="col">#</th><th scope="col">Cliente</th><th scope="col">Fecha</th><th scope="col">Estado</th><th scope="col">Total</th><th scope="col">Acción</th></tr></thead><tbody data-tabla-pedidos-recientes></tbody></table></div>
     <a href="pedidos.html" class="btn btn-outline-primary btn-sm">Ir a pedidos</a>

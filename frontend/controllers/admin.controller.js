@@ -10,7 +10,7 @@ import { escapar, mostrarAviso } from '../views/componentes.view.js';
 import { pintarMenuAdmin, pintarSinAcceso, pintarMigas } from '../views/menu.view.js';
 import { accesosDirectosHtml, indicadorHtml } from '../views/dashboard.view.js';
 import { iniciarCampana } from './campana.controller.js';
-import { entradasModel, cajaModel, inscripcionesModel, facturasModel, rutinasModel, asistenciaModel, turnoAbierto } from '../models/fase2.model.js';
+import { entradasModel, cajaModel, inscripcionesModel, facturasModel, rutinasModel, asistenciaModel, inventarioModel, turnoAbierto } from '../models/fase2.model.js';
 import { iniciarAvisoServidor } from '../views/servidor.view.js';
 import { formatearPrecio } from '../models/carrito.model.js';
 
@@ -165,6 +165,27 @@ async function pintarIndicadoresRol() {
   cont.setAttribute('aria-busy', 'false');
 }
 
+function normalizarAlertas(respuesta) {
+  const datos = respuesta?.data ?? respuesta ?? {};
+  const conteos = datos.conteos ?? datos;
+  const valor = (...claves) => {
+    for (const clave of claves) {
+      const numero = Number(conteos?.[clave]);
+      if (Number.isFinite(numero)) return numero;
+    }
+    for (const clave of claves) {
+      const lista = datos?.[clave];
+      if (Array.isArray(lista)) return lista.length;
+    }
+    return 0;
+  };
+  return {
+    porCaducar: valor('porCaducar', 'lotesPorCaducar', 'caducando'),
+    caducados: valor('caducadosConUnidades', 'caducados'),
+    sinStock: valor('sinStockYMinimo', 'sinStock', 'bajoStock')
+  };
+}
+
 export async function iniciarDashboard(){
   const accesos = select('[data-accesos-directos]');
   if (accesos) accesos.innerHTML = accesosDirectosHtml(menuVisible((permiso) => puede(permiso)));
@@ -178,7 +199,11 @@ export async function iniciarDashboard(){
   const verPedidos = puede('pedidos:leer');
   if (!verPedidos) select('[data-tabla-pedidos-recientes]')?.closest('section')?.setAttribute('hidden', '');
   try {
-    const [resumen, pedidos] = await Promise.all([adminModel.resumen(), verPedidos ? adminModel.pedidos({limit:5}) : Promise.resolve([])]);
+    const [resumen, pedidos, respuestaAlertas] = await Promise.all([
+      adminModel.resumen(),
+      verPedidos ? adminModel.pedidos({limit:5}) : Promise.resolve([]),
+      inventarioModel.alertas().catch(() => null)
+    ]);
     const map = {
       '[data-total-productos]': resumen.productosActivos ?? resumen.productos ?? 0,
       '[data-total-bajo-stock]': resumen.bajoStock ?? 0,
@@ -188,6 +213,16 @@ export async function iniciarDashboard(){
       '[data-total-mensajes]': resumen.mensajesPendientes ?? 0
     };
     Object.entries(map).forEach(([sel,val])=>{ const n=select(sel); if(n) n.textContent = val; });
+    const alertas = normalizarAlertas(respuestaAlertas);
+    select('[data-alerta-por-caducar]')?.replaceChildren(String(alertas.porCaducar));
+    select('[data-alerta-caducados]')?.replaceChildren(String(alertas.caducados));
+    select('[data-alerta-sin-stock]')?.replaceChildren(String(alertas.sinStock));
+    const partes = [];
+    if (alertas.porCaducar) partes.push(`${alertas.porCaducar} ${alertas.porCaducar === 1 ? 'lote caduca' : 'lotes caducan'} esta semana`);
+    if (alertas.caducados) partes.push(`${alertas.caducados} ${alertas.caducados === 1 ? 'lote caducado' : 'lotes caducados'} con unidades`);
+    if (alertas.sinStock) partes.push(`${alertas.sinStock} ${alertas.sinStock === 1 ? 'producto' : 'productos'} sin stock o en stock mínimo`);
+    const aviso = select('#mensaje-alertas-inventario');
+    if (aviso) { aviso.textContent = partes.length ? `${partes.join(' · ')}.` : ''; aviso.hidden = !partes.length; }
     const tbody = select('[data-tabla-pedidos-recientes]');
     const lista = pedidos?.data || pedidos?.pedidos || pedidos || [];
     if (tbody) tbody.innerHTML = lista.length ? lista.map(p=>`<tr><th scope="row">${escapar(p.id)}</th><td>${escapar(p.usuario?.login||p.userId||'')}</td><td>${escapar(new Date(p.createdAt||Date.now()).toLocaleDateString('es-EC'))}</td><td>${escapar(p.estadoNombre||p.estado||'')}</td><td>${formatearPrecio(p.total)}</td><td><a class="btn btn-sm btn-outline-primary" href="pedidos.html">Ver</a></td></tr>`).join('') : '<tr><td colspan="6" class="text-center text-body-secondary">No hay pedidos recientes.</td></tr>';

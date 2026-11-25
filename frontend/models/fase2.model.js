@@ -88,6 +88,7 @@ export const inventarioModel = {
   baja: (id, observacion) => post(`/admin/inventario/lotes/${e(id)}/baja`, { observacion }),
   bloqueo: (id, bloquear) => patch(`/admin/inventario/lotes/${e(id)}/bloqueo`, { bloquear }),
   lotes: (p) => get('/admin/inventario/lotes', p),
+  alertas: () => get('/admin/inventario/alertas'),
   kardex: (productoId, p) => get(`/admin/inventario/kardex/${e(productoId)}`, p),
   proveedores: (id) => get(`/admin/productos/${e(id)}/proveedores`),
   guardarProveedores: (id, proveedores) => put(`/admin/productos/${e(id)}/proveedores`, { proveedores })
