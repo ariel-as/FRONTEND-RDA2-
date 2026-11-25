@@ -1,0 +1,2124 @@
+/* =========================================================
+   Planeta Fitness - hoja de estilos complementaria
+   Tailwind (cliente) y Bootstrap (admin) siguen siendo los
+   frameworks principales; aquí viven la identidad visual
+   (negro, amarillo, rojo y blanco), el foco visible, el panel
+   lateral del carrito, el modal de acceso y las animaciones.
+   ========================================================= */
+
+:root {
+  /* Identidad visual de Planeta Fitness */
+  --pf-negro: #0a0a0a;
+  --pf-grafito: #151515;
+  --pf-carbon: #1f1f1f;
+  --pf-linea: #2e2e2e;
+  --pf-amarillo: #ffd000;
+  --pf-rojo: #e21b23;
+  /* Variante clara del rojo para texto pequeño: sobre el grafito del panel
+     (#151515) el rojo de marca solo alcanza 3.8:1 y un texto de 12.8 px
+     necesita 4.5:1 (WCAG 2.2 SC 1.4.3). Este tono llega a 6.6:1. */
+  --pf-rojo-claro: #ff6b72;
+  --pf-borde-control: #6b6b6b;
+  --pf-blanco: #ffffff;
+  --pf-gris: #a0a0a0;
+  --pf-gris-oscuro: #6b6b6b;
+
+  /* Colores que cambian con el tema pero no tienen nombre de marca:
+     el amarillo como texto de acento, los precios, los tonos de error
+     de los formularios y de los avisos, los dos grises con los que Tailwind
+     escribe los párrafos (neutral-200/300 y neutral-400) y el fondo sólido
+     del encabezado al hacer scroll. */
+  --pf-amarillo-texto: #ffd000;
+  --pf-precio-texto: #ffd000;
+  --pf-foco-anillo: #ffd000;
+  --pf-error-texto: #ff8b91;
+  --pf-error-aviso: #ffd9db;
+  --pf-texto-2: #d4d4d4;
+  --pf-texto-3: #a3a3a3;
+  --pf-fondo-encabezado-fijo: rgba(10, 10, 10, 0.96);
+
+  /* Movimiento y profundidad */
+  --pf-transicion: 180ms ease;
+  --pf-transicion-lenta: 260ms ease;
+  --pf-sombra: 0 1px 2px rgba(0, 0, 0, 0.6), 0 8px 24px rgba(0, 0, 0, 0.45);
+  --pf-sombra-alta: 0 10px 40px rgba(0, 0, 0, 0.7);
+}
+
+/* ---------- Modo claro ---------- */
+
+/* El sitio arranca con el esquema del sistema (prefers-color-scheme) y la
+   persona puede fijar uno desde el botón del encabezado (cookie pf_tema,
+   volcada en <html data-tema>). El arranque de assets/js/tema.js pone ese
+   atributo antes del primer pintado, así que aquí solo hace falta CSS.
+
+   La paleta clara reutiliza los mismos nombres: el "negro" pasa a ser el
+   fondo de página (#f6f6f3), el "grafito" la superficie de las tarjetas
+   (blanco) y el "blanco" el color del texto (#1a1a1a). Las superficies
+   amarillas y rojas no cambian: el texto que va encima se escribe siempre
+   en negro casi puro.
+
+   Solo el área cliente sigue el tema; el panel de administración reacciona
+   a data-bs-theme (Bootstrap) y tiene su bloque propio al final de la hoja. */
+
+/* 1. El sistema prefiere claro y la persona no ha elegido oscuro. */
+@media (prefers-color-scheme: light) {
+  html:has(body:not(.pf-admin)):not([data-tema="oscuro"]) {
+    --pf-negro: #f6f6f3;
+    --pf-grafito: #ffffff;
+    --pf-carbon: #e9e9e6;
+    --pf-linea: #8a8a8a;
+    --pf-borde-control: #767676;
+    --pf-blanco: #1a1a1a;
+    --pf-gris: #565656;
+    --pf-gris-oscuro: #6f6f6f;
+    --pf-rojo-claro: #b3121a;
+    --pf-amarillo-texto: #1a1a1a;
+    --pf-precio-texto: #1a1a1a;
+    --pf-foco-anillo: #111111;
+    --pf-error-texto: #b30f18;
+    --pf-error-aviso: #b30f18;
+    --pf-texto-2: #3a3a3a;
+    --pf-texto-3: #525252;
+    --pf-fondo-encabezado-fijo: rgba(246, 246, 243, 0.96);
+    --pf-sombra: 0 1px 2px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.12);
+    --pf-sombra-alta: 0 10px 40px rgba(0, 0, 0, 0.18);
+  }
+}
+
+/* 2. La persona eligió claro con el botón, tenga el sistema el esquema que
+   tenga. Es el mismo bloque: un atributo no puede "apagar" una media query,
+   así que el selector de arriba excluye data-tema="oscuro" y este lo impone. */
+html[data-tema="claro"]:has(body:not(.pf-admin)) {
+  --pf-negro: #f6f6f3;
+  --pf-grafito: #ffffff;
+  --pf-carbon: #e9e9e6;
+  --pf-linea: #8a8a8a;
+  --pf-borde-control: #767676;
+  --pf-blanco: #1a1a1a;
+  --pf-gris: #565656;
+  --pf-gris-oscuro: #6f6f6f;
+  --pf-rojo-claro: #b3121a;
+  --pf-amarillo-texto: #1a1a1a;
+  --pf-precio-texto: #1a1a1a;
+  --pf-foco-anillo: #111111;
+  --pf-error-texto: #b30f18;
+  --pf-error-aviso: #b30f18;
+  --pf-texto-2: #3a3a3a;
+  --pf-texto-3: #525252;
+  --pf-fondo-encabezado-fijo: rgba(246, 246, 243, 0.96);
+  --pf-sombra: 0 1px 2px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.12);
+  --pf-sombra-alta: 0 10px 40px rgba(0, 0, 0, 0.18);
+}
+
+/* Bootstrap mantiene su paleta propia en el panel; el texto de marca también
+   debe cambiar allí al activar su tema claro. */
+html[data-bs-theme="light"] {
+  --pf-amarillo-texto: #1a1a1a;
+  --pf-precio-texto: #1a1a1a;
+  --pf-foco-anillo: #111111;
+}
+
+/* ---------- Utilidades de Tailwind que deben seguir el tema ---------- */
+
+/* El CDN de Tailwind genera estas clases con colores literales (text-white es
+   siempre #fff, text-neutral-400 siempre #a3a3a3...). En modo claro ese texto
+   desaparecería sobre el fondo claro, así que se re-declaran apuntando a las
+   variables del tema. El prefijo `html` les da un punto más de especificidad
+   que a las del CDN, que pierden sin importar el orden de carga. Los colores
+   pf-* (bg-pf-negro, border-pf-linea...) ya giran solos porque su definición
+   en assets/js/identidad.js usa las mismas variables. */
+html .text-white {
+  color: var(--pf-blanco);
+}
+
+html .text-neutral-200,
+html .text-neutral-300 {
+  color: var(--pf-texto-2);
+}
+
+html .text-neutral-400 {
+  color: var(--pf-texto-3);
+}
+
+html .text-pf-amarillo {
+  color: var(--pf-amarillo-texto);
+}
+
+html[data-bs-theme="dark"] .text-pf-amarillo {
+  color: var(--pf-amarillo-texto);
+}
+
+html .hover\:text-pf-amarillo:hover {
+  color: var(--pf-amarillo-texto);
+}
+
+html[data-bs-theme="dark"] .hover\:text-pf-amarillo:hover {
+  color: var(--pf-amarillo-texto);
+}
+
+/* Va sobre una superficie amarilla (bg-pf-amarillo), que no cambia con el
+   tema: el texto es negro casi puro en ambos modos. */
+html .text-pf-negro {
+  color: #0a0a0a;
+}
+
+html .decoration-pf-amarillo {
+  text-decoration-color: var(--pf-amarillo-texto);
+}
+
+footer a,
+nav[aria-label="Ruta de navegación"] a {
+  color: var(--pf-amarillo-texto);
+  display: inline-flex;
+  align-items: center;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+/* El logo oficial conserva sus trazos blancos sobre el respaldo oscuro en
+   ambos temas. Así todas las páginas usan el mismo archivo de identidad. */
+.pf-logo img,
+footer img[src*="logo-planeta.png"] {
+  background-color: #0a0a0a;
+  border-radius: 0.25rem;
+  object-fit: contain;
+  padding: 2px;
+}
+
+.pf-admin-logo {
+  width: auto;
+  height: 2.6rem;
+  border-radius: 0;
+  object-fit: contain;
+  background-color: transparent;
+  padding: 0;
+}
+
+/* ---------- Hero: cartel siempre oscuro ---------- */
+
+/* La foto del hero con sus letras blancas es la portada del sitio: se
+   presenta igual en ambos temas (foto oscura + texto blanco), como un
+   cartel, en lugar de lavar la foto sobre el fondo claro. Por eso estas
+   reglas usan colores fijos, fuera de las variables del tema. */
+.pf-hero {
+  background-color: #0a0a0a;
+}
+
+.pf-hero .text-white {
+  color: #ffffff;
+}
+
+.pf-hero .text-pf-amarillo {
+  color: #ffffff;
+  text-decoration: underline;
+  text-decoration-color: var(--pf-amarillo);
+  text-decoration-thickness: 0.15em;
+  text-underline-offset: 0.1em;
+}
+
+.pf-hero .text-neutral-300 {
+  color: #d4d4d4;
+}
+
+.pf-hero .text-neutral-400 {
+  color: #a3a3a3;
+}
+
+/* El botón secundario del hero va sobre la foto oscura: blanco. */
+.pf-hero .pf-boton-secundario {
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+.pf-hero .pf-boton-secundario:hover {
+  background-color: #ffffff;
+  color: #0a0a0a;
+}
+
+.pf-hero > .relative > p:last-child {
+  display: inline-block;
+  max-width: 100%;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.5rem;
+  background: rgba(0, 0, 0, 0.55);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
+}
+
+.pf-hero p, .pf-hero p > a { color: #ffffff; }
+body:not(.pf-admin) .pf-hero p > a.underline { color: #ffffff; }
+.pf-hero p > a { text-decoration-color: var(--pf-amarillo); text-decoration-thickness: 0.12em; text-underline-offset: 0.15em; }
+
+[data-entrenadores] .pf-tarjeta { height: 100%; }
+[data-entrenadores] .pf-foto-entrenador { aspect-ratio: 4 / 5; width: 100%; height: auto; object-fit: cover; }
+
+/* ---------- Base ---------- */
+
+/* El atributo hidden debe ganar siempre a las utilidades de Tailwind
+   (.hidden, .flex, .grid, .contents), que de otro modo lo anulan. */
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- Encabezado y navegación ---------- */
+
+/* El encabezado se queda fijo arriba mientras se navega por la página. */
+.pf-encabezado {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  transition: background-color var(--pf-transicion), box-shadow var(--pf-transicion),
+    border-color var(--pf-transicion);
+}
+
+/* Al bajar, el encabezado gana fondo sólido, borde y una sombra discreta. */
+.pf-encabezado[data-fijo="true"] {
+  background-color: var(--pf-fondo-encabezado-fijo);
+  border-color: var(--pf-linea);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+/* Barra del encabezado: cómoda, todo en una sola fila. */
+.pf-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-height: 4rem;
+  padding-top: 0.55rem;
+  padding-bottom: 0.55rem;
+}
+
+/* ---------- Barra flotante de la página principal ---------- */
+
+/* Igual que en el panel administrativo: la cabecera se transparenta y la
+   navegación se convierte en una píldora separada del borde superior. */
+.pf-encabezado-flotante {
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.pf-encabezado-flotante[data-fijo="true"] {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.pf-encabezado-flotante .pf-nav {
+  width: min(100%, 1400px);
+  max-width: 1400px;
+  min-height: 3.5rem;
+  margin-inline: auto;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--pf-linea);
+  border-radius: 1rem;
+  background-color: var(--pf-fondo-encabezado-fijo);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+}
+
+.pf-encabezado-flotante .pf-enlace {
+  border-radius: 999px;
+}
+
+.pf-encabezado-flotante .pf-enlace-activo {
+  color: #111111;
+  background-color: var(--pf-amarillo);
+}
+
+.pf-encabezado-flotante .pf-enlace-activo::after {
+  display: none;
+}
+
+@media (max-width: 1023.98px) {
+  .pf-encabezado-flotante .pf-menu.pf-menu-abierto {
+    border-radius: 1rem;
+    background-color: var(--pf-fondo-encabezado-fijo);
+    backdrop-filter: blur(12px);
+  }
+}
+
+.pf-logo {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.pf-logo img {
+  height: 2.75rem;
+  width: auto;
+}
+
+/* Navegación: plegada en móvil y en línea en escritorio. */
+.pf-menu {
+  display: none;
+}
+
+.pf-menu-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Enlaces de navegación. */
+.pf-enlace {
+  display: block;
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.5rem;
+  color: var(--pf-gris);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--pf-transicion), background-color var(--pf-transicion);
+}
+
+.pf-enlace:hover {
+  color: var(--pf-blanco);
+}
+
+/* Sección actual: amarillo, algo más de peso e indicador inferior. */
+.pf-enlace-activo {
+  position: relative;
+  color: var(--pf-amarillo-texto);
+  font-weight: 700;
+}
+
+.pf-enlace-activo::after {
+  content: "";
+  position: absolute;
+  left: 0.9rem;
+  right: 0.9rem;
+  bottom: 0.15rem;
+  height: 2px;
+  border-radius: 2px;
+  background-color: var(--pf-amarillo);
+}
+
+/* Acciones que acompañan a la navegación (Inscríbete / sesión). */
+.pf-menu-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+/* Saludo compacto del usuario con sesión: "Hola, Lenin". */
+.pf-usuario {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--pf-gris);
+  white-space: nowrap;
+}
+
+.pf-usuario-nombre {
+  color: var(--pf-amarillo-texto);
+  font-weight: 700;
+}
+
+/* Con sesión activa el encabezado se ajusta para que saludo, botón y carrito quepan
+   en una sola fila, sin encoger ni partir el texto de los botones. */
+@media (min-width: 1024px) {
+  .pf-nav:has([data-sesion="activa"]:not([hidden])) .pf-enlace {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .pf-nav:has([data-sesion="activa"]:not([hidden])) .pf-menu-acciones .pf-boton:not(.pf-boton-tema) {
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .pf-nav:has([data-sesion="activa"]:not([hidden])) .pf-enlace {
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
+  }
+
+  .pf-nav:has([data-sesion="activa"]:not([hidden])) .pf-menu-acciones .pf-boton:not(.pf-boton-tema) {
+    padding-left: 1.1rem;
+    padding-right: 1.1rem;
+  }
+}
+
+/* En el encabezado el botón del carrito se empuja a la derecha. */
+.pf-carrito {
+  margin-left: auto;
+}
+
+.pf-carrito,
+.pf-menu-boton {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.pf-carrito-contador {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 0.35rem;
+  border-radius: 9999px;
+  background-color: #0a0a0a;
+  color: #ffd000;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* El botón del menú solo se muestra en pantallas pequeñas. */
+.pf-menu-boton {
+  display: inline-flex;
+}
+
+/* En móviles estrechos los botones se reducen y el logo se ajusta. */
+.pf-carrito-texto,
+.pf-menu-boton-texto {
+  display: none;
+}
+
+/* El rótulo de cada botón aparece solo cuando la barra del encabezado sigue
+   cabiendo en una sola fila. Medido en pantalla: con los dos rótulos visibles
+   la fila necesita 450 px, y el rótulo del menú por sí solo necesita 375 px.
+   Mostrarlos antes desbordaba el borde derecho a 360 px y 420 px. */
+@media (min-width: 375px) {
+  .pf-menu-boton-texto {
+    display: inline;
+  }
+}
+
+@media (min-width: 450px) {
+  .pf-carrito-texto {
+    display: inline;
+  }
+}
+
+@media (max-width: 479px) {
+  .pf-logo img {
+    height: 2.25rem;
+  }
+
+  .pf-carrito,
+  .pf-menu-boton {
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
+  }
+}
+
+/* A 320 px la palabra más larga del titular ("EVOLUCIONA.") medía 319 px y se
+   quedaba recortada contra el borde derecho. Se reduce solo por debajo de 375 px. */
+@media (max-width: 374px) {
+  #titulo-hero {
+    font-size: 2.5rem;
+  }
+}
+
+/* ---------- Escritorio: navegación en línea y menú centrado ---------- */
+@media (min-width: 1024px) {
+  .pf-nav {
+    gap: 0.75rem;
+    min-height: 4.25rem;
+  }
+
+  .pf-enlace {
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
+  }
+
+  .pf-menu {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .pf-menu-lista {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.2rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .pf-menu-acciones {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0;
+  }
+
+  .pf-menu-acciones .pf-boton:not(.pf-boton-tema) {
+    padding-left: 1.3rem;
+    padding-right: 1.3rem;
+  }
+
+  .pf-menu-boton {
+    display: none;
+  }
+
+  .pf-carrito {
+    margin-left: 0;
+  }
+
+  /* Entre 1024 y 1279 px el carrito se reduce al icono para que todo quepa. */
+  .pf-carrito-texto {
+    display: none;
+  }
+}
+
+/* ---------- Escritorio amplio: header más cómodo y logo mayor ---------- */
+@media (min-width: 1280px) {
+  .pf-nav {
+    gap: 1rem;
+    min-height: 4.5rem;
+  }
+
+  .pf-logo img {
+    height: 3rem;
+  }
+
+  .pf-enlace {
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+  }
+
+  .pf-menu-lista {
+    gap: 0.3rem;
+  }
+
+  .pf-menu-acciones {
+    gap: 0.75rem;
+  }
+
+  .pf-menu-acciones .pf-boton:not(.pf-boton-tema) {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .pf-carrito-texto {
+    display: inline;
+  }
+}
+
+/* En escritorio el botón del menú desaparece del todo (gana a .pf-boton). */
+@media (min-width: 1024px) {
+  .pf-nav .pf-menu-boton {
+    display: none;
+  }
+}
+
+/* ---------- Menú móvil: panel flotante bajo el encabezado ---------- */
+.pf-menu.pf-menu-abierto {
+  position: absolute;
+  top: 100%;
+  left: 0.75rem;
+  right: 0.75rem;
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: auto;
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+  padding: 0.6rem;
+  background-color: var(--pf-grafito);
+  border: 1px solid var(--pf-linea);
+  border-radius: 0.9rem;
+  box-shadow: var(--pf-sombra-alta);
+}
+
+/* En escritorio el menú nunca es una capa flotante. */
+@media (min-width: 1024px) {
+  .pf-menu.pf-menu-abierto {
+    position: static;
+    z-index: auto;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.pf-posicion-pendiente) {
+    scroll-behavior: smooth;
+  }
+}
+
+html {
+  /* `clip` evita el desplazamiento horizontal sin romper `position: sticky`. */
+  overflow-x: clip;
+}
+
+section[id] {
+  scroll-margin-top: var(--pf-alto-encabezado, 90px);
+}
+
+html.pf-posicion-pendiente {
+  scroll-behavior: auto;
+}
+
+body {
+  overflow-x: clip;
+  transition: background-color var(--pf-transicion), color var(--pf-transicion);
+}
+
+/* Enlaces en línea ("Crear cuenta", "Acceso administrativo") y migas de pan:
+   el texto conserva su aspecto, pero el área pulsable llega a 24 px (WCAG 2.2
+   SC 2.5.8). */
+a.underline {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+}
+
+/* En ambos temas el enlace subrayado usa el color de acento legible sobre el
+   fondo de la página; antes heredo un gris que no llegaba a 4.5:1 en oscuro. */
+body:not(.pf-admin) a.underline {
+  color: var(--pf-amarillo-texto);
+}
+
+/* Al entrar con un ancla, el alto del documento aún no es el definitivo: el
+   catálogo, las clases y los planes se inyectan después y casi duplican la
+   altura de la página. El salto nativo cae en mitad de ese crecimiento y se veía
+   un fogonazo del inicio antes de bajar a la sección. `visibility: hidden`
+   esconde el contenido sin sacarlo de la maqueta, de modo que la barra de
+   desplazamiento conserva su ancho y la primera imagen pintada es ya la sección
+   pedida. La clase la pone `js/app.js` (cargado en el encabezado con
+   `blocking="render"` para que ningún fotograma se pinte antes) y él mismo la
+   quita cuando la sección queda bajo el encabezado. */
+html.pf-posicion-pendiente body {
+  visibility: hidden;
+}
+
+/* El tema oscuro (negro + texto blanco) es el del área cliente, la que usa
+   Tailwind. El panel de administración usa Bootstrap y tiene su propio bloque
+   de color al final de esta hoja (`.pf-admin`). */
+html:has(body:not(.pf-admin)) {
+  background-color: var(--pf-negro);
+}
+
+body:not(.pf-admin) {
+  background-color: var(--pf-negro);
+  color: var(--pf-blanco);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+::selection {
+  background-color: var(--pf-amarillo);
+  color: #0a0a0a;
+}
+
+/* ---------- Foco visible (teclado) ---------- */
+
+:focus-visible {
+  outline: 3px solid var(--pf-foco-anillo);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* En superficies amarillas el contorno debe ser oscuro */
+.pf-foco-claro:focus-visible {
+  outline-color: #0a0a0a;
+}
+
+.breadcrumb a,
+.pagination .page-link,
+footer a {
+  display: inline-flex;
+  align-items: center;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+/* ---------- Enlace de salto al contenido ---------- */
+
+.pf-saltar {
+  position: absolute;
+  left: 0.5rem;
+  top: -100%;
+  z-index: 104;
+  background-color: var(--pf-amarillo);
+  color: #0a0a0a;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  transition: top var(--pf-transicion);
+}
+
+.pf-saltar:focus {
+  top: 0.5rem;
+}
+
+/* ---------- Utilidades de apoyo ---------- */
+
+.pf-oculto-visual {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.pf-bloquea-scroll {
+  overflow: hidden;
+}
+
+/* ---------- Componentes propios ---------- */
+
+.pf-tarjeta {
+  background-color: var(--pf-grafito);
+  border: 1px solid var(--pf-linea);
+  border-radius: 1rem;
+  box-shadow: var(--pf-sombra);
+  transition: transform var(--pf-transicion), box-shadow var(--pf-transicion),
+    border-color var(--pf-transicion), background-color var(--pf-transicion),
+    color var(--pf-transicion);
+}
+
+/* Los tres planes reales ocupan toda la altura de la fila y el botón queda
+   abajo, aunque un plan tenga más beneficios que los otros. */
+[data-planes] > .pf-tarjeta[data-plan] {
+  height: 100%;
+}
+
+[data-planes] > .pf-tarjeta[data-plan] > div:last-child {
+  flex: 1;
+}
+
+[data-planes] > .pf-tarjeta[data-plan] button[data-accion="elegir-plan"] {
+  margin-top: auto;
+}
+
+.pf-tarjeta:hover,
+.pf-tarjeta:focus-within {
+  transform: translateY(-4px);
+  border-color: var(--pf-amarillo-texto);
+  box-shadow: var(--pf-sombra-alta);
+}
+
+/* Las fotos del catálogo se guardan todas en 800x800, asi que la tarjeta usa
+   esa misma proporción y `cover` no recorta nada del producto. */
+.pf-imagen-tarjeta {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  object-fit: cover;
+  background-color: var(--pf-carbon);
+}
+
+/* Etiqueta de nivel / categoría */
+.pf-etiqueta {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  background-color: rgba(255, 208, 0, 0.2);
+  color: var(--pf-amarillo-texto);
+  border: 1px solid rgba(255, 208, 0, 0.4);
+}
+
+/* ---------- Botones ---------- */
+
+.pf-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.6rem;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--pf-transicion), color var(--pf-transicion),
+    border-color var(--pf-transicion), transform var(--pf-transicion);
+}
+
+.pf-boton:active {
+  transform: translateY(1px);
+}
+
+/* Acción principal: amarillo sobre negro. El amarillo de marca no cambia
+   con el tema, así que el texto va siempre en negro casi puro. */
+.pf-boton-primario {
+  background-color: var(--pf-amarillo);
+  color: #0a0a0a;
+  border: 2px solid var(--pf-amarillo-texto);
+}
+
+.pf-boton-primario:hover {
+  background-color: #ffe033;
+  border-color: #ffe033;
+  color: #0a0a0a;
+}
+
+/* Acción secundaria: fondo transparente con borde claro */
+.pf-boton-secundario {
+  background-color: transparent;
+  color: var(--pf-blanco);
+  border: 2px solid var(--pf-blanco);
+}
+
+.pf-boton-secundario:hover {
+  background-color: var(--pf-blanco);
+  color: var(--pf-negro);
+}
+
+/* Botón de tema: cuadrado compacto de solo icono, del mismo alto que sus
+   vecinos del encabezado (2.75 rem). */
+.pf-boton-tema {
+  width: 2.75rem;
+  padding-left: 0;
+  padding-right: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* En el panel móvil del menú las acciones van en columna y los botones se
+   estiran a lo ancho: el cuadrado se queda pegado a la izquierda. */
+body:not(.pf-admin) .pf-boton-tema {
+  align-self: flex-start;
+}
+
+/* En el panel de administración acompaña a los btn-sm de Bootstrap: mismo
+   alto, ancho compacto y centrado. */
+.pf-admin .pf-boton-tema {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* Botón de enlace: sin borde, para la navegación del encabezado */
+.pf-boton-enlace {
+  background-color: transparent;
+  color: var(--pf-blanco);
+  border: 2px solid transparent;
+  padding: 0.4rem 0.6rem;
+  min-height: 0;
+  text-decoration: none;
+}
+
+.pf-boton-enlace:hover {
+  color: var(--pf-amarillo-texto);
+  border-color: transparent;
+}
+
+/* ---------- Clases: tarjetas por actividad ---------- */
+.pf-clase {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--pf-linea);
+  border-radius: 1rem;
+  background-color: var(--pf-grafito);
+  box-shadow: var(--pf-sombra);
+  transition: transform var(--pf-transicion), border-color var(--pf-transicion),
+    box-shadow var(--pf-transicion);
+}
+
+.pf-clase:hover,
+.pf-clase:focus-within {
+  transform: translateY(-4px);
+  border-color: var(--pf-amarillo);
+  box-shadow: var(--pf-sombra-alta);
+}
+
+.pf-clase-imagen {
+  width: 100%;
+  height: 11rem;
+  object-fit: cover;
+  background-color: var(--pf-carbon);
+}
+
+.pf-clase[data-clase="2"] .pf-clase-imagen {
+  object-position: center top;
+}
+
+.pf-clase-cuerpo {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.pf-clase-nombre {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--pf-blanco);
+}
+
+.pf-clase-descripcion {
+  color: var(--pf-gris);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.pf-clase-horarios {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pf-clase-horario {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid rgba(255, 208, 0, 0.18);
+  border-radius: 0.6rem;
+  background-color: rgba(255, 208, 0, 0.06);
+  color: var(--pf-blanco);
+}
+
+.pf-clase-dia {
+  font-weight: 700;
+  color: var(--pf-blanco);
+}
+
+.pf-clase-hora {
+  font-weight: 700;
+  color: var(--pf-amarillo-texto);
+  white-space: nowrap;
+}
+
+.pf-clase-meta {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--pf-linea);
+}
+
+.pf-clase-meta-fila {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.pf-clase-meta-fila dt {
+  color: var(--pf-gris);
+  font-weight: 600;
+}
+
+.pf-clase-meta-fila dd {
+  margin: 0;
+  color: var(--pf-blanco);
+}
+
+/* ---------- Tienda: secciones por categoría ---------- */
+.pf-tienda-categoria + .pf-tienda-categoria {
+  margin-top: 3rem;
+}
+
+.pf-tienda-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--pf-blanco);
+}
+
+.pf-tienda-titulo::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background-color: var(--pf-linea);
+}
+
+.pf-tienda-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .pf-tienda-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .pf-tienda-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Formularios en tema oscuro ---------- */
+
+/* El borde es la única pista que delimita un campo en reposo, así que necesita
+   3:1 frente a los dos fondos que lo rodean: el interior grafito (#151515) y
+   la superficie de la sección (#0a0a0a). `--pf-linea` (#2e2e2e) se quedaba en
+   1.3:1 y 1.5:1, por debajo del mínimo (WCAG 2.2 SC 1.4.11). Por eso los campos
+   no deben llevar la utilidad `border-pf-linea` de Tailwind: tiene más
+   especificidad que `input` y volvería a imponer el color anterior. */
+input,
+select,
+textarea {
+  background-color: var(--pf-grafito);
+  color: var(--pf-blanco);
+  border: 1px solid var(--pf-borde-control);
+}
+
+/* Los campos de texto también son objetivos táctiles: 24 px de alto sin
+   cambiar tipografía ni relleno (WCAG 2.2 SC 2.5.8). */
+input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  min-height: 24px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--pf-gris-oscuro);
+}
+
+select option {
+  background-color: var(--pf-grafito);
+  color: var(--pf-blanco);
+}
+
+/* ---------- Mensajes dinámicos (aria-live) ---------- */
+
+.pf-mensaje {
+  border-radius: 0.75rem;
+  padding: 0.85rem 1rem;
+  font-weight: 600;
+  border-left: 6px solid var(--pf-amarillo);
+  background-color: var(--pf-carbon);
+  color: var(--pf-blanco);
+}
+
+.pf-mensaje[data-tipo="error"] {
+  border-left-color: var(--pf-rojo);
+  background-color: var(--pf-carbon);
+  color: var(--pf-error-aviso);
+}
+
+.pf-mensaje[data-tipo="exito"] {
+  border-left-color: var(--pf-amarillo);
+  /* Superficie opaca: el aviso de confirmación flota sobre cualquier sección
+     (incluida una fotografía del hero), así que no puede depender de un fondo
+     semitransparente para que su texto se lea. */
+  background-color: var(--pf-carbon);
+  color: var(--pf-amarillo-texto);
+}
+
+.pf-cargando {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.5rem;
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--pf-linea);
+  border-radius: 0.75rem;
+  background-color: var(--pf-grafito);
+  color: var(--pf-blanco);
+}
+
+.pf-cargando::before {
+  content: "";
+  flex: 0 0 1rem;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--pf-linea);
+  border-top-color: var(--pf-amarillo);
+  border-radius: 50%;
+  animation: pf-cargando-giro 800ms linear infinite;
+}
+
+@keyframes pf-cargando-giro {
+  to { transform: rotate(360deg); }
+}
+
+/* Errores de formulario: nunca dependen solo del color */
+.pf-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  color: var(--pf-error-texto);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-top: 0.35rem;
+}
+
+.pf-error::before {
+  content: "⚠";
+  font-weight: 700;
+}
+
+[aria-invalid="true"] {
+  border-color: var(--pf-rojo);
+  box-shadow: 0 0 0 2px rgba(226, 27, 35, 0.35);
+}
+
+/* ---------- Estados de carga ---------- */
+
+.pf-cargando {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--pf-gris);
+}
+
+.pf-cargando::before {
+  content: "";
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 3px solid var(--pf-linea);
+  border-top-color: var(--pf-amarillo);
+  border-radius: 50%;
+  animation: pf-gira 700ms linear infinite;
+}
+
+@keyframes pf-gira {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   Panel lateral del carrito (drawer)
+   ========================================================= */
+
+.pf-capa {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--pf-transicion-lenta), visibility var(--pf-transicion-lenta);
+}
+
+.pf-capa[data-visible="true"] {
+  opacity: 1;
+  visibility: visible;
+}
+
+.pf-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  width: min(26rem, 100%);
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background-color: var(--pf-grafito);
+  border-left: 1px solid var(--pf-linea);
+  box-shadow: var(--pf-sombra-alta);
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform var(--pf-transicion-lenta), visibility var(--pf-transicion-lenta);
+}
+
+.pf-panel[hidden] {
+  display: none;
+}
+
+.pf-panel[data-visible="true"] {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+[data-panel-contenido] {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* En móvil el panel ocupa casi todo el ancho */
+@media (max-width: 480px) {
+  .pf-panel {
+    width: 100%;
+    border-left: none;
+  }
+}
+
+.pf-panel-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--pf-linea);
+  background-color: var(--pf-negro);
+}
+
+.pf-panel-cabecera h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pf-panel-cerrar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--pf-linea);
+  background-color: transparent;
+  color: var(--pf-blanco);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color var(--pf-transicion), color var(--pf-transicion);
+}
+
+.pf-panel-cerrar:hover {
+  background-color: var(--pf-amarillo);
+  border-color: var(--pf-amarillo);
+  color: #0a0a0a;
+}
+
+.pf-panel-cuerpo {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+}
+
+.pf-panel-pie {
+  flex-shrink: 0;
+  border-top: 1px solid var(--pf-linea);
+  background-color: var(--pf-negro);
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+/* Línea de producto dentro del panel */
+.pf-linea {
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--pf-linea);
+}
+
+.pf-linea:last-child {
+  border-bottom: none;
+}
+
+.pf-linea img {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  background-color: var(--pf-carbon);
+}
+
+/* Sustituto de la foto cuando la línea no trae imagen (por ejemplo, un plan). */
+.pf-linea-sin-imagen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--pf-amarillo);
+  background-color: var(--pf-carbon);
+  color: var(--pf-amarillo-texto);
+  font-weight: 800;
+  font-size: 1.25rem;
+}
+
+.pf-linea-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pf-linea-precios {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.pf-tarjeta .pf-precio,
+.pf-panel .pf-precio,
+.pf-precio {
+  color: var(--pf-precio-texto);
+  font-weight: 900;
+}
+
+html[data-tema="claro"] .pf-precio,
+html[data-bs-theme="light"] .pf-precio {
+  display: inline-block;
+  border-bottom: 4px solid var(--pf-amarillo);
+}
+
+html[data-tema="claro"] [aria-labelledby="titulo-como-contratar"] .pf-tarjeta > p:first-child {
+  padding-left: 0.5rem;
+  border-left: 4px solid var(--pf-amarillo);
+}
+
+html[data-tema="claro"] .pf-tarjeta h4.text-pf-amarillo {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background-color: var(--pf-amarillo);
+  color: #111111;
+  font-weight: 800;
+}
+
+/* Control de cantidad: [-] cantidad [+] */
+.pf-cantidad {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--pf-linea);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: var(--pf-carbon);
+}
+
+.pf-cantidad button {
+  width: 2.25rem;
+  height: 2.25rem;
+  background-color: transparent;
+  color: var(--pf-blanco);
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color var(--pf-transicion), color var(--pf-transicion);
+}
+
+.pf-cantidad button:hover {
+  background-color: var(--pf-amarillo);
+  color: #0a0a0a;
+}
+
+.pf-cantidad output {
+  min-width: 2.5rem;
+  text-align: center;
+  font-weight: 700;
+  color: var(--pf-blanco);
+  padding: 0 0.25rem;
+}
+
+/* "Eliminar del carrito": es un enlace en línea dentro de una columna estrecha
+   junto a los controles de cantidad, así que necesita un alto pulsable real y
+   un color de hover legible (WCAG 2.2 SC 2.5.8 y SC 1.4.3). */
+.pf-quitar {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0.35rem 0;
+  min-height: 24px;
+  color: var(--pf-gris);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.pf-quitar:hover {
+  color: var(--pf-rojo-claro);
+}
+
+.pf-total-bloque {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.35rem 0;
+}
+
+.pf-total-bloque dt {
+  color: var(--pf-gris);
+}
+
+.pf-total-bloque dd {
+  margin: 0;
+  font-weight: 800;
+}
+
+.pf-total-final dd {
+  color: var(--pf-precio-texto);
+  font-size: 1.35rem;
+}
+
+/* =========================================================
+   Modal de acceso (login dentro del flujo de compra)
+   ========================================================= */
+
+.pf-modal {
+  position: fixed;
+  z-index: 102;
+  top: 50%;
+  left: 50%;
+  width: min(28rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  transform: translate(-50%, -50%) scale(0.97);
+  opacity: 0;
+  visibility: hidden;
+  background-color: var(--pf-grafito);
+  border: 1px solid var(--pf-linea);
+  border-top: 4px solid var(--pf-amarillo);
+  border-radius: 1rem;
+  box-shadow: var(--pf-sombra-alta);
+  transition: opacity var(--pf-transicion-lenta), transform var(--pf-transicion-lenta),
+    visibility var(--pf-transicion-lenta);
+}
+
+.pf-modal[data-visible="true"] {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.pf-modal-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--pf-linea);
+}
+
+.pf-modal-cabecera h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ---------- Avisos flotantes ---------- */
+
+/* Entrada de los mensajes. Solo se anima la opacidad: muchos mensajes viven en
+   el flujo normal de la página (formularios, catálogo, panel del carrito) y un
+   `transform` los desplazaría de su sitio y, al terminar la animación, los
+   dejaría fuera de lugar. */
+.pf-aparece {
+  animation: pf-aparece 260ms ease both;
+}
+
+@keyframes pf-aparece {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* El aviso flotante sí está centrado con `left: 50%` + `translateX(-50%)`, así
+   que su entrada necesita además el pequeño desplazamiento vertical. Por eso
+   tiene su propia animación en lugar de compartir la de arriba. */
+.pf-aviso.pf-aparece {
+  animation: pf-aparece-aviso 260ms ease both;
+}
+
+@keyframes pf-aparece-aviso {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Confirmación al agregar al carrito */
+.pf-confirmacion {
+  animation: pf-confirmacion 320ms ease both;
+}
+
+@keyframes pf-confirmacion {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.03);
+    border-color: var(--pf-amarillo);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pf-aviso {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%);
+  z-index: 105;
+  max-width: min(92vw, 34rem);
+  box-shadow: var(--pf-sombra-alta);
+  border: 1px solid var(--pf-linea);
+  background-color: var(--pf-grafito);
+  color: var(--pf-blanco);
+}
+
+.pf-aviso[hidden] {
+  display: none;
+}
+
+/* =========================================================
+   Área administrativa (Bootstrap): claro u oscuro
+   ========================================================= */
+
+/* Las páginas del panel llevan la clase `pf-admin` en <body> y arrancan con
+   Bootstrap en claro. La barra superior es bg-dark en los dos modos (la
+   utilidad no gira con data-bs-theme), así que sus botones claros no
+   cambian. El resto de la página sí gira: assets/js/tema.js copia el tema a
+   data-bs-theme y Bootstrap repinta fondos, tarjetas y tablas. Aquí abajo
+   solo se corrige lo que esta hoja pinta con la paleta del área cliente
+   (variables que en el panel valen siempre los tonos oscuros). */
+.pf-admin {
+  color: var(--pf-carbon);
+  background-color: #f8f9fa;
+}
+
+.pf-admin h1,
+.pf-admin h2,
+.pf-admin h3 {
+  color: var(--pf-negro);
+}
+
+.pf-admin > header {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  padding: 0.75rem 1rem;
+  background: transparent !important;
+}
+
+.pf-admin > header .navbar {
+  width: min(100%, 1400px);
+  margin-inline: auto;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1rem;
+  background-color: rgba(15, 18, 22, 0.94);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+}
+
+.pf-admin > header .navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.pf-admin > header .nav-link {
+  padding: 0.45rem 0.75rem !important;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.78) !important;
+  transition: background-color var(--pf-transicion), color var(--pf-transicion);
+}
+
+.pf-admin > header .nav-link:hover,
+.pf-admin > header .nav-link:focus-visible {
+  color: #ffffff !important;
+  background-color: rgba(255, 208, 0, 0.14);
+}
+
+.pf-admin > header .nav-link.active {
+  color: #111111 !important;
+  background-color: var(--pf-amarillo);
+  font-weight: 700;
+}
+
+.pf-admin > header .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: none;
+}
+
+.pf-admin > header .pf-admin-usuario {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.pf-admin > header .pf-admin-usuario svg {
+  color: var(--pf-amarillo);
+}
+
+.pf-admin > header .dropdown-menu {
+  min-width: 14rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.75rem;
+  background-color: #15181d;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.pf-admin > header .dropdown-header {
+  color: #adb5bd;
+}
+
+.pf-admin > header .dropdown-item {
+  border-radius: 0.5rem;
+  color: #dee2e6;
+}
+
+.pf-admin > header .dropdown-item:hover,
+.pf-admin > header .dropdown-item:focus-visible {
+  background-color: rgba(255, 208, 0, 0.14);
+  color: #ffffff;
+}
+
+.pf-admin > header .dropdown-divider {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.pf-admin > header + main {
+  padding-top: 2rem;
+}
+
+.pf-admin main[id] {
+  scroll-margin-top: 8rem;
+}
+
+.pf-admin .pf-saltar {
+  z-index: 1080;
+}
+
+@media (min-width: 992px) {
+  .pf-admin > header .navbar-nav {
+    gap: 0.15rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .pf-admin > header .navbar-collapse {
+    margin-top: 0.65rem;
+    padding: 0.65rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 0.85rem;
+    background-color: rgba(10, 10, 10, 0.96);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  .pf-admin > header .navbar-collapse .navbar-nav {
+    gap: 0.15rem;
+  }
+
+  .pf-admin > header .navbar-collapse .d-flex {
+    margin-top: 0.4rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+  }
+}
+
+/* Errores de formulario en el panel: el tono del área cliente (#ff8b91,
+   pensado para fondos oscuros) no se lee sobre el fondo claro de Bootstrap,
+   así que aquí bajan a un rojo oscuro y vuelven al claro cuando el panel
+   está en oscuro. */
+.pf-admin .pf-error {
+  color: #b30f18;
+}
+
+html[data-bs-theme="dark"] .pf-admin .pf-error {
+  color: #ff8b91;
+}
+
+/* Los mensajes del panel se leen sobre fondo claro, así que aquí el amarillo
+   y el rojo pasan a ser el borde de acento y el texto va en tonos oscuros. */
+.pf-admin .pf-mensaje {
+  background-color: #fff8dc;
+  color: #4a3b00;
+  border-left-color: var(--pf-amarillo);
+}
+
+.pf-admin .pf-mensaje[data-tipo="error"] {
+  background-color: #fde8e9;
+  color: #8a1119;
+  border-left-color: var(--pf-rojo);
+}
+
+/* Panel en oscuro: Bootstrap ya giró fondos, tarjetas y tablas, pero el texto
+   general y los títulos de esta hoja siguen siendo tonos oscuros (en el panel
+   las variables del área cliente no cambian de valor), así que se re-declaran
+   con tonos claros. Los .pf-mensaje de arriba no hacen falta retocarlos:
+   sus fondos y textos son literales y se leen en ambos modos. */
+html[data-bs-theme="dark"] .pf-admin {
+  color: #dee2e6;
+  background-color: #212529;
+}
+
+html[data-bs-theme="dark"] .pf-admin .card {
+  background-color: #2b3035;
+}
+
+.pf-admin > header .navbar-brand,
+.pf-admin > header .btn-outline-light {
+  color: #ffffff;
+}
+
+.pf-admin > header .navbar-brand:hover,
+.pf-admin > header .navbar-brand:focus-visible,
+.pf-admin > header .btn-outline-light:hover,
+.pf-admin > header .btn-outline-light:focus-visible {
+  color: #ffffff;
+}
+
+body:not(.pf-admin) a[href^="tel:"],
+body:not(.pf-admin) [data-aliados-nutricion] a[href^="mailto:"] {
+  color: var(--pf-amarillo-texto);
+}
+
+html[data-bs-theme="dark"] .pf-admin h1,
+html[data-bs-theme="dark"] .pf-admin h2,
+html[data-bs-theme="dark"] .pf-admin h3 {
+  color: #ffffff;
+}
+
+/* ---------- Fase 2: menú agrupado, permisos y aviso de servidor ---------- */
+
+.pf-admin .navbar .dropdown-toggle.nav-link:not(.active) {
+  background: none;
+  border: 0;
+  min-height: 24px;
+}
+
+.pf-admin .navbar .dropdown-menu .dropdown-item {
+  min-height: 24px;
+}
+
+.pf-aviso-servidor {
+  position: fixed;
+  top: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  max-width: calc(100% - 2rem);
+  margin: 0;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  background: #1f2937;
+  color: #ffffff;
+  border: 2px solid #facc15;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.35);
+  font-weight: 600;
+}
+
+.pf-sin-acceso h1:focus {
+  outline: none;
+}
+
+.pf-disponible-pronto {
+  border-left: 0.35rem solid currentColor;
+}
+
+/* ---------- Fase 2: diálogo propio y componente de pagos ---------- */
+
+.pf-dialogo {
+  width: min(560px, calc(100% - 2rem));
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  background: var(--bs-body-bg, #111827);
+  color: var(--bs-body-color, #f3f4f6);
+  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.45);
+}
+
+body:not(.pf-admin) .pf-dialogo {
+  background: #111111;
+  color: #f5f5f5;
+  border: 1px solid #3f3f46 !important;
+}
+
+.pf-dialogo::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.pf-dialogo-error {
+  margin: 0.75rem 0 0;
+  padding: 0.6rem 0.75rem;
+  border-left: 0.3rem solid #dc3545;
+  background: rgba(220, 53, 69, 0.12);
+  font-weight: 600;
+}
+
+body:not(.pf-admin) .pf-dialogo .form-control,
+body:not(.pf-admin) .pf-dialogo .form-select {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #52525b;
+  background: #18181b;
+  color: #f5f5f5;
+}
+
+body:not(.pf-admin) .pf-dialogo-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.pf-pagos [data-pagos-estado][data-tipo="error"]::before {
+  content: "Atención: ";
+}
+
+.pf-pagos [data-pagos-estado][data-tipo="exito"]::before {
+  content: "Listo: ";
+}
+
+.pf-pagos .form-check-input {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* ---------- Fase 2: campana de notificaciones ---------- */
+
+.pf-campana {
+  position: relative;
+  display: inline-block;
+}
+
+.pf-campana-boton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+}
+
+.pf-admin .pf-campana-boton {
+  color: #ffffff;
+}
+
+.pf-campana-contador {
+  position: absolute;
+  top: -0.35rem;
+  right: -0.35rem;
+  min-width: 1.25rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: #facc15;
+  color: #111111;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.25rem;
+}
+
+.pf-campana-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  z-index: 1500;
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: 24rem;
+  overflow: auto;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background: #111827;
+  color: #f9fafb;
+  border: 1px solid #4b5563;
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.4);
+}
+
+.pf-campana-titulo {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  color: #ffffff;
+}
+
+.pf-campana-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pf-campana-item {
+  padding: 0.5rem 0;
+  border-top: 1px solid #374151;
+}
+
+.pf-campana-item[data-leida="N"] .pf-campana-marca {
+  color: #facc15;
+  font-weight: 700;
+}
+
+.pf-campana-fecha {
+  font-size: 0.8rem;
+  color: #d1d5db;
+}
+
+.pf-campana-leer {
+  min-height: 24px;
+  padding: 0.15rem 0.6rem;
+  border-radius: 0.375rem;
+  border: 1px solid #facc15;
+  background: transparent;
+  color: #facc15;
+}
+
+/* ---------- Fase 2: estados y diferencias de caja (siempre con texto) ---------- */
+
+.pf-dif-faltante { color: #b02a37; font-weight: 700; }
+.pf-dif-sobrante { color: #0a58ca; font-weight: 700; }
+.pf-dif-cero { color: #146c43; font-weight: 700; }
+html[data-bs-theme="dark"] .pf-dif-faltante { color: #ff8a95; }
+html[data-bs-theme="dark"] .pf-dif-sobrante { color: #8bb9fe; }
+html[data-bs-theme="dark"] .pf-dif-cero { color: #75d6a6; }
+.pf-aforo-barra { height: 1.5rem; }
+.pf-entrada-cedula { font-size: 1.5rem; max-width: 18rem; }
+@media print {
+  .pf-admin header, .pf-admin footer, .pf-admin .btn, .pf-admin [data-mensaje], .pf-no-imprimir { display: none !important; }
+  .pf-factura-impresa { display: block !important; color: #000; }
+}
+
+/* ---------- Correcciones de diseño: menú de cuenta del sitio ---------- */
+
+.pf-cuenta { position: relative; display: inline-block; }
+.pf-cuenta-boton { display: inline-flex; align-items: center; justify-content: center; min-width: 2.5rem; min-height: 2.5rem; padding: 0.4rem; }
+.pf-cuenta-panel { position: absolute; right: 0; top: calc(100% + 0.5rem); z-index: 1500; min-width: 14rem; padding: 0.75rem; border-radius: 0.75rem; background: #111111; color: #f5f5f5; border: 1px solid #3f3f46; box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.45); }
+.pf-cuenta-saludo { margin: 0 0 0.5rem; font-weight: 700; }
+.pf-cuenta-lista { list-style: none; margin: 0; padding: 0; }
+.pf-cuenta-opcion { display: block; width: 100%; min-height: 2.25rem; padding: 0.4rem 0.6rem; border: 0; border-radius: 0.5rem; background: transparent; color: inherit; text-align: left; text-decoration: none; }
+.pf-cuenta-opcion:hover, .pf-cuenta-opcion:focus-visible, .pf-cuenta-opcion[aria-current="page"] { background: rgba(250, 204, 21, 0.18); color: #ffffff; }
+html[data-tema="claro"] .pf-cuenta-panel { background: #ffffff; color: #111111; border-color: #d4d4d8; }
+html[data-tema="claro"] .pf-cuenta-opcion:hover, html[data-tema="claro"] .pf-cuenta-opcion:focus-visible, html[data-tema="claro"] .pf-cuenta-opcion[aria-current="page"] { background: #fef3c7; color: #111111; }
+@media (max-width: 1023.98px) { .pf-cuenta-panel { position: static; margin-top: 0.5rem; box-shadow: none; } }
+.pf-campana-sitio { display: inline-flex; }
+
+/* ---------- Correcciones de diseño: grupo activo del menú del panel y migas ---------- */
+
+.pf-admin > header .nav-link.dropdown-toggle.active { color: #111111 !important; background-color: var(--pf-amarillo); font-weight: 700; border-radius: 999px; padding-inline: 0.85rem; border: 0; }
+.pf-admin > header .nav-link:not(.active):hover, .pf-admin > header .nav-link:not(.active):focus-visible { color: var(--pf-amarillo) !important; }
+.pf-admin .dropdown-menu .dropdown-item.active, .pf-admin .dropdown-menu .dropdown-item[aria-current="page"] { background-color: #fef3c7; color: #111111; font-weight: 700; }
+.pf-admin .dropdown-menu .dropdown-item:focus-visible { outline: 3px solid var(--pf-amarillo); outline-offset: -3px; }
+html[data-bs-theme="dark"] .pf-admin .dropdown-menu .dropdown-item.active, html[data-bs-theme="dark"] .pf-admin .dropdown-menu .dropdown-item[aria-current="page"] { background-color: rgba(250, 204, 21, 0.22); color: #ffffff; }
+.pf-migas { display: block; width: 100%; flex-basis: 100%; margin: 0 0 0.75rem; font-size: 0.9rem; text-align: left; }
+.pf-migas .breadcrumb { margin: 0; }
+.pf-migas .breadcrumb-item.active { color: inherit; font-weight: 600; }
+main > div.d-flex > h1 { margin-bottom: 0; }
+
+/* ---------- Correcciones de diseño: sitio público ---------- */
+
+.pf-foto-entrenador { width: 100%; aspect-ratio: 4 / 5; height: auto; object-fit: cover; object-position: top; }
+.pf-iniciales { display: flex; align-items: center; justify-content: center; background: #1f1f1f; color: var(--pf-amarillo); font-size: 3rem; font-weight: 800; }
+html[data-tema="claro"] .pf-iniciales { background: #f4f4f5; color: #92400e; }
+@media (max-width: 639.98px) {
+  .pf-hero { min-height: 0; }
+  .pf-hero > .relative { padding-top: 6.5rem; padding-bottom: 3rem; }
+}
+
+/* ---------- Correcciones de diseño: plantilla, tablas y colores del panel ---------- */
+
+.pf-admin main.container { max-width: 1320px; }
+.pf-admin main > h1 { margin-bottom: 0.25rem; }
+.pf-admin main > h1 + p.text-body-secondary { margin-bottom: 1.25rem; }
+.pf-admin main .card { border-radius: 0.75rem; margin-bottom: 1.25rem; }
+.pf-admin main .card-body { padding: 1.25rem; }
+.pf-admin main > section { margin-bottom: 1.5rem; }
+.pf-cabecera-bloque { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.75rem; }
+.pf-admin .form-text { margin-top: 0.25rem; }
+@media (max-width: 575.98px) {
+  .pf-admin main [data-nuevo], .pf-admin main [data-nueva-inscripcion], .pf-admin main [data-nuevo-cliente], .pf-admin main [data-nueva-compra], .pf-admin main [data-nueva-rutina] { width: 100%; }
+}
+
+/* Encabezados de tabla que siguen el tema (no blancos sobre panel oscuro). */
+.pf-admin .table > thead, .pf-admin .table > thead.table-light { --bs-table-bg: var(--bs-tertiary-bg); --bs-table-color: var(--bs-emphasis-color); }
+.pf-admin .table > thead th { font-weight: 700; white-space: nowrap; }
+.pf-admin td:has(> .pf-num), .pf-admin th:has(> .pf-num) { text-align: right; white-space: nowrap; }
+.pf-admin .pf-celda-acciones { white-space: nowrap; }
+
+/* Colores de marca: primario amarillo con texto oscuro. */
+.pf-admin .btn-primary { --bs-btn-bg: var(--pf-amarillo); --bs-btn-border-color: var(--pf-amarillo); --bs-btn-color: #111111; --bs-btn-hover-bg: #eab308; --bs-btn-hover-border-color: #eab308; --bs-btn-hover-color: #111111; --bs-btn-active-bg: #ca8a04; --bs-btn-active-border-color: #ca8a04; --bs-btn-active-color: #111111; --bs-btn-disabled-bg: #fde68a; --bs-btn-disabled-border-color: #fde68a; --bs-btn-disabled-color: #3f3f46; font-weight: 700; }
+.pf-admin .btn-outline-primary { --bs-btn-color: #854d0e; --bs-btn-border-color: #a16207; --bs-btn-hover-bg: var(--pf-amarillo); --bs-btn-hover-border-color: var(--pf-amarillo); --bs-btn-hover-color: #111111; --bs-btn-active-bg: #eab308; --bs-btn-active-border-color: #eab308; --bs-btn-active-color: #111111; }
+html[data-bs-theme="dark"] .pf-admin .btn-outline-primary { --bs-btn-color: #fde047; --bs-btn-border-color: #facc15; }
+html[data-bs-theme="light"] .pf-admin .nav-tabs .nav-link:not(.active) { color: #0a58ca; }
+html[data-bs-theme="dark"] .pf-admin .btn-outline-secondary { --bs-btn-color: #dee2e6; --bs-btn-border-color: #adb5bd; }
+html[data-bs-theme="dark"] .pf-admin .btn-outline-danger { --bs-btn-color: #ff8a95; --bs-btn-border-color: #f87171; }
+.pf-admin .btn-outline-primary[aria-pressed="true"] { background: var(--pf-amarillo); color: #111111; border-color: var(--pf-amarillo); }
+.pf-admin .progress-bar.bg-success { color: #ffffff; }
+
+/* Celular: el botón de tema en la fila del menú y las listas como tarjetas apiladas. */
+@media (max-width: 991.98px) {
+  .pf-admin > header .navbar > .container-fluid { flex-wrap: wrap; }
+  .pf-admin > header .navbar-brand { flex: 1 1 0; min-width: 0; margin-right: 0.5rem; }
+  .pf-admin > header .navbar-brand > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pf-admin > header .navbar .pf-boton-tema { order: 2; margin-left: auto; flex: 0 0 auto; }
+  .pf-admin > header .navbar .navbar-toggler { order: 3; margin-left: 0.5rem; flex: 0 0 auto; }
+  .pf-admin > header .navbar .navbar-collapse { order: 4; }
+}
+@media (max-width: 639.98px) {
+  .pf-tabla-apilable thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .pf-tabla-apilable, .pf-tabla-apilable tbody, .pf-tabla-apilable tr, .pf-tabla-apilable th, .pf-tabla-apilable td { display: block; width: 100%; }
+  .pf-tabla-apilable tr { margin-bottom: 0.75rem; border: 1px solid var(--bs-border-color); border-radius: 0.5rem; padding: 0.5rem 0.75rem; }
+  .pf-tabla-apilable th[data-label], .pf-tabla-apilable td[data-label] { display: flex; justify-content: space-between; gap: 0.75rem; border: 0; padding: 0.3rem 0; text-align: right; white-space: normal; }
+  .pf-tabla-apilable th[data-label]::before, .pf-tabla-apilable td[data-label]::before { content: attr(data-label); font-weight: 700; text-align: left; }
+  .pf-tabla-apilable .pf-celda-acciones { flex-wrap: wrap; justify-content: flex-end; }
+}
+
+/* ---------- Correcciones de diseño: pantallas ---------- */
+
+.pf-aforo-barra { border: 1px solid var(--bs-border-color); background-color: var(--bs-secondary-bg); }
+.pf-enlace-indicador { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.pf-enlace-indicador:focus-visible { outline: 3px solid var(--pf-amarillo); outline-offset: 2px; }
+
+/* ---------- Respeta a quien prefiere reducir el movimiento ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

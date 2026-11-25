@@ -1,0 +1,11 @@
+# Gitleaks: reglas por defecto más excepciones para archivos de terceros o generados.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Librería minificada de terceros e informes de herramientas (Lighthouse, axe) sin credenciales"
+paths = [
+  '''frontend/assets/vendor/''',
+  '''evidencias-[^/]+/.*\.json''',
+  '''package-lock\.json'''
+]

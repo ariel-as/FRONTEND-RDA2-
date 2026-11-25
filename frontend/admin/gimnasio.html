@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex, nofollow"><title>Datos del gimnasio | Administración Planeta Fitness</title>
+<link rel="icon" href="../assets/img/logo/logo-planeta.png" type="image/png"><script src="../assets/js/tema.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"><link rel="stylesheet" href="../assets/css/styles.css"></head>
+<body class="bg-body-tertiary pf-admin" data-pagina="gimnasio-admin">
+<a class="pf-saltar" href="#contenido">Ir al contenido principal</a>
+<header class="bg-dark"><nav class="navbar navbar-expand-lg navbar-dark" aria-label="Navegación administrativa"><div class="container-fluid">
+  <a class="navbar-brand d-flex align-items-center gap-2" href="index.html"><picture><source type="image/webp" srcset="../assets/img/logo/logo-planeta-compact.webp"><img src="../assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="48" height="44" class="pf-admin-logo"></picture><span>Administrador</span></a>
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu-admin" aria-controls="menu-admin" aria-expanded="false" aria-label="Mostrar el menú de administración"><span class="navbar-toggler-icon"></span></button>
+  <div class="collapse navbar-collapse" id="menu-admin">
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0" data-menu-admin><li class="nav-item"><a class="nav-link" href="index.html">Dashboard</a></li></ul>
+    <div class="d-flex align-items-center gap-2 ms-lg-2" data-cabecera-acciones>
+      <div class="dropdown">
+        <button type="button" class="pf-admin-usuario btn btn-outline-light btn-sm rounded-circle d-inline-flex align-items-center justify-content-center p-0" id="menu-usuario-admin" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Opciones de usuario">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0-2.2-2.7-4-6-4s-6 1.8-6 4v1h12v-1ZM3.1 12c.4-1.4 2.3-2.5 4.9-2.5s4.5 1.1 4.9 2.5H3.1Z"/></svg>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menu-usuario-admin">
+          <li><p class="dropdown-header mb-0"><span data-admin-tipo class="fw-bold text-white">Administrador general</span></p></li>
+          <li><a class="dropdown-item" href="../index.html">Ver sitio</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><button type="button" class="dropdown-item" data-cerrar-sesion>Cerrar sesión</button></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <button type="button" class="btn btn-outline-light btn-sm pf-boton-tema ms-2" data-boton-tema aria-label="Cambiar el modo de color"><span aria-hidden="true" data-icono-tema>☾</span></button>
+</div></nav></header>
+<main id="contenido" class="container py-4">
+  <h1 class="h3">Datos del gimnasio</h1>
+  <p data-mensaje class="pf-mensaje" role="status" aria-live="polite" hidden></p>
+  <div class="row g-4">
+  <section class="col-12 col-xl-7" aria-labelledby="titulo-datos"><div class="card shadow-sm"><div class="card-body">
+    <h2 id="titulo-datos" class="h5">Datos generales y de facturación</h2>
+    <p class="small text-body-secondary">Los campos con * son obligatorios.</p>
+    <p class="mb-3" hidden>RUC: <strong data-ruc></strong> <span class="small text-body-secondary">(solo lectura)</span></p>
+    <form id="form-gimnasio" class="row g-2" novalidate aria-busy="true">
+      <div class="col-12 col-md-6"><label class="form-label" for="g-nombre">Nombre comercial *</label><input class="form-control" id="g-nombre" name="nombre" maxlength="100" required></div>
+      <div class="col-12 col-md-6"><label class="form-label" for="g-propietaria">Razón social o propietaria</label><input class="form-control" id="g-propietaria" name="propietaria" maxlength="100"></div>
+      <div class="col-12"><label class="form-label" for="g-direccion">Dirección</label><input class="form-control" id="g-direccion" name="direccion" maxlength="200"></div>
+      <div class="col-12 col-md-6"><label class="form-label" for="g-telefono">Teléfono</label><input class="form-control" id="g-telefono" name="telefono" inputmode="tel" pattern="0[0-9]{8,9}" data-mensaje-patron="El teléfono empieza con 0 y tiene 9 o 10 dígitos."></div>
+      <div class="col-12 col-md-6"><label class="form-label" for="g-correo">Correo de contacto</label><input class="form-control" id="g-correo" name="correo" type="email" maxlength="120"></div>
+      <div class="col-6 col-md-3"><label class="form-label" for="g-aforo">Aforo máximo *</label><input class="form-control" id="g-aforo" name="aforoMax" type="number" min="1" max="10000" step="1" required></div>
+      <div class="col-6 col-md-3"><label class="form-label" for="g-iva">IVA (%) *</label><input class="form-control" id="g-iva" name="porcentajeIva" type="number" min="0" max="100" step="0.01" required aria-describedby="g-iva-ayuda"></div>
+      <div class="col-6 col-md-3"><label class="form-label" for="g-est">Establecimiento</label><input class="form-control" id="g-est" name="establecimiento" pattern="[0-9]{3}" maxlength="3" data-mensaje-patron="Tres dígitos, por ejemplo 001."></div>
+      <div class="col-6 col-md-3"><label class="form-label" for="g-pto">Punto de emisión</label><input class="form-control" id="g-pto" name="puntoEmision" pattern="[0-9]{3}" maxlength="3" data-mensaje-patron="Tres dígitos, por ejemplo 001."></div>
+      <p id="g-iva-ayuda" class="col-12 form-text mb-0">Cambiar el IVA no afecta las ventas, inscripciones ni facturas ya registradas.</p>
+      <p class="pf-mensaje col-12" role="status" aria-live="polite" hidden></p>
+      <div class="col-12" data-permiso="gimnasio:editar"><button type="submit" class="btn btn-primary">Guardar datos</button></div>
+    </form>
+  </div></div></section>
+  <section class="col-12 col-xl-5" aria-labelledby="titulo-horario"><div class="card shadow-sm"><div class="card-body">
+    <h2 id="titulo-horario" class="h5">Horario de atención</h2>
+    <form id="form-horario" novalidate>
+      <div data-horario aria-busy="true"></div>
+      <div class="mt-2" data-permiso="gimnasio:editar"><button type="submit" class="btn btn-primary">Guardar horario</button></div>
+    </form>
+  </div></div></section>
+  </div>
+</main>
+<footer class="border-top py-4 mt-5"><p class="container text-center text-body-secondary mb-0">© <span data-anio>2026</span> Planeta Fitness</p></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script type="module" src="../controllers/admin-gimnasio.controller.js"></script>
+</body>
+</html>

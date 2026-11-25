@@ -1,0 +1,384 @@
+[
+  {
+    "pagina": "index.html",
+    "tema": "claro",
+    "precios": [
+      {
+        "tag": "P",
+        "clase": "text-3xl font-extrabold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "P",
+        "clase": "text-3xl font-extrabold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "P",
+        "clase": "text-3xl font-extrabold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "DD",
+        "clase": "",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      }
+    ]
+  },
+  {
+    "pagina": "index.html",
+    "tema": "oscuro",
+    "precios": [
+      {
+        "tag": "P",
+        "clase": "text-3xl font-extrabold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "P",
+        "clase": "text-3xl font-extrabold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "P",
+        "clase": "text-3xl font-extrabold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "P",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "DD",
+        "clase": "",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      }
+    ]
+  },
+  {
+    "pagina": "cliente/login.html",
+    "tema": "claro",
+    "precios": [
+      {
+        "tag": "DD",
+        "clase": "",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      }
+    ]
+  },
+  {
+    "pagina": "cliente/login.html",
+    "tema": "oscuro",
+    "precios": [
+      {
+        "tag": "DD",
+        "clase": "",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      }
+    ]
+  },
+  {
+    "pagina": "cliente/checkout.html",
+    "tema": "claro",
+    "precios": [
+      {
+        "tag": "SPAN",
+        "clase": "font-bold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "SPAN",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "SPAN",
+        "clase": "pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "DD",
+        "clase": "",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      }
+    ]
+  },
+  {
+    "pagina": "cliente/checkout.html",
+    "tema": "oscuro",
+    "precios": [
+      {
+        "tag": "SPAN",
+        "clase": "font-bold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "SPAN",
+        "clase": "text-2xl font-extrabold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "SPAN",
+        "clase": "pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "DD",
+        "clase": "",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      }
+    ]
+  },
+  {
+    "pagina": "cliente/nutricion.html",
+    "tema": "claro",
+    "precios": [
+      {
+        "tag": "DD",
+        "clase": "",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      }
+    ]
+  },
+  {
+    "pagina": "cliente/nutricion.html",
+    "tema": "oscuro",
+    "precios": [
+      {
+        "tag": "DD",
+        "clase": "",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      }
+    ]
+  },
+  {
+    "pagina": "cliente/mis-pedidos.html",
+    "tema": "claro",
+    "precios": [
+      {
+        "tag": "P",
+        "clase": "mt-3 font-bold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "P",
+        "clase": "mt-3 font-bold pf-precio",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      },
+      {
+        "tag": "DD",
+        "clase": "",
+        "color": "rgb(26, 26, 26)",
+        "tema": "claro",
+        "propiedadPrecio": "#1a1a1a"
+      }
+    ]
+  },
+  {
+    "pagina": "cliente/mis-pedidos.html",
+    "tema": "oscuro",
+    "precios": [
+      {
+        "tag": "P",
+        "clase": "mt-3 font-bold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "P",
+        "clase": "mt-3 font-bold pf-precio",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      },
+      {
+        "tag": "DD",
+        "clase": "",
+        "color": "rgb(255, 208, 0)",
+        "tema": "oscuro",
+        "propiedadPrecio": "#ffd000"
+      }
+    ]
+  }
+]

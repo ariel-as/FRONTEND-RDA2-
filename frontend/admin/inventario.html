@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex, nofollow"><title>Lotes y kárdex | Administración Planeta Fitness</title>
+<link rel="icon" href="../assets/img/logo/logo-planeta.png" type="image/png"><script src="../assets/js/tema.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"><link rel="stylesheet" href="../assets/css/styles.css"></head>
+<body class="bg-body-tertiary pf-admin" data-pagina="inventario-admin">
+<a class="pf-saltar" href="#contenido">Ir al contenido principal</a>
+<header class="bg-dark"><nav class="navbar navbar-expand-lg navbar-dark" aria-label="Navegación administrativa"><div class="container-fluid">
+  <a class="navbar-brand d-flex align-items-center gap-2" href="index.html"><picture><source type="image/webp" srcset="../assets/img/logo/logo-planeta-compact.webp"><img src="../assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="48" height="44" class="pf-admin-logo"></picture><span>Administrador</span></a>
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu-admin" aria-controls="menu-admin" aria-expanded="false" aria-label="Mostrar el menú de administración"><span class="navbar-toggler-icon"></span></button>
+  <div class="collapse navbar-collapse" id="menu-admin">
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0" data-menu-admin><li class="nav-item"><a class="nav-link" href="index.html">Dashboard</a></li></ul>
+    <div class="d-flex align-items-center gap-2 ms-lg-2" data-cabecera-acciones>
+      <div class="dropdown">
+        <button type="button" class="pf-admin-usuario btn btn-outline-light btn-sm rounded-circle d-inline-flex align-items-center justify-content-center p-0" id="menu-usuario-admin" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Opciones de usuario">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0-2.2-2.7-4-6-4s-6 1.8-6 4v1h12v-1ZM3.1 12c.4-1.4 2.3-2.5 4.9-2.5s4.5 1.1 4.9 2.5H3.1Z"/></svg>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menu-usuario-admin">
+          <li><p class="dropdown-header mb-0"><span data-admin-tipo class="fw-bold text-white">Administrador general</span></p></li>
+          <li><a class="dropdown-item" href="../index.html">Ver sitio</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><button type="button" class="dropdown-item" data-cerrar-sesion>Cerrar sesión</button></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <button type="button" class="btn btn-outline-light btn-sm pf-boton-tema ms-2" data-boton-tema aria-label="Cambiar el modo de color"><span aria-hidden="true" data-icono-tema>☾</span></button>
+</div></nav></header>
+<main id="contenido" class="container py-4">
+  <h1 class="h3">Inventario</h1>
+  <p class="text-body-secondary">Saldos de cantidad, costo promedio y valor calculados por el servidor.</p>
+  <aside class="alert alert-info py-2" aria-label="Ayuda breve de inventario">
+    <ol class="mb-0 small">
+      <li>El sistema vende primero el lote que caduca antes (FEFO).</li>
+      <li>Si un lote está por caducar, conviene ofrecerlo o promocionarlo.</li>
+      <li>Si ya caducó, se da de baja y sale del stock.</li>
+      <li>La tarea diaria marca los caducados y avisa al administrador.</li>
+    </ol>
+  </aside>
+  <p data-mensaje class="pf-mensaje" role="status" aria-live="polite" hidden></p>
+  <div class="d-flex flex-wrap gap-2 mb-3"><button type="button" class="btn btn-primary" data-recibir hidden>Recibir mercadería</button><button type="button" class="btn btn-outline-primary" data-ajustar hidden>Registrar ajuste</button></div>
+  <ul class="nav nav-tabs mb-3" role="tablist" aria-label="Secciones de inventario">
+    <li class="nav-item" role="presentation"><button class="nav-link active" id="tab-lotes" data-bs-toggle="tab" data-bs-target="#pestana-lotes" type="button" role="tab" aria-controls="pestana-lotes" aria-selected="true">Lotes y kárdex</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="tab-productos" data-bs-toggle="tab" data-bs-target="#pestana-productos" type="button" role="tab" aria-controls="pestana-productos" aria-selected="false">Productos</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="tab-alertas" data-bs-toggle="tab" data-bs-target="#pestana-alertas" type="button" role="tab" aria-controls="pestana-alertas" aria-selected="false">Alertas</button></li>
+  </ul>
+  <div class="tab-content">
+    <section class="tab-pane fade show active" id="pestana-lotes" role="tabpanel" aria-labelledby="tab-lotes" tabindex="0">
+      <section class="card shadow-sm mb-4" id="pantalla-lotes" aria-labelledby="titulo-lotes"><div class="card-body">
+        <h2 id="titulo-lotes" class="h5">Lotes</h2>
+        <form id="filtros-lotes" class="row g-2 align-items-end mb-2">
+          <div class="col-12 col-md-6 col-xl-3"><label class="form-label" for="lotes-tipo">Tipo de inventario</label><select class="form-select" id="lotes-tipo" name="tipoInventario"><option value="">Todos</option><option value="FEFO">Con caducidad (FEFO)</option><option value="FIFO">Sin caducidad (FIFO)</option></select></div>
+          <div class="col-12 col-md-6 col-xl-3"><label class="form-label" for="lotes-producto">Producto</label><select class="form-select" id="lotes-producto" name="productoId" data-productos><option value="">Todos</option></select></div>
+          <div class="col-12 col-md-6 col-xl-3"><label class="form-label" for="lotes-categoria">Categoría</label><select class="form-select" id="lotes-categoria" name="categoriaId"><option value="">Todas</option></select></div>
+          <div class="col-12 col-md-6 col-xl-3"><label class="form-label" for="lotes-estado">Estado</label><select class="form-select" id="lotes-estado" name="estado"><option value="">Todos</option><option value="D">Disponible</option><option value="I">Bloqueado</option><option value="C">Caducado o dado de baja</option></select></div>
+          <div class="col-12"><fieldset id="rango-caducidad" class="row g-2 align-items-end" disabled><legend class="form-label h6">Rango de caducidad (FEFO)</legend>
+            <div class="col-6 col-md-3"><label class="form-label" for="lotes-desde">Desde</label><input class="form-control" id="lotes-desde" name="caducidadDesde" type="date"></div>
+            <div class="col-6 col-md-3"><label class="form-label" for="lotes-hasta">Hasta</label><input class="form-control" id="lotes-hasta" name="caducidadHasta" type="date"></div>
+          </fieldset></div>
+          <div class="col-12 d-flex flex-wrap gap-3"><div class="form-check"><input class="form-check-input" type="checkbox" id="lotes-caducar" name="porCaducar" value="S"><label class="form-check-label" for="lotes-caducar">Solo por caducar</label></div><div class="form-check"><input class="form-check-input" type="checkbox" id="lotes-stock" name="conStock" value="S"><label class="form-check-label" for="lotes-stock">Solo con stock</label></div></div>
+        </form>
+        <div data-lista aria-busy="false"></div>
+      </div></section>
+      <section class="card shadow-sm" id="pantalla-kardex" aria-labelledby="titulo-kardex"><div class="card-body">
+        <h2 id="titulo-kardex" class="h5">Kárdex</h2>
+        <form id="filtros-kardex" class="d-flex flex-wrap gap-2 align-items-end mb-2"><div><label class="form-label" for="kardex-producto">Producto</label><select class="form-select" id="kardex-producto" name="productoId" data-productos required><option value="">Selecciona un producto</option></select></div></form>
+        <div data-lista aria-busy="false"><p class="text-body-secondary">Elige un producto para ver su kárdex.</p></div>
+      </div></section>
+    </section>
+    <section class="tab-pane fade" id="pestana-productos" role="tabpanel" aria-labelledby="tab-productos" tabindex="0">
+      <div class="card shadow-sm"><div class="card-body"><h2 class="h5">Productos del inventario</h2><p class="small text-body-secondary">Primero los que caducan antes; luego el resto por nombre. FEFO caduca, FIFO no.</p><div id="lista-productos-inventario" data-lista aria-busy="false"><p class="text-body-secondary">Cargando productos…</p></div></div></div>
+    </section>
+    <section class="tab-pane fade" id="pestana-alertas" role="tabpanel" aria-labelledby="tab-alertas" tabindex="0">
+      <div class="card shadow-sm" id="pantalla-alertas"><div class="card-body"><h2 class="h5">Alertas de inventario</h2>
+        <p id="mensaje-alertas" class="pf-mensaje" role="alert" aria-live="assertive" hidden></p>
+        <div data-alertas aria-busy="false"><p class="text-body-secondary">Cargando alertas…</p></div>
+      </div></div>
+    </section>
+  </div>
+</main>
+<footer class="border-top py-4 mt-5"><p class="container text-center text-body-secondary mb-0">© <span data-anio>2026</span> Planeta Fitness</p></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script type="module" src="../controllers/admin-inventario.controller.js"></script>
+</body>
+</html>

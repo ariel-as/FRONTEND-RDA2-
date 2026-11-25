@@ -1,0 +1,12 @@
+version: 2
+updates:
+  # Mantiene al día las acciones del workflow de CI/CD.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  # Dependencias de desarrollo (Playwright para las pruebas de navegador).
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly

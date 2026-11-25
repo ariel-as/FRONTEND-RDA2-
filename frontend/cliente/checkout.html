@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex, nofollow">
+  <title>Finalizar compra | Planeta Fitness</title>
+  <meta name="description" content="Checkout de Planeta Fitness: datos del cliente, resumen del pedido y confirmación con el punto de retiro.">
+  <link rel="icon" href="../assets/img/logo/logo-planeta.png" type="image/png">
+
+  <!-- Fija el tema (cookie pf_tema o el esquema del sistema) en <html> antes
+       de que se pinte nada, para que no haya destello de color equivocado.
+       Debe ir antes de la hoja de estilos. -->
+  <script src="../assets/js/tema.js"></script>
+  <!-- Tailwind Play CDN 3.4.17 servido desde el sitio: versión fija y sin dependencia de terceros en tiempo de carga. -->
+  <script src="../assets/vendor/tailwindcss-play-3.4.17.js"></script>
+  <script src="../assets/js/identidad.js"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="bg-pf-negro text-neutral-200" data-pagina="checkout">
+  <a class="pf-saltar" href="#contenido">Ir al contenido principal</a>
+
+  <header class="pf-encabezado border-b border-pf-linea bg-pf-negro">
+    <nav class="pf-nav mx-auto max-w-6xl px-4" aria-label="Navegación principal">
+      <a href="../index.html" class="pf-logo" aria-label="Planeta Fitness, ir al inicio">
+        <picture><source type="image/webp" srcset="../assets/img/logo/logo-planeta-compact.webp"><img src="../assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="112" height="101" class=""></picture>
+      </a>
+
+      <div id="menu-principal" data-menu class="pf-menu">
+        <ul class="pf-menu-lista">
+          <li><a href="../index.html#inicio" class="pf-enlace">Inicio</a></li>
+          <li><a href="../index.html#planes" class="pf-enlace">Planes</a></li>
+          <li><a href="../index.html#tienda" class="pf-enlace">Tienda</a></li>
+          <li><a href="../index.html#clases" class="pf-enlace">Clases</a></li>
+          <li><a href="../index.html#rutinas" class="pf-enlace">Rutinas</a></li>
+          <li><a href="nutricion.html" class="pf-enlace">Nutrición</a></li>
+          <li><a href="../index.html#contacto" class="pf-enlace">Contacto</a></li>
+        </ul>
+
+        <div class="pf-menu-acciones">
+          <!-- Cuadrado compacto para alternar el tema; js/tema.js pinta el
+               icono (sol/luna) y el aria-label según el tema activo. -->
+          <button
+            type="button"
+            class="pf-boton pf-boton-secundario pf-boton-tema"
+            data-boton-tema
+            aria-label="Cambiar el modo de color">
+            <span aria-hidden="true" data-icono-tema>&#9790;</span>
+          </button>
+          <div data-sesion="inactiva" class="contents">
+            <a href="login.html" class="pf-boton pf-boton-secundario">Inscríbete</a>
+          </div>
+          <div data-sesion="activa" class="contents" hidden>
+            <a href="mis-pedidos.html" class="pf-boton pf-boton-secundario">Mis pedidos</a>
+            <a href="mi-cuenta.html" class="pf-boton pf-boton-secundario">Mi cuenta</a>
+            <span class="pf-usuario">
+              <span class="pf-usuario-saludo">Hola,</span>
+              <span class="pf-usuario-nombre" data-nombre-sesion></span>
+            </span>
+            <button type="button" class="pf-boton pf-boton-secundario" data-cerrar-sesion>Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="pf-boton pf-boton-primario pf-carrito"
+        data-abrir-carrito
+        aria-label="🛒Carrito0 🛒0, vacío"
+        aria-expanded="false"
+        aria-controls="panel-carrito">
+        <span aria-hidden="true">&#128722;</span>
+        <span class="pf-carrito-texto">Carrito</span>
+        <span class="pf-carrito-contador" data-contador-carrito aria-hidden="true">0</span>
+      </button>
+
+      <button
+        type="button"
+        class="pf-boton pf-boton-secundario pf-menu-boton"
+        data-menu-boton
+        aria-label="Abrir menú de navegación"
+        aria-expanded="false"
+        aria-controls="menu-principal">
+        <span aria-hidden="true">&#9776;</span> <span class="pf-menu-boton-texto">Menú</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="contenido" class="mx-auto max-w-6xl px-4 py-10">
+    <nav aria-label="Ruta de navegación" class="mb-4 text-sm text-neutral-400">
+      <ol class="flex flex-wrap items-center gap-2">
+        <li><a href="../index.html" class="underline">Inicio</a></li>
+        <li aria-hidden="true">/</li>
+        <li aria-current="page" class="font-semibold text-pf-amarillo">Finalizar compra</li>
+      </ol>
+    </nav>
+    <h1 class="text-3xl font-extrabold uppercase text-white sm:text-4xl">Finalizar compra</h1>
+    <p class="mt-3 max-w-3xl text-neutral-300">
+      Revisa tus datos y confirma el pedido. El proyecto es académico: no se cobran datos de pago
+      ni se conecta a ninguna pasarela. El pedido se registra en el sistema del gimnasio y queda
+      asociado a tu cuenta.
+    </p>
+
+    <p id="mensaje-dinamico" class="mt-6 text-sm font-semibold text-neutral-200" role="status" aria-live="polite"></p>
+
+    <section data-checkout-vacio class="mt-8 rounded-xl border border-pf-linea bg-pf-grafito p-8 text-center" hidden>
+      <h2 class="text-xl font-bold uppercase text-white">No hay productos en el carrito</h2>
+      <p class="mt-2 text-neutral-300">Agrega productos en la tienda antes de finalizar la compra.</p>
+      <a href="../index.html#tienda" class="pf-boton pf-boton-primario mt-4">Ir a la tienda</a>
+    </section>
+
+    <div class="mt-8 grid gap-8 lg:grid-cols-5">
+      <section class="pf-tarjeta p-6 lg:col-span-3" data-checkout-formulario aria-labelledby="titulo-checkout">
+        <h2 id="titulo-checkout" class="text-2xl font-bold uppercase text-white">Datos del cliente</h2>
+
+        <form id="formulario-checkout" class="mt-4 space-y-4" novalidate>
+          <div data-checkout-cliente class="mb-4"></div>
+
+          <p class="pf-mensaje" data-aviso-planes hidden></p>
+          <fieldset class="rounded-xl border border-pf-linea p-4">
+            <legend class="px-2 font-bold text-white">Forma de pago</legend>
+            <div class="mt-2 space-y-2">
+              <label class="flex items-center gap-2"><input type="radio" name="metodoPago" value="EF" aria-label="Efectivo al retirar" checked> <span>Efectivo al retirar</span></label>
+              <label class="flex items-center gap-2"><input type="radio" name="metodoPago" value="TR" aria-label="Transferencia bancaria"> <span>Transferencia bancaria</span></label>
+            </div>
+            <div class="mt-3" data-campo-transferencia hidden>
+              <div class="mb-3 rounded-lg border border-pf-linea p-3 text-sm" data-cuenta-transferencia></div>
+              <label class="block font-semibold text-white" for="refTransferencia">Número de referencia de la transferencia</label>
+              <input class="mt-1 w-full rounded-lg border border-pf-linea p-2" type="text" id="refTransferencia" name="refTransferencia" maxlength="30" pattern="(?:[A-Za-z0-9]|-){4,30}" data-mensaje-patron="La referencia debe tener de 4 a 30 letras, números o guion." aria-describedby="ayuda-ref" disabled>
+              <p id="ayuda-ref" class="text-sm text-neutral-400">Obligatorio con transferencia. 4 a 30 letras, números o guion. Un empleado verificará el pago antes de aprobarlo.</p>
+              <!-- Ranura reservada para subir la imagen del comprobante cuando el equipo decida dónde guardarla (sección 7). -->
+              <div data-ranura-comprobante></div>
+            </div>
+          </fieldset>
+
+          <button type="submit" class="pf-boton pf-boton-primario w-full">Confirmar pedido</button>
+          <p id="mensaje-checkout" class="pf-mensaje" role="alert" aria-live="assertive" hidden></p>
+        </form>
+      </section>
+
+      <section class="pf-tarjeta h-fit p-6 lg:col-span-2" data-checkout-bloque aria-labelledby="titulo-resumen-checkout">
+        <h2 id="titulo-resumen-checkout" class="text-2xl font-bold uppercase text-white">Resumen del pedido</h2>
+        <ul class="mt-4 list-none p-0" data-checkout-resumen></ul>
+        <div class="mt-4 flex items-center justify-between border-t border-pf-linea pt-4">
+          <span class="font-bold text-white">Total estimado (IVA incluido)</span>
+          <span class="text-2xl font-extrabold pf-precio" data-checkout-total>$0.00</span>
+        </div>
+        <p class="mt-4 text-sm text-neutral-300">
+          Retiro en el gimnasio. No se solicitan ni almacenan datos de pago.
+        </p>
+      </section>
+    </div>
+
+    <section
+      data-checkout-confirmacion
+      class="mt-10 rounded-xl border border-pf-amarillo bg-pf-grafito p-8"
+      aria-labelledby="titulo-confirmacion"
+      hidden>
+      <p class="pf-etiqueta">Pedido confirmado</p>
+      <h2 id="titulo-confirmacion" tabindex="-1" class="mt-3 text-3xl font-extrabold uppercase text-white">
+        ¡Pedido registrado correctamente!
+      </h2>
+      <p class="mt-3 max-w-2xl text-neutral-200">
+        Retiro en:<br>
+        <strong class="text-pf-amarillo">Avenida San Rio de Janeiro y Panamá</strong><br>
+        Quito, Ecuador
+      </p>
+      <h3 class="mt-6 text-xl font-bold uppercase text-white">Resumen del pedido</h3>
+      <div class="mt-3" data-confirmacion-resumen></div>
+      <p class="mt-6">
+        <a href="mis-pedidos.html" class="pf-boton pf-boton-primario">Ver mis pedidos</a> <a href="../index.html" class="pf-boton pf-boton-secundario ml-2">Volver al inicio</a>
+      </p>
+    </section>
+  </main>
+
+      <aside class="pf-panel" id="panel-carrito" data-panel-carrito data-visible="false" role="dialog" aria-modal="true" aria-labelledby="titulo-panel-carrito" inert hidden>
+    <div class="pf-panel-cabecera"><h2 id="titulo-panel-carrito">Carrito <span class="text-pf-amarillo" data-panel-articulos>(0)</span></h2><button type="button" class="pf-panel-cerrar" data-cerrar-carrito aria-label="Cerrar el carrito"><span aria-hidden="true">&times;</span></button></div>
+    <div data-panel-contenido></div>
+  </aside>
+  <footer class="mt-12 border-t border-pf-linea bg-pf-negro py-10">
+    <div class="mx-auto grid max-w-6xl gap-8 px-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div>
+        <img src="../assets/img/logo/logo-planeta.png" alt="Planeta Fitness" width="112" height="101" class="h-24 w-auto">
+        <p class="mt-3 text-sm text-neutral-400">Gimnasio en Quito, Ecuador. Entrena. Supera. Evoluciona.</p>
+      </div>
+      <nav aria-label="Secciones del sitio">
+        <h2 class="text-base font-bold text-white">Secciones</h2>
+        <ul class="mt-2 space-y-2 text-sm">
+          <li><a href="../index.html#planes" class="inline-block py-1 underline hover:text-pf-amarillo">Planes</a></li>
+          <li><a href="../index.html#tienda" class="inline-block py-1 underline hover:text-pf-amarillo">Tienda</a></li>
+          <li><a href="../index.html#clases" class="inline-block py-1 underline hover:text-pf-amarillo">Clases</a></li>
+          <li><a href="../index.html#rutinas" class="inline-block py-1 underline hover:text-pf-amarillo">Rutinas</a></li>
+          <li><a href="nutricion.html" class="inline-block py-1 underline hover:text-pf-amarillo">Nutrición</a></li>
+          <li><a href="../index.html#contacto" class="inline-block py-1 underline hover:text-pf-amarillo">Contacto</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Accesos">
+        <h2 class="text-base font-bold text-white">Accesos</h2>
+        <ul class="mt-2 space-y-2 text-sm">
+          <li><a href="login.html" class="inline-block py-1 underline hover:text-pf-amarillo">Inscr?bete / Inicia sesi?n</a></li>
+          <li><a href="checkout.html" class="inline-block py-1 underline hover:text-pf-amarillo">Finalizar compra</a></li>
+          <li><a href="mis-pedidos.html" class="inline-block py-1 underline hover:text-pf-amarillo">Mis pedidos</a></li>
+          <li><a href="../admin/login.html" class="inline-block py-1 underline hover:text-pf-amarillo">Acceso administrativo</a></li>
+        </ul>
+      </nav>
+      <div>
+        <h2 class="text-base font-bold text-white">Contacto</h2>
+        <p class="mt-2 text-sm text-neutral-400"><span data-gimnasio-direccion>Avenida San Rio de Janeiro y Panam?, Quito, Ecuador</span></p>
+        <p class="mt-1 text-sm"><a href="mailto:planetafitness@gmail.com" data-gimnasio-correo class="inline-block py-1 underline hover:text-pf-amarillo">planetafitness@gmail.com</a></p>
+        <p class="mt-3 text-sm text-neutral-400">? <span data-anio>2026</span> Planeta Fitness.</p>
+      </div>
+    </div>
+  </footer>
+
+  <aside class="pf-aviso pf-foco-claro border border-pf-linea p-4 text-sm text-white" data-aviso-cookies aria-label="Aviso de cookies" hidden>
+    <p>Este sitio utiliza cookies para mejorar tu experiencia.</p>
+    <button type="button" class="pf-boton pf-boton-primario mt-2" data-aceptar-cookies>Entendido</button>
+  </aside>
+
+  <div class="pf-aviso pf-mensaje" data-aviso role="status" aria-live="polite" hidden></div>
+
+  <script type="module" src="../controllers/main.controller.js"></script>
+</body>
+</html>

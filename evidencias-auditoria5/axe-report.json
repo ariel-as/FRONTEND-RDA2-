@@ -1,0 +1,4222 @@
+{
+  "index.html::claro::default": {
+    "violations": [
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-secundario mt-4 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario mt-3 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-enlace mt-2 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/index.html#tienda",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/cliente/login.html#registro",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/admin/login.html",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (149×15 px)",
+        "selector": "a#font-semibold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (171×17 px)",
+        "selector": "a#text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#nombre",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#telefono",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (76×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (129×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 16,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "index.html::oscuro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.47:1 < 4.5:1)",
+        "selector": "li.pf-clase-horario",
+        "help": "Elemento con color rgb(255, 255, 255) sobre [255,208,0]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.47:1 < 4.5:1)",
+        "selector": "span.pf-clase-dia",
+        "help": "Elemento con color rgb(255, 255, 255) sobre [255,208,0]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.47:1 < 4.5:1)",
+        "selector": "li.pf-clase-horario",
+        "help": "Elemento con color rgb(255, 255, 255) sobre [255,208,0]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.47:1 < 4.5:1)",
+        "selector": "span.pf-clase-dia",
+        "help": "Elemento con color rgb(255, 255, 255) sobre [255,208,0]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.47:1 < 4.5:1)",
+        "selector": "li.pf-clase-horario",
+        "help": "Elemento con color rgb(255, 255, 255) sobre [255,208,0]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.47:1 < 4.5:1)",
+        "selector": "span.pf-clase-dia",
+        "help": "Elemento con color rgb(255, 255, 255) sobre [255,208,0]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.47:1 < 4.5:1)",
+        "selector": "li.pf-clase-horario",
+        "help": "Elemento con color rgb(255, 255, 255) sobre [255,208,0]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.47:1 < 4.5:1)",
+        "selector": "span.pf-clase-dia",
+        "help": "Elemento con color rgb(255, 255, 255) sobre [255,208,0]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.47:1 < 4.5:1)",
+        "selector": "li.pf-clase-horario",
+        "help": "Elemento con color rgb(255, 255, 255) sobre [255,208,0]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.47:1 < 4.5:1)",
+        "selector": "span.pf-clase-dia",
+        "help": "Elemento con color rgb(255, 255, 255) sobre [255,208,0]"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-secundario mt-4 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario mt-3 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-enlace mt-2 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/index.html#tienda",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/cliente/login.html#registro",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/admin/login.html",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (149×15 px)",
+        "selector": "a#font-semibold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (171×17 px)",
+        "selector": "a#text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#nombre",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#telefono",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (76×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (129×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 26,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "cliente/login.html::claro::default": {
+    "violations": [
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-secundario mt-4 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario mt-3 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-enlace mt-2 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/index.html#tienda",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/cliente/login.html#registro",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/admin/login.html",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (185×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#nombre-registro",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#apellido-registro",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#cedula-registro",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#telefono-registro",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#correo-registro",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1150×19 px)",
+        "selector": "select#nivel",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#contrasena-registro",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#confirmar",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (76×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (129×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 22,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "cliente/login.html::oscuro::default": {
+    "violations": [
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-secundario mt-4 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario mt-3 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-enlace mt-2 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/index.html#tienda",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/cliente/login.html#registro",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/admin/login.html",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (185×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#nombre-registro",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#apellido-registro",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#cedula-registro",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#telefono-registro",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#correo-registro",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1150×19 px)",
+        "selector": "select#nivel",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#contrasena-registro",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1156×19 px)",
+        "selector": "input#confirmar",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (76×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (129×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 22,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "cliente/checkout.html::claro::default": {
+    "violations": [
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-quitar",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-secundario mt-4 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario mt-3 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-enlace mt-2 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/cliente/login.html#registro",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/admin/login.html",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (76×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (129×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 13,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "cliente/checkout.html::oscuro::default": {
+    "violations": [
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-quitar",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-secundario mt-4 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario mt-3 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-enlace mt-2 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/cliente/login.html#registro",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/admin/login.html",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (76×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (129×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 13,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "cliente/nutricion.html::claro::default": {
+    "violations": [
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-secundario mt-4 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario mt-3 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-enlace mt-2 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/index.html#tienda",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/cliente/login.html#registro",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/admin/login.html",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (70×15 px)",
+        "selector": "a#underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (156×15 px)",
+        "selector": "a#underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#nombre",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#telefono",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1152×19 px)",
+        "selector": "select#motivo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (76×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (129×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 17,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "cliente/nutricion.html::oscuro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.94:1 < 4.5:1)",
+        "selector": "a.underline",
+        "help": "Elemento con color rgb(0, 0, 238) sobre [21,21,21]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.94:1 < 4.5:1)",
+        "selector": "a.underline",
+        "help": "Elemento con color rgb(0, 0, 238) sobre [21,21,21]"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-secundario mt-4 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario mt-3 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-enlace mt-2 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/index.html#tienda",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/cliente/login.html#registro",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/admin/login.html",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (70×15 px)",
+        "selector": "a#underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (156×15 px)",
+        "selector": "a#underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#nombre",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#telefono",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1152×19 px)",
+        "selector": "select#motivo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (76×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (129×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 19,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "cliente/mis-pedidos.html::claro::default": {
+    "violations": [
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-secundario mt-4 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario mt-3 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-enlace mt-2 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/index.html#tienda",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/cliente/login.html#registro",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/admin/login.html",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (76×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (129×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 11,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "cliente/mis-pedidos.html::oscuro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.47:1 < 4.5:1)",
+        "selector": "p.pf-mensaje",
+        "help": "Elemento con color rgb(255, 255, 255) sobre [255,208,0]"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-secundario mt-4 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario mt-3 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-enlace mt-2 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/index.html#tienda",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/cliente/login.html#registro",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/admin/login.html",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (76×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (129×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 12,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/login.html::claro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "button.btn",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "span",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      }
+    ],
+    "totalViolations": 2,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/login.html::oscuro::default": {
+    "violations": [],
+    "totalViolations": 0,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/index.html::claro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "button.btn",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "span",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 19,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/index.html::oscuro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (4.09:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [107,107,107]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 4,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/productos.html::claro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "button.btn",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "span",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#pagaIva",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#publicarWeb",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#controlaCaducidad",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 22,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/productos.html::oscuro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (4.09:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [107,107,107]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#pagaIva",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#publicarWeb",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#controlaCaducidad",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 7,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/pedidos.html::claro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "button.btn",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "span",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 19,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/pedidos.html::oscuro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (4.09:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [107,107,107]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 4,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/clientes.html::claro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "button.btn",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "span",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 19,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/clientes.html::oscuro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (4.09:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [107,107,107]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 4,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/membresias.html::claro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "button.btn",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "span",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 19,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/membresias.html::oscuro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (4.09:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [107,107,107]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 4,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/inscripciones.html::claro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "button.btn",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "span",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 19,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/inscripciones.html::oscuro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (4.09:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [107,107,107]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 4,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/clases.html::claro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "button.btn",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "span",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 19,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/clases.html::oscuro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (4.09:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [107,107,107]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 4,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/personal.html::claro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "button.btn",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "span",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 19,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/personal.html::oscuro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (4.09:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [107,107,107]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 4,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/usuarios.html::claro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "button.btn",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "span",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#form-check-input",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#form-check-input",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#form-check-input",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#form-check-input",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 23,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/usuarios.html::oscuro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (4.09:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [107,107,107]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#form-check-input",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#form-check-input",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#form-check-input",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (13×13 px)",
+        "selector": "input#form-check-input",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 8,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/tablas.html::claro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "li.nav-item",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [15,18,22]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "li",
+        "help": "Elemento con color rgb(31, 31, 31) sobre [21,24,29]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.14:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "button.btn",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.08:1 < 4.5:1)",
+        "selector": "span",
+        "help": "Elemento con color rgb(248, 249, 250) sobre [240,240,240]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 19,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "admin/tablas.html::oscuro::default": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (4.09:1 < 4.5:1)",
+        "selector": "button.dropdown-item",
+        "help": "Elemento con color rgb(222, 226, 230) sobre [107,107,107]"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (16×6 px)",
+        "selector": "button#navbar-toggler",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (54×17 px)",
+        "selector": "a#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (96×21 px)",
+        "selector": "button#dropdown-item",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 4,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "index.html::claro::carrito_abierto": {
+    "violations": [
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/cliente/login.html#registro",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/admin/login.html",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (149×15 px)",
+        "selector": "a#font-semibold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (171×17 px)",
+        "selector": "a#text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#nombre",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#telefono",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (76×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (129×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 12,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "index.html::claro::modal_abierto": {
+    "violations": [
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (149×15 px)",
+        "selector": "a#font-semibold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (171×17 px)",
+        "selector": "a#text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#nombre",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#telefono",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (414×19 px)",
+        "selector": "input#acceso-correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (414×19 px)",
+        "selector": "input#acceso-contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (78×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (133×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 9,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "index.html::claro::menu_movil": {
+    "violations": [
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-quitar",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-secundario mt-4 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario mt-3 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-enlace mt-2 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/cliente/login.html#registro",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/admin/login.html",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (149×15 px)",
+        "selector": "a#font-semibold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (171×17 px)",
+        "selector": "a#text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (333×19 px)",
+        "selector": "input#nombre",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (333×19 px)",
+        "selector": "input#correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (333×19 px)",
+        "selector": "input#telefono",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (300×18 px)",
+        "selector": "input#acceso-correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (300×18 px)",
+        "selector": "input#acceso-contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (76×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (129×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "aria-hidden-focus",
+        "impact": "serious",
+        "description": "Elemento con aria-hidden=\"true\" contiene elementos enfocables",
+        "selector": "ASIDE",
+        "help": "Quitar aria-hidden o sacar controles enfocables"
+      },
+      {
+        "id": "aria-hidden-focus",
+        "impact": "serious",
+        "description": "Elemento con aria-hidden=\"true\" contiene elementos enfocables",
+        "selector": "DIV",
+        "help": "Quitar aria-hidden o sacar controles enfocables"
+      }
+    ],
+    "totalViolations": 18,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "index.html::claro::estado_vacio": {
+    "violations": [
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-secundario mt-4 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario mt-3 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-enlace mt-2 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/index.html#tienda",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/cliente/login.html#registro",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/admin/login.html",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (149×15 px)",
+        "selector": "a#font-semibold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (171×17 px)",
+        "selector": "a#text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#nombre",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#telefono",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (76×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (129×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 16,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  },
+  "index.html::claro::estado_error": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.47:1 < 4.5:1)",
+        "selector": "p",
+        "help": "Elemento con color rgb(179, 15, 24) sobre [226,27,35]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (3.66:1 < 4.5:1)",
+        "selector": "button.pf-boton",
+        "help": "Elemento con color rgb(26, 26, 26) sobre [226,27,35]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (1.47:1 < 4.5:1)",
+        "selector": "p",
+        "help": "Elemento con color rgb(179, 15, 24) sobre [226,27,35]"
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Contraste insuficiente (3.66:1 < 4.5:1)",
+        "selector": "button.pf-boton",
+        "help": "Elemento con color rgb(26, 26, 26) sobre [226,27,35]"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-secundario mt-4 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario mt-3 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-enlace mt-2 w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "button-name",
+        "impact": "critical",
+        "description": "El botón no tiene nombre accesible discernible",
+        "selector": "pf-boton pf-boton-primario w-full",
+        "help": "Proveer texto visible o aria-label"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/index.html#tienda",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/cliente/login.html#registro",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "description": "El enlace no tiene nombre accesible",
+        "selector": "http://planeta.local/admin/login.html",
+        "help": "Proveer texto de anclaje claro"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (149×15 px)",
+        "selector": "a#font-semibold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (171×17 px)",
+        "selector": "a#text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#nombre",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (1158×19 px)",
+        "selector": "input#telefono",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-correo",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (402×18 px)",
+        "selector": "input#acceso-contrasena",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (76×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      },
+      {
+        "id": "target-size",
+        "impact": "minor",
+        "description": "Objetivo táctil menor a 24×24 px (129×15 px)",
+        "selector": "a#font-bold text-pf-amarillo underline",
+        "help": "WCAG 2.5.8: Mínimo 24×24 px"
+      }
+    ],
+    "totalViolations": 20,
+    "rulesTested": [
+      "color-contrast",
+      "document-title",
+      "html-has-lang",
+      "image-alt",
+      "button-name",
+      "link-name",
+      "label",
+      "heading-order",
+      "page-has-heading-one",
+      "landmark-one-main",
+      "bypass",
+      "duplicate-id",
+      "target-size",
+      "aria-hidden-focus"
+    ]
+  }
+}
