@@ -76,6 +76,7 @@ export const ventasModel = {
 };
 export const facturasModel = {
   generar: (body) => post('/admin/facturas', body),
+  pendientes: (p) => get('/admin/facturas/pendientes', p),
   listar: (p) => get('/admin/facturas', p),
   detalle: (id) => get(`/admin/facturas/${e(id)}`),
   sri: (id, body) => patch(`/admin/facturas/${e(id)}/sri`, body),

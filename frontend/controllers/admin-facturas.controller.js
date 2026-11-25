@@ -3,7 +3,7 @@ import { facturasModel } from '../models/fase2.model.js';
 import { txt, dinero, fecha } from '../views/lista-api.view.js';
 import { confirmarAccion } from './dialogo.controller.js';
 import { puede } from '../models/permisos.model.js';
-import { mostrarFactura, elegirOperacionesSinFactura, ofrecerFactura, estadoFactura, numeroFactura } from './factura.controller.js';
+import { mostrarFactura, elegirOperacionesSinFactura, ofrecerFactura, estadoFactura, numeroFactura, numeroPendiente, tipoPendiente, clientePendiente, origenPendiente } from './factura.controller.js';
 import { crearLista, formulario, enlazarBoton } from './lista-api.controller.js';
 
 const columnas = [['N.º de factura', (f) => txt(numeroFactura(f))], ['Fecha', (f) => fecha(f.fecha)], ['Cliente', (f) => txt(f.cliente?.nombre || f.cliente || f.clienteId)],
@@ -13,6 +13,19 @@ async function imprimir(f) {
   await mostrarFactura(f.id);
   return null;
 }
+
+const pendientes = crearLista({
+  raiz: '#pantalla-pendientes', caption: 'Pendientes de facturar',
+  cargar: (p) => facturasModel.pendientes(p),
+  columnas: [['Tipo', (p) => txt(tipoPendiente(p))], ['N.º', (p) => txt(numeroPendiente(p))], ['Fecha', (p) => fecha(p.fecha)],
+    ['Cliente', (p) => txt(clientePendiente(p))], ['Total', (p) => dinero(p.total)]],
+  acciones: (p) => [{ texto: 'Generar factura', permiso: 'facturas:generar', etiqueta: `Generar la factura de ${tipoPendiente(p)} ${numeroPendiente(p)}`,
+    ejecutar: async () => {
+      const mensaje = await ofrecerFactura(origenPendiente(p));
+      if (mensaje) { pendientes.recargar(); facturas.recargar(); porAnular?.recargar(); }
+      return mensaje;
+    } }]
+});
 
 const facturas = crearLista({
   raiz: '#pantalla-facturas', filtros: '#filtros-facturas', caption: 'Facturas',
@@ -43,6 +56,6 @@ enlazarBoton('[data-generar-factura]', 'facturas:generar', async () => {
   const origen = await elegirOperacionesSinFactura();
   if (!origen) return null;
   const mensaje = await ofrecerFactura(origen);
-  if (mensaje) { facturas?.recargar(); porAnular?.recargar(); }
+  if (mensaje) { pendientes?.recargar(); facturas?.recargar(); porAnular?.recargar(); }
   return mensaje;
 });

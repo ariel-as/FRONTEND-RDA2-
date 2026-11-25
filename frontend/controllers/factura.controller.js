@@ -1,4 +1,4 @@
-import { facturasModel, gimnasioModel, ventasModel, inscripcionesModel, lista as extraerLista } from '../models/fase2.model.js';
+import { facturasModel, gimnasioModel, lista as extraerLista } from '../models/fase2.model.js';
 import { puede } from '../models/permisos.model.js';
 import { formatearPrecio } from '../models/carrito.model.js';
 import { escapar } from '../views/componentes.view.js';
@@ -38,21 +38,37 @@ export async function mostrarFactura(id) {
   await abrirDialogo({ titulo: `Factura ${txt(numeroFactura(f))}`, contenido: html, textoConfirmar: 'Imprimir', textoCancelar: 'Cerrar', alConfirmar: async () => { window.print(); } });
 }
 
-// Las operaciones pendientes se deducen de las listas y de las facturas ya emitidas; nadie escribe números a mano.
+export function numeroPendiente(item) {
+  return item?.numero ?? item?.numeroOperacion ?? item?.id ?? '';
+}
+
+export function tipoPendiente(item) {
+  const tipo = String(item?.tipo || '').toLowerCase();
+  if (tipo.includes('inscrip')) return 'Inscripción';
+  if (tipo.includes('venta')) return 'Venta';
+  return tipo ? `${tipo.charAt(0).toUpperCase()}${tipo.slice(1)}` : 'Operación';
+}
+
+export function clientePendiente(item) {
+  const cliente = item?.cliente;
+  if (typeof cliente === 'string') return cliente;
+  return cliente?.nombre || cliente?.razonSocial || item?.clienteId || '';
+}
+
+export function origenPendiente(item) {
+  const tipo = String(item?.tipo || '').toLowerCase();
+  const numero = numeroPendiente(item);
+  return tipo.includes('inscrip') ? { inscripcionId: numero } : { ventaId: numero };
+}
+
 export async function operacionesSinFactura() {
-  const [ventas, inscripciones, facturas] = await Promise.all([
-    ventasModel.listar({ limit: 500 }),
-    inscripcionesModel.listar({ limit: 500 }),
-    facturasModel.listar({ limit: 500 })
-  ]);
-  const emitidas = new Set();
-  extraerLista(facturas).forEach((f) => {
-    if (f.ventaId) emitidas.add(`venta:${f.ventaId}`);
-    if (f.inscripcionId) emitidas.add(`inscripcion:${f.inscripcionId}`);
-  });
+  const res = await facturasModel.pendientes({ limit: 500 });
+  const pendientes = extraerLista(res);
+  const normalizar = (p) => ({ ...p, id: numeroPendiente(p) });
   return {
-    ventas: extraerLista(ventas).filter((v) => v.estado !== 'X' && !v.facturaId && !emitidas.has(`venta:${v.id}`)),
-    inscripciones: extraerLista(inscripciones).filter((i) => i.estado !== 'X' && !i.facturaId && !emitidas.has(`inscripcion:${i.id}`))
+    pendientes,
+    ventas: pendientes.filter((p) => String(p?.tipo || '').toLowerCase().includes('venta')).map(normalizar),
+    inscripciones: pendientes.filter((p) => String(p?.tipo || '').toLowerCase().includes('inscrip')).map(normalizar)
   };
 }
 
@@ -67,7 +83,7 @@ export async function elegirOperacionesSinFactura() {
     await abrirDialogo({ titulo: 'Generar factura', mensaje: 'No hay ventas ni inscripciones pendientes de factura.', textoConfirmar: 'Cerrar', textoCancelar: 'Cerrar' });
     return null;
   }
-  const opcion = (o, tipo) => ({ valor: o.id, texto: `${tipo} ${o.id} · ${o.cliente?.nombre || o.titular?.nombre || o.cliente || o.clienteId || o.plan || ''} · ${formatearPrecio(o.total ?? 0)}` });
+  const opcion = (o, tipo) => ({ valor: String(numeroPendiente(o)), texto: `${tipo} ${numeroPendiente(o)} · ${clientePendiente(o)} · ${formatearPrecio(o.total ?? 0)}` });
   const r = await abrirDialogo({
     titulo: 'Generar factura',
     mensaje: 'Elige las operaciones sin factura. Puedes juntar una venta de productos y una inscripción de un plan en una sola factura.',
@@ -80,8 +96,8 @@ export async function elegirOperacionesSinFactura() {
   });
   if (!r) return null;
   const origen = {};
-  if (r.valores.ventaId) origen.ventaId = Number(r.valores.ventaId);
-  if (r.valores.inscripcionId) origen.inscripcionId = Number(r.valores.inscripcionId);
+  if (r.valores.ventaId) Object.assign(origen, origenPendiente({ tipo: 'venta', numero: r.valores.ventaId }));
+  if (r.valores.inscripcionId) Object.assign(origen, origenPendiente({ tipo: 'inscripcion', numero: r.valores.inscripcionId }));
   return origen;
 }
 

@@ -28,8 +28,13 @@
 </div></nav></header>
 <main id="contenido" class="container py-4">
   <h1 class="h3">Facturación</h1>
-  <p data-mensaje class="pf-mensaje" role="status" aria-live="polite" hidden></p>
+  <p data-mensaje class="pf-mensaje" role="alert" aria-live="assertive" hidden></p>
   <div class="d-flex flex-wrap gap-2 mb-3 pf-no-imprimir"><button type="button" class="btn btn-primary" data-generar-factura hidden>Generar factura</button></div>
+  <section class="card shadow-sm mb-4" id="pantalla-pendientes" aria-labelledby="titulo-pendientes"><div class="card-body">
+    <h2 id="titulo-pendientes" class="h5">Pendientes de facturar</h2>
+    <p class="small text-body-secondary">Ventas e inscripciones cobradas que todavía no tienen factura.</p>
+    <div data-lista aria-busy="false"></div>
+  </div></section>
   <section class="card shadow-sm mb-4" id="pantalla-facturas" aria-labelledby="titulo-facturas"><div class="card-body">
     <h2 id="titulo-facturas" class="h5">Facturas</h2>
     <form id="filtros-facturas" class="d-flex flex-wrap gap-2 align-items-end mb-2">
