@@ -92,7 +92,7 @@ export async function elegirOperacionesSinFactura() {
       { nombre: 'ventaId', etiqueta: 'Venta de productos sin factura', tipo: 'select', opciones: [{ valor: '', texto: 'Ninguna' }, ...ventas.map((v) => opcion(v, 'Venta'))] },
       { nombre: 'inscripcionId', etiqueta: 'Inscripción de plan sin factura', tipo: 'select', opciones: [{ valor: '', texto: 'Ninguna' }, ...inscripciones.map((i) => opcion(i, 'Inscripción'))] }
     ],
-    validarExtra: (_, v) => (!v.ventaId && !v.inscripcionId ? 'Elige al menos una operación.' : null)
+    validarExtra: (_, v) => (!v.ventaId && !v.inscripcionId ? { campo: 'ventaId', mensaje: 'Elige al menos una operación.' } : null)
   });
   if (!r) return null;
   const origen = {};

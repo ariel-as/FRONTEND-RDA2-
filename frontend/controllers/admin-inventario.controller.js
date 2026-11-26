@@ -262,7 +262,7 @@ enlazarBoton('[data-ajustar]', 'inventario:gestionar', async () => {
   const m = await formulario({
     titulo: 'Ajuste de inventario', textoConfirmar: 'Registrar ajuste', mensaje: 'Usa una cantidad positiva para sumar y negativa para restar.',
     campos: [{ nombre: 'productoId', etiqueta: 'Producto', tipo: 'select', requerido: true, opciones: [{ valor: '', texto: 'Selecciona un producto' }, ...productos.map((p) => ({ valor: p.id, texto: `${p.nombre} (${p.id})` }))] }, { nombre: 'cantidad', etiqueta: 'Cantidad (+ o −)', tipo: 'number', paso: '1', requerido: true }, { nombre: 'observacion', etiqueta: 'Observación', tipo: 'textarea', requerido: true, maxlength: 200 }],
-    validarExtra: (_, v) => (Number(v.cantidad) === 0 ? 'La cantidad no puede ser cero.' : null),
+    validarExtra: (_, v) => (Number(v.cantidad) === 0 ? { campo: 'cantidad', mensaje: 'La cantidad no puede ser cero.' } : null),
     alConfirmar: (v) => inventarioModel.ajustar({ productoId: v.productoId, cantidad: Number(v.cantidad), observacion: v.observacion.trim() }),
     exito: 'Ajuste registrado.'
   });

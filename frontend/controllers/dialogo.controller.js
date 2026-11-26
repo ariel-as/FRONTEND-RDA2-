@@ -1,5 +1,5 @@
 import { crearDialogoHtml } from '../views/dialogo.view.js';
-import { construirValidador, mostrarMensaje, mostrarErroresServidor } from './validacion.controller.js';
+import { construirValidador, mostrarMensaje, mostrarError, enfocarCampo, pintarResumenErrores } from './validacion.controller.js';
 
 /*
  * Diálogo accesible propio para confirmar acciones y pedir datos.
@@ -7,6 +7,11 @@ import { construirValidador, mostrarMensaje, mostrarErroresServidor } from './va
  * - Escape o "Cancelar" lo cierran y el foco vuelve al botón que lo abrió.
  * - Si se pasa `alConfirmar`, la acción corre con el diálogo abierto y los
  *   errores del servidor (por ejemplo los 409) se muestran tal cual dentro de él.
+ *
+ * - Los errores (de validarExtra o de un 400 con detalles[].campo) se marcan en su campo:
+ *   foco en el primero, mensaje debajo y un resumen corto con enlaces arriba.
+ *   validarExtra puede devolver un texto, { campo, mensaje } o una lista de ellos.
+ *   ubicarCampo(ruta, form) traduce rutas del servidor a un campo del formulario.
  *
  * Devuelve una promesa: null si se canceló, o { valores, resultado } si se confirmó.
  */
@@ -36,19 +41,49 @@ export function abrirDialogo(opciones = {}) {
 
     if (typeof opciones.alPreparar === 'function') opciones.alPreparar(form, dialogo);
 
+    const ubicar = (ref) => {
+      if (ref instanceof HTMLElement) return ref;
+      if (!ref) return null;
+      const nombre = String(ref);
+      const propio = typeof opciones.ubicarCampo === 'function' ? opciones.ubicarCampo(nombre, form) : null;
+      return propio || form.querySelector(`[name="${CSS.escape(nombre)}"]`) || form.querySelector(`#${CSS.escape(nombre)}`) || form.querySelector(`[name="${CSS.escape(nombre.split('.').pop())}"]`);
+    };
+    const contenidoPrimero = () => form.querySelector('[data-dialogo-contenido] input:not([type="hidden"]):not([disabled]), [data-dialogo-contenido] select, [data-dialogo-contenido] textarea');
+    const marcar = (lista) => {
+      const campos = [];
+      lista.forEach(({ campo, mensaje }) => {
+        const control = ubicar(campo);
+        if (!control || campos.includes(control)) return;
+        mostrarError(control, mensaje);
+        campos.push(control);
+      });
+      if (!campos.length) return false;
+      pintarResumenErrores(form, campos);
+      enfocarCampo(campos[0]);
+      return true;
+    };
+    const mostrarGeneral = (texto) => {
+      error.textContent = texto;
+      error.hidden = false;
+      error.tabIndex = -1;
+      error.focus();
+    };
+
     construirValidador(form, {
       borrador: false,
+      resumen: true,
       reglas: opciones.reglas || {},
       alEnviar: async () => {
         error.hidden = true;
         error.textContent = '';
         const valores = Object.fromEntries(new FormData(form).entries());
         const extra = typeof opciones.validarExtra === 'function' ? opciones.validarExtra(form, valores) : null;
-        if (extra) {
-          error.textContent = extra;
-          error.hidden = false;
+        const errores = !extra ? [] : Array.isArray(extra) ? extra : typeof extra === 'object' ? [extra] : [{ campo: null, mensaje: String(extra) }];
+        if (errores.length) {
+          if (!marcar(errores.map((e) => (e.campo ? e : { ...e, campo: contenidoPrimero() })))) mostrarGeneral(errores[0].mensaje);
           return false;
         }
+        pintarResumenErrores(form, []);
         if (typeof opciones.alConfirmar !== 'function') { cerrar({ valores, resultado: null }); return true; }
         ocupado = true;
         botonConfirmar.disabled = true;
@@ -62,9 +97,9 @@ export function abrirDialogo(opciones = {}) {
         } catch (fallo) {
           ocupado = false;
           dialogo.querySelector('[data-dialogo-region]').hidden = true;
-          mostrarErroresServidor(form, fallo);
-          error.textContent = fallo?.mensaje || 'No se pudo completar la acción.';
-          error.hidden = false;
+          const detalles = Array.isArray(fallo?.detalles) ? fallo.detalles : [];
+          const conCampo = detalles.map((d) => ({ campo: d?.campo || d?.field || d?.path || d?.nombre, mensaje: d?.mensaje || d?.message || String(d) }));
+          if (!marcar(conCampo)) mostrarGeneral(fallo?.mensaje || 'No se pudo completar la acción.');
           if (typeof opciones.alFallar === 'function') opciones.alFallar(fallo, form, error);
           return false;
         } finally {

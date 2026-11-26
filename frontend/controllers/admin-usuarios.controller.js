@@ -55,7 +55,7 @@ const lista = crearLista({
     { texto: 'Roles', permiso: 'usuarios:gestionar', etiqueta: `Roles de ${u.login}`, ejecutar: () => formulario({
       titulo: `Roles de ${u.login}`, mensaje: 'Marca los roles activos. Debe quedar al menos uno.',
       contenido: `<fieldset><legend class="fs-6">Roles activos</legend>${ROLES.map(([c, t]) => `<div class="form-check"><input class="form-check-input" type="checkbox" name="rol-${c}" id="rol-${u.id}-${c}" value="${c}" ${(u.roles || []).includes(c) ? 'checked' : ''} ${String(u.id) === String(yo?.id) && c === 'ADM' ? 'disabled' : ''}><label class="form-check-label" for="rol-${u.id}-${c}">${t}${String(u.id) === String(yo?.id) && c === 'ADM' ? ' (no puedes quitártelo)' : ''}</label><p class="small text-body-secondary mb-2">${PERMITE[c]}</p></div>`).join('')}</fieldset>`,
-      validarExtra: (f) => (f.querySelectorAll('input[type="checkbox"]:checked').length ? null : 'Marca al menos un rol.'),
+      validarExtra: (f) => (f.querySelectorAll('input[type="checkbox"]:checked').length ? null : { campo: f.querySelector('input[type="checkbox"]'), mensaje: 'Marca al menos un rol.' }),
       alConfirmar: (_, f) => usuariosModel.roles(u.id, [...f.querySelectorAll('input[type="checkbox"]:checked')].map((c) => c.value)),
       exito: 'Roles actualizados.' }) },
     { texto: u.estado === 'A' ? 'Desactivar' : 'Activar', permiso: 'usuarios:gestionar', tono: u.estado === 'A' ? 'btn-outline-danger' : 'btn-outline-success', etiqueta: `${u.estado === 'A' ? 'Desactivar' : 'Activar'} ${u.login}`,

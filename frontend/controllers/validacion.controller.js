@@ -81,6 +81,12 @@ function mensajeNativo(campo) {
   const valor = campo.value.trim();
   if (campo.validity.valueMissing) return 'Este campo es obligatorio.';
   if (campo.validity.typeMismatch && campo.type === 'email') return 'Escribe un correo válido, por ejemplo: nombre@correo.com';
+  if (campo.validity.rangeUnderflow || campo.validity.rangeOverflow || campo.validity.stepMismatch || campo.validity.badInput) {
+    if (campo.dataset.mensajeRango) return campo.dataset.mensajeRango;
+    if (campo.type === 'date') return campo.max && campo.validity.rangeOverflow ? `La fecha no puede pasar del ${campo.max.split('-').reverse().join('/')}.` : 'Revisa la fecha.';
+    if (campo.min && campo.max) return `Escribe un número entre ${campo.min} y ${campo.max}.`;
+    return campo.min ? `El valor mínimo es ${campo.min}.` : 'Escribe un número válido.';
+  }
   if (campo.validity.tooShort) return `Escribe al menos ${campo.minLength} caracteres para continuar.`;
   if (campo.validity.tooLong) return `Escribe como máximo ${campo.maxLength} caracteres.`;
   if (campo.validity.patternMismatch) return campo.dataset.mensajePatron || 'El valor no tiene el formato esperado.';
@@ -126,6 +132,47 @@ export function validarCoincidencia(campo, campoOriginal, etiqueta='Las contrase
   limpiarError(campo); return true;
 }
 
+const escaparHtml = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// Abre el panel <details> que lo contiene, lo trae a la vista y le pone el foco.
+export function enfocarCampo(campo) {
+  if (!campo) return;
+  for (let padre = campo.parentElement; padre; padre = padre.parentElement) if (padre.tagName === 'DETAILS' && !padre.open) padre.open = true;
+  campo.scrollIntoView?.({ block: 'center' });
+  campo.focus({ preventScroll: true });
+}
+
+function etiquetaCampo(campo) {
+  if (campo.dataset.etiqueta) return campo.dataset.etiqueta;
+  const etiqueta = campo.id ? campo.form?.querySelector(`label[for="${CSS.escape(campo.id)}"]`) : null;
+  return (etiqueta?.textContent || campo.getAttribute('aria-label') || campo.name || 'Campo').replace(/\s*\*\s*$/, '').trim();
+}
+
+// Resumen corto arriba del formulario: un enlace por campo con error que lleva a ese campo.
+export function pintarResumenErrores(formulario, campos = [], titulo = '') {
+  let resumen = formulario.querySelector('[data-resumen-errores]');
+  const lista = [...new Set(campos)].filter((campo) => campo?.id);
+  if (!lista.length) { if (resumen) { resumen.hidden = true; resumen.innerHTML = ''; } return null; }
+  if (!resumen) {
+    resumen = document.createElement('div');
+    resumen.setAttribute('data-resumen-errores', '');
+    resumen.className = 'pf-resumen-errores alert alert-danger py-2 small';
+    resumen.setAttribute('role', 'alert');
+    const titular = [...formulario.children].find((hijo) => /^H[1-6]$/.test(hijo.tagName));
+    if (titular) titular.insertAdjacentElement('afterend', resumen); else formulario.prepend(resumen);
+    resumen.addEventListener('click', (evento) => {
+      const enlace = evento.target.closest('[data-ir-campo]');
+      if (!enlace) return;
+      evento.preventDefault();
+      enfocarCampo(document.getElementById(enlace.dataset.irCampo));
+    });
+  }
+  const texto = titulo || (lista.length === 1 ? 'Revisa 1 campo:' : `Revisa ${lista.length} campos:`);
+  resumen.innerHTML = `<p class="mb-1 fw-semibold">${escaparHtml(texto)}</p><ul class="mb-0">${lista.map((campo) => `<li><a href="#${escaparHtml(campo.id)}" data-ir-campo="${escaparHtml(campo.id)}">${escaparHtml(etiquetaCampo(campo))}</a></li>`).join('')}</ul>`;
+  resumen.hidden = false;
+  return resumen;
+}
+
 export function mostrarErroresServidor(formulario, error, mapa = {}) {
   const detalles = error?.detalles || [];
   let primero = null;
@@ -136,7 +183,7 @@ export function mostrarErroresServidor(formulario, error, mapa = {}) {
     const campo = formulario.querySelector(`[name="${id}"]`) || formulario.querySelector(`#${CSS.escape(id)}`);
     if (campo) { mostrarError(campo, mensaje); if (!primero) primero = campo; }
   });
-  if (primero) primero.focus();
+  enfocarCampo(primero);
   return primero;
 }
 
@@ -182,12 +229,13 @@ export function construirValidador(formulario, opciones = {}) {
     evento.preventDefault();
     [...formulario.querySelectorAll('input, select, textarea')].forEach((c)=>tocados.add(c));
     if (!validarTodo()) {
-      const primero = formulario.querySelector('[aria-invalid="true"]');
-      if (primero) primero.focus();
-      const region = formulario.querySelector('.pf-mensaje[aria-live]');
-      mostrarMensaje(region, 'Revisa los campos marcados antes de continuar.', 'error');
+      const invalidos = [...formulario.querySelectorAll('[aria-invalid="true"]')];
+      enfocarCampo(invalidos[0]);
+      if (opciones.resumen) pintarResumenErrores(formulario, invalidos);
+      else mostrarMensaje(formulario.querySelector('.pf-mensaje[aria-live]'), 'Revisa los campos marcados antes de continuar.', 'error');
       return;
     }
+    if (opciones.resumen) pintarResumenErrores(formulario, []);
     if (typeof opciones.alEnviar === 'function') {
       const resultado = await opciones.alEnviar(formulario);
       if (resultado !== false && opciones.borrador !== false) borrarBorrador(formulario);

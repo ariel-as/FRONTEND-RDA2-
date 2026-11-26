@@ -91,7 +91,7 @@ tabla = crearLista({
     i.estado === 'A' && { texto: 'Suspender', permiso: 'inscripciones:gestionar', etiqueta: `Suspender la inscripción ${i.id}`, ejecutar: () => formulario({
       titulo: `Suspender la inscripción ${i.id}`, mensaje: 'Suspensión por motivo médico. Los días suspendidos se recuperan al final del plan.', textoConfirmar: 'Suspender',
       campos: [{ nombre: 'fechaInicio', etiqueta: 'Desde', tipo: 'date', requerido: true }, { nombre: 'fechaFin', etiqueta: 'Hasta', tipo: 'date', requerido: true }, { nombre: 'motivo', etiqueta: 'Motivo', tipo: 'textarea', requerido: true, maxlength: 200 }, { nombre: 'certificado', etiqueta: 'Número o detalle del certificado médico', requerido: true, maxlength: 100 }],
-      validarExtra: (_, v) => (v.fechaInicio > v.fechaFin ? 'La fecha inicial debe ser anterior a la final.' : null),
+      validarExtra: (_, v) => (v.fechaInicio > v.fechaFin ? { campo: 'fechaFin', mensaje: 'La fecha inicial debe ser anterior a la final.' } : null),
       alConfirmar: (v) => inscripcionesModel.suspender(i.id, { fechaInicio: v.fechaInicio, fechaFin: v.fechaFin, motivo: v.motivo.trim(), certificado: v.certificado.trim() }), exito: 'Inscripción suspendida.' }) },
     i.estado === 'S' && { texto: 'Anular suspensión', permiso: 'inscripciones:anular', tono: 'btn-outline-danger', etiqueta: `Anular suspensión de la inscripción ${i.id}`, ejecutar: () => formulario({
       titulo: 'Anular suspensión', mensaje: 'El número de suspensión aparece en el detalle de la inscripción.', tono: 'peligro', textoConfirmar: 'Anular suspensión',

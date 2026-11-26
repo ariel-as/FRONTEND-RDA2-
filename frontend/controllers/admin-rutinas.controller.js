@@ -2,7 +2,7 @@ import './admin.controller.js';
 import { rutinasModel, lista as extraer } from '../models/fase2.model.js';
 import { txt, fecha } from '../views/lista-api.view.js';
 import { escapar } from '../views/componentes.view.js';
-import { mostrarMensaje, validarCedula } from './validacion.controller.js';
+import { mostrarMensaje } from './validacion.controller.js';
 import { crearLista } from './lista-api.controller.js';
 import { abrirDialogo, confirmarAccion } from './dialogo.controller.js';
 import { usuarioActual, tieneRol } from '../models/sesion.model.js';
@@ -11,47 +11,134 @@ import { esAdm } from '../models/permisos.model.js';
 const NIVELES = [{ valor: 'PRI', texto: 'Principiante' }, { valor: 'INT', texto: 'Intermedio' }, { valor: 'AVA', texto: 'Avanzado' }];
 const OBJETIVOS = ['Bajar de peso', 'Ganar masa muscular', 'Resistencia', 'Tonificar', 'Salud general'].map((texto) => ({ valor: texto, texto }));
 const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+const LIMITES = { dias: 7, ejercicios: 10, repeticiones: 100, tiempo: 3600 };
 const hoyISO = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/Guayaquil' });
 const sumarDias = (iso, cantidad) => { const d = new Date(`${iso}T12:00:00`); d.setDate(d.getDate() + cantidad); return d.toLocaleDateString('en-CA'); };
 const menorFecha = (a, b) => (!a ? b : (!b ? a : (a < b ? a : b)));
-const fechaTexto = (v) => { const t = String(v || '').slice(0, 10); const m = /^(d{4})-(d{2})-(d{2})$/.exec(t); return m ? `${m[3]}/${m[2]}/${m[1]}` : (t || '-'); };
+const fechaTexto = (v) => { const t = String(v || '').slice(0, 10); const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t); return m ? `${m[3]}/${m[2]}/${m[1]}` : (t || '-'); };
 const nombreEntrenador = (r) => (typeof r?.entrenador === 'string' ? r.entrenador : (r?.entrenador?.nombre || r?.empleado?.nombre || ''));
+const nivelValor = (r) => r?.nivelId || NIVELES.find((n) => n.valor === r?.nivel || n.texto === r?.nivel)?.valor || '';
+const textoNivel = (valor) => NIVELES.find((n) => n.valor === valor)?.texto || valor;
 const mensajero = () => document.querySelector('[data-mensaje]');
+const entero = (v) => String(v ?? '').match(/\d+/)?.[0] || '';
+const enteroEntre = (v, min, max) => /^\d+$/.test(String(v ?? '').trim()) && Number(v) >= min && Number(v) <= max;
+const rutaDia = (i) => `detalle.dias[${i}]`;
+const rutaEjercicio = (i, j) => `${rutaDia(i)}.ejercicios[${j}]`;
 
-function filaVacia() { return { ejercicio: '', series: '', repeticiones: '', descanso: '', nota: '' }; }
+function ejercicioVacio() { return { nombre: '', grupo: '', series: '3', modo: 'reps', cantidad: '12', descanso: '60s', nota: '' }; }
+function diaVacio(indice) { return { nombre: `Día ${indice + 1}`, ejercicios: [ejercicioVacio()] }; }
 
+function leerDetalle(detalle) {
+  if (typeof detalle !== 'string') return detalle;
+  try { return JSON.parse(detalle); } catch { return detalle; }
+}
+
+function notaGeneral(detalle) {
+  const datos = leerDetalle(detalle);
+  return datos && typeof datos === 'object' && !Array.isArray(datos) ? String(datos.nota || '') : '';
+}
+
+function leerEjercicio(e) {
+  if (typeof e === 'string') return { ...ejercicioVacio(), nombre: e.replace(/^[-•]\s*/, '') };
+  const vacio = (v) => v === null || v === undefined || v === '';
+  let modo = 'reps';
+  let cantidad = '';
+  if (!vacio(e.tiempo) && vacio(e.repeticiones)) { modo = 'seg'; cantidad = entero(e.tiempo); } else {
+    const texto = String(e.repeticiones ?? '');
+    cantidad = entero(texto);
+    if (/min/i.test(texto) && cantidad) { modo = 'seg'; cantidad = String(Number(cantidad) * 60); } else if (/\d\s*(s|seg|segundos)\b/i.test(texto)) modo = 'seg';
+  }
+  return { nombre: String(e.nombre ?? e.ejercicio ?? e.descripcion ?? ''), grupo: String(e.grupo ?? e.grupoMuscular ?? ''), series: entero(e.series), modo, cantidad, descanso: String(e.descanso ?? '').replace(/\s+/g, ''), nota: String(e.nota ?? '') };
+}
+
+// Lee el formato del backend ({ dias: [{ nombre, ejercicios }] }) y también las rutinas viejas (filas o texto).
 function normalizarDias(detalle) {
-  let datos = detalle;
+  const datos = leerDetalle(detalle);
   if (typeof datos === 'string') {
-    try { datos = JSON.parse(datos); } catch {
-      const lineas = datos.split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean);
-      return lineas.map((linea, indice) => ({ dia: DIAS[indice] || `Día ${indice + 1}`, filas: [{ ...filaVacia(), ejercicio: linea.replace(/^[-•]\s*/, '') }] })).filter((dia) => dia.filas[0].ejercicio);
-    }
+    const lineas = datos.split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean);
+    return lineas.map((linea, indice) => ({ nombre: DIAS[indice] || `Día ${indice + 1}`, ejercicios: [leerEjercicio(linea)] }));
   }
   const entregados = [].concat(datos?.dias || datos?.rutinaDias || (Array.isArray(datos) ? datos : []));
   return entregados.map((dia, indice) => {
-    const filas = [].concat(dia.filas || dia.ejercicios || []).map((fila) => (typeof fila === 'string' ? { ...filaVacia(), ejercicio: fila } : { ...filaVacia(), ...fila }));
-    if (!filas.length) String(dia.detalle || dia.descripcion || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean).forEach((linea) => filas.push({ ...filaVacia(), ejercicio: linea.replace(/^[-•]\s*/, '') }));
-    return { dia: dia.dia || dia.nombre || dia.diaSemana || `Día ${indice + 1}`, filas };
-  }).filter((dia) => dia.filas.length);
+    const lista = [].concat(dia.ejercicios || dia.filas || []).map(leerEjercicio);
+    if (!lista.length) String(dia.detalle || dia.descripcion || '').split(/\r?\n/).map((linea) => linea.trim()).filter(Boolean).forEach((linea) => lista.push(leerEjercicio(linea)));
+    return { nombre: String(dia.nombre || dia.dia || dia.diaSemana || `Día ${indice + 1}`), ejercicios: lista };
+  }).filter((dia) => dia.ejercicios.length);
 }
 
-function diasParaDetalle(dias) {
-  return { dias: dias.map((dia) => ({ dia: dia.dia, filas: dia.filas.map((fila) => ({ ejercicio: fila.ejercicio.trim(), series: fila.series.trim(), repeticiones: fila.repeticiones.trim(), descanso: fila.descanso.trim(), nota: fila.nota.trim() })).filter((fila) => fila.ejercicio) })).filter((dia) => dia.filas.length) };
+// Arma exactamente el formato que acepta el backend, con números enteros.
+function diasParaDetalle(dias, nota = '') {
+  const detalle = {
+    editable: true,
+    dias: dias.map((dia) => ({
+      nombre: dia.nombre.trim(),
+      ejercicios: dia.ejercicios.map((e) => ({
+        nombre: e.nombre.trim(),
+        grupo: e.grupo.trim() || null,
+        series: Number.parseInt(e.series, 10),
+        repeticiones: e.modo === 'seg' ? null : Number.parseInt(e.cantidad, 10),
+        tiempo: e.modo === 'seg' ? Number.parseInt(e.cantidad, 10) : null,
+        descanso: e.descanso.trim(),
+        nota: e.nota.trim()
+      }))
+    }))
+  };
+  if (String(nota || '').trim()) detalle.nota = String(nota).trim();
+  return detalle;
+}
+
+// Mismas reglas que el backend; cada error apunta al campo exacto del editor.
+function validarRutina(dias) {
+  const errores = [];
+  const agregar = (campo, mensaje) => errores.push({ campo, mensaje });
+  if (!dias.length) agregar('nivelId', 'La rutina necesita al menos un día. Elige un nivel para cargar su plantilla.');
+  if (dias.length > LIMITES.dias) agregar(`${rutaDia(LIMITES.dias)}.nombre`, `La rutina admite hasta ${LIMITES.dias} días.`);
+  dias.forEach((dia, i) => {
+    const nombre = dia.nombre.trim();
+    if (nombre.length < 3 || nombre.length > 30) agregar(`${rutaDia(i)}.nombre`, 'El nombre del día tiene entre 3 y 30 caracteres.');
+    if (!dia.ejercicios.length || dia.ejercicios.length > LIMITES.ejercicios) agregar(`${rutaDia(i)}.nombre`, `Cada día lleva entre 1 y ${LIMITES.ejercicios} ejercicios.`);
+    dia.ejercicios.forEach((e, j) => {
+      const q = rutaEjercicio(i, j);
+      const nombreEjercicio = e.nombre.trim();
+      if (nombreEjercicio.length < 2 || nombreEjercicio.length > 60) agregar(`${q}.nombre`, 'El ejercicio tiene entre 2 y 60 caracteres.');
+      if (!enteroEntre(e.series, 1, 10)) agregar(`${q}.series`, 'Las series son un número entero de 1 a 10.');
+      if (e.modo === 'seg' ? !enteroEntre(e.cantidad, 1, LIMITES.tiempo) : !enteroEntre(e.cantidad, 1, LIMITES.repeticiones)) agregar(`${q}.repeticiones`, e.modo === 'seg' ? 'El tiempo es un número entero de 1 a 3600 segundos.' : 'Las repeticiones son un número entero de 1 a 100.');
+      const descanso = e.descanso.trim();
+      if (descanso.length < 1 || descanso.length > 15) agregar(`${q}.descanso`, 'El descanso tiene entre 1 y 15 caracteres, por ejemplo 90s.');
+      if (e.nota.trim().length > 120) agregar(`${q}.nota`, 'La nota tiene hasta 120 caracteres.');
+    });
+  });
+  return errores;
+}
+
+// Traduce rutas del servidor (detalle.dias[1].ejercicios[3].tiempo) al campo del editor.
+function ubicarCampo(ruta, formulario) {
+  let nombre = String(ruta || '').replace(/^body\./, '');
+  if (nombre === 'observaciones' || nombre === 'nota') nombre = 'detalle.nota';
+  if (nombre === 'detalle' || nombre === 'detalle.dias') nombre = `${rutaDia(0)}.nombre`;
+  nombre = nombre.replace(/\.tiempo$/, '.repeticiones').replace(/(dias\[\d+\])\.ejercicios$/, '$1.nombre');
+  if (/\]$/.test(nombre)) nombre += '.nombre';
+  return formulario.querySelector(`[name="${CSS.escape(nombre)}"]`);
+}
+
+function textoCantidad(e) {
+  if (!e.cantidad) return '';
+  return e.modo === 'seg' ? `${e.cantidad} s` : `${e.cantidad} repeticiones`;
 }
 
 function resumenRutina(rutina) {
-  return normalizarDias(rutina?.detalle).map((dia) => `${dia.dia}: ${dia.filas.map((fila) => [fila.ejercicio, fila.series && `${fila.series} series`, fila.repeticiones, fila.descanso && `descanso ${fila.descanso}`, fila.nota].filter(Boolean).join(' · ')).join(' | ')}`).join('\n');
+  return normalizarDias(rutina?.detalle).map((dia) => `${dia.nombre}: ${dia.ejercicios.map((e) => [e.nombre, e.series && `${e.series} series`, textoCantidad(e), e.descanso && `descanso ${e.descanso}`, e.nota].filter(Boolean).join(' · ')).join(' | ')}`).join('\n');
 }
 
 function rutinaHtml(rutina) {
   const dias = normalizarDias(rutina?.detalle);
-  const nivel = NIVELES.find((n) => n.valor === (rutina?.nivelId || rutina?.nivel))?.texto || rutina?.nivel || rutina?.nivelId || '-';
+  const nivel = textoNivel(nivelValor(rutina)) || rutina?.nivel || '-';
+  const nota = notaGeneral(rutina?.detalle) || rutina?.observaciones || '';
   return `<article class="pf-rutina-vista"><h3>${escapar(rutina?.objetivo || 'Rutina')}</h3>
-    <p>Nivel: ${escapar(nivel)} · Del ${escapar(fecha(rutina?.fechaInicio))} al ${escapar(fecha(rutina?.fechaFin))}${nombreEntrenador(rutina) ? ` · Entrenador: ${escapar(nombreEntrenador(rutina))}` : ''}</p>
-    ${rutina?.observaciones ? `<p>${escapar(rutina.observaciones)}</p>` : ''}
-    ${dias.map((dia, indice) => `<section aria-labelledby="rutina-vista-dia-${indice}"><h4 id="rutina-vista-dia-${indice}">${escapar(dia.dia)}</h4><ul>${dia.filas.map((fila) => `<li><strong>${escapar(fila.ejercicio)}</strong>${[fila.series && `${escapar(fila.series)} series`, fila.repeticiones && escapar(fila.repeticiones), fila.descanso && `Descanso: ${escapar(fila.descanso)}`, fila.nota && escapar(fila.nota)].filter(Boolean).map((parte) => `<span>${parte}</span>`).join('')}</li>`).join('')}</ul></section>`).join('')}
-    ${!dias.length ? `<p>${escapar(String(rutina?.detalle || 'Sin detalle.'))}</p>` : ''}</article>`;
+    <p>Nivel: ${escapar(nivel)} · Del ${escapar(fechaTexto(rutina?.fechaInicio))} al ${escapar(fechaTexto(rutina?.fechaFin))}${nombreEntrenador(rutina) ? ` · Entrenador: ${escapar(nombreEntrenador(rutina))}` : ''}</p>
+    ${nota ? `<p>${escapar(nota)}</p>` : ''}
+    ${dias.map((dia, indice) => `<section aria-labelledby="rutina-vista-dia-${indice}"><h4 id="rutina-vista-dia-${indice}">${escapar(dia.nombre)}</h4><ul>${dia.ejercicios.map((e) => `<li><strong>${escapar(e.nombre)}</strong>${[e.grupo && escapar(e.grupo), e.series && `${escapar(e.series)} series`, textoCantidad(e) && escapar(textoCantidad(e)), e.descanso && `Descanso: ${escapar(e.descanso)}`, e.nota && escapar(e.nota)].filter(Boolean).map((parte) => `<span>${parte}</span>`).join('')}</li>`).join('')}</ul></section>`).join('')}
+    ${!dias.length ? `<p>${escapar(typeof rutina?.detalle === 'string' ? rutina.detalle : 'Sin detalle.')}</p>` : ''}</article>`;
 }
 
 function imprimirRutina(html) {
@@ -115,7 +202,7 @@ function pintarFicha() {
   if (!ficha) { cont.hidden = true; return; }
   cont.hidden = false;
   cont.querySelector('[data-ficha-nombre]').textContent = ficha.nombre || ficha.cedula;
-  cont.querySelector('[data-ficha-nivel]').textContent = ficha.nivel || NIVELES.find((n) => n.valor === ficha.nivelId)?.texto || ficha.nivelId;
+  cont.querySelector('[data-ficha-nivel]').textContent = ficha.nivel || textoNivel(ficha.nivelId);
   cont.querySelector('[data-ficha-plan]').textContent = ficha.tienePlan ? `${ficha.plan || 'Plan activo'}${ficha.fechaFin ? ` · hasta ${fechaTexto(ficha.fechaFin)}` : ''} · ${ficha.incluyeRutina ? 'Incluye rutina' : 'No incluye rutina'}` : 'Sin plan activo';
   cont.querySelector('[data-ficha-rutina]').textContent = ficha.rutina ? `${ficha.rutina.objetivo || 'Rutina'} · ${fechaTexto(ficha.rutina.fechaInicio)} a ${fechaTexto(ficha.rutina.fechaFin)}${ficha.rutina.entrenador ? ` · ${ficha.rutina.entrenador}` : ''}` : 'Sin rutina vigente';
   const motivo = cont.querySelector('[data-ficha-motivo]');
@@ -150,140 +237,208 @@ async function consultarCliente() {
   }
 }
 
-function datosLista() {
-  const grupos = new Map();
-  ejercicios.forEach((ejercicio) => {
-    const grupo = ejercicio.grupoMuscular || ejercicio.grupo || ejercicio.grupoMusculo || 'Otros';
-    if (!grupos.has(grupo)) grupos.set(grupo, []);
-    grupos.get(grupo).push(ejercicio.nombre || ejercicio.descripcion || ejercicio.ejercicio || '');
-  });
-  return `<datalist id="lista-ejercicios-rutina">${[...grupos].map(([grupo, nombres]) => nombres.filter(Boolean).map((nombre) => `<option value="${escapar(nombre)}" label="${escapar(grupo)}"></option>`).join('')).join('')}</datalist>`;
+function opcionesDatalist() {
+  return ejercicios.map((e) => ({ nombre: e.nombre || e.descripcion || e.ejercicio || '', grupo: e.grupoMuscular || e.grupo || '' })).filter((e) => e.nombre)
+    .map((e) => `<option value="${escapar(e.nombre)}"${e.grupo ? ` label="${escapar(e.grupo)}"` : ''}></option>`).join('');
 }
 
 function leerEditor() {
   if (!editorRaiz) return;
-  editorDias = editorDias.map((dia, indice) => ({
-    dia: editorRaiz.querySelector(`[name="dia-${indice}"]`)?.value || dia.dia,
-    filas: dia.filas.map((_, filaIndice) => ({
-      ejercicio: editorRaiz.querySelector(`[name="ejercicio-${indice}-${filaIndice}"]`)?.value || '',
-      series: editorRaiz.querySelector(`[name="series-${indice}-${filaIndice}"]`)?.value || '',
-      repeticiones: editorRaiz.querySelector(`[name="repeticiones-${indice}-${filaIndice}"]`)?.value || '',
-      descanso: editorRaiz.querySelector(`[name="descanso-${indice}-${filaIndice}"]`)?.value || '',
-      nota: editorRaiz.querySelector(`[name="nota-${indice}-${filaIndice}"]`)?.value || ''
-    }))
+  const valor = (nombre, actual) => editorRaiz.querySelector(`[name="${CSS.escape(nombre)}"]`)?.value ?? actual;
+  editorDias = editorDias.map((dia, i) => ({
+    nombre: valor(`${rutaDia(i)}.nombre`, dia.nombre),
+    ejercicios: dia.ejercicios.map((e, j) => {
+      const q = rutaEjercicio(i, j);
+      return { nombre: valor(`${q}.nombre`, e.nombre), grupo: valor(`${q}.grupo`, e.grupo), series: valor(`${q}.series`, e.series), modo: valor(`${q}.modo`, e.modo), cantidad: valor(`${q}.repeticiones`, e.cantidad), descanso: valor(`${q}.descanso`, e.descanso), nota: valor(`${q}.nota`, e.nota) };
+    })
   }));
 }
 
-function pintarEditor(mensaje = '') {
+function ejercicioHtml(e, i, j, total) {
+  const q = rutaEjercicio(i, j);
+  const id = `rt-${i}-${j}`;
+  const et = `Día ${i + 1} · Ejercicio ${j + 1}`;
+  const seg = e.modo === 'seg';
+  return `<fieldset class="border-top pt-2 mb-2" data-ejercicio="${i}-${j}"><legend class="small fw-semibold mb-1">Ejercicio ${j + 1}</legend><div class="row g-2">
+    <div class="col-12 col-md-8"><label class="form-label small" for="${id}-nombre">Ejercicio</label><input class="form-control form-control-sm" id="${id}-nombre" name="${q}.nombre" list="lista-ejercicios-rutina" value="${escapar(e.nombre)}" required maxlength="60" pattern=".*\\S.*\\S.*" data-mensaje-patron="El ejercicio tiene entre 2 y 60 caracteres." data-etiqueta="${et} · Nombre" placeholder="Busca o escribe un ejercicio" autocomplete="off"></div>
+    <div class="col-12 col-md-4"><label class="form-label small" for="${id}-grupo">Grupo muscular</label><input class="form-control form-control-sm" id="${id}-grupo" name="${q}.grupo" value="${escapar(e.grupo)}" maxlength="40" data-etiqueta="${et} · Grupo" autocomplete="off"></div>
+    <div class="col-6 col-md-2"><label class="form-label small" for="${id}-series">Series</label><input class="form-control form-control-sm" type="number" inputmode="numeric" id="${id}-series" name="${q}.series" value="${escapar(e.series)}" required min="1" max="10" step="1" data-mensaje-rango="Las series son un número entero de 1 a 10." data-etiqueta="${et} · Series"></div>
+    <div class="col-6 col-md-4"><label class="form-label small" for="${id}-cantidad">Reps o tiempo</label><input class="form-control form-control-sm" type="number" inputmode="numeric" id="${id}-cantidad" name="${q}.repeticiones" value="${escapar(e.cantidad)}" required min="1" max="${seg ? LIMITES.tiempo : LIMITES.repeticiones}" step="1" data-mensaje-rango="${seg ? 'El tiempo es un número entero de 1 a 3600 segundos.' : 'Las repeticiones son un número entero de 1 a 100.'}" data-etiqueta="${et} · Reps o tiempo"><select class="form-select form-select-sm mt-1" id="${id}-modo" name="${q}.modo" aria-label="Unidad del ${et}"><option value="reps"${seg ? '' : ' selected'}>Repeticiones</option><option value="seg"${seg ? ' selected' : ''}>Segundos</option></select></div>
+    <div class="col-6 col-md-2"><label class="form-label small" for="${id}-descanso">Descanso</label><input class="form-control form-control-sm" id="${id}-descanso" name="${q}.descanso" value="${escapar(e.descanso)}" required maxlength="15" placeholder="90s" data-etiqueta="${et} · Descanso" autocomplete="off"></div>
+    <div class="col-6 col-md-4"><label class="form-label small" for="${id}-nota">Nota</label><input class="form-control form-control-sm" id="${id}-nota" name="${q}.nota" value="${escapar(e.nota)}" maxlength="120" data-etiqueta="${et} · Nota" autocomplete="off"></div>
+    <div class="col-12 d-flex flex-wrap gap-1"><button type="button" class="btn btn-outline-secondary btn-sm" data-accion="subir-fila" data-dia="${i}" data-fila="${j}"${j === 0 ? ' disabled' : ''}>Subir</button><button type="button" class="btn btn-outline-secondary btn-sm" data-accion="bajar-fila" data-dia="${i}" data-fila="${j}"${j === total - 1 ? ' disabled' : ''}>Bajar</button><button type="button" class="btn btn-outline-danger btn-sm" data-accion="quitar-fila" data-dia="${i}" data-fila="${j}"${total === 1 ? ' disabled' : ''} aria-label="Quitar ejercicio ${j + 1} del día ${i + 1}">Quitar</button></div>
+  </div></fieldset>`;
+}
+
+function diaHtml(dia, i, total, abierto) {
+  const n = dia.ejercicios.length;
+  return `<details class="border rounded mb-2" data-dia-panel="${i}"${abierto ? ' open' : ''}><summary class="p-2 fw-semibold">${escapar(dia.nombre || `Día ${i + 1}`)} · ${n} ${n === 1 ? 'ejercicio' : 'ejercicios'}</summary><div class="px-3 pb-3">
+    <label class="form-label small" for="rt-${i}-nombre">Nombre del día</label><input class="form-control form-control-sm" id="rt-${i}-nombre" name="${rutaDia(i)}.nombre" value="${escapar(dia.nombre)}" required maxlength="30" pattern="\\s*\\S.{1,28}\\S\\s*" data-mensaje-patron="El nombre del día tiene entre 3 y 30 caracteres." data-etiqueta="Día ${i + 1} · Nombre del día" autocomplete="off">
+    <div class="d-flex flex-wrap gap-1 my-2"><button type="button" class="btn btn-outline-secondary btn-sm" data-accion="subir-dia" data-dia="${i}"${i === 0 ? ' disabled' : ''}>Subir día</button><button type="button" class="btn btn-outline-secondary btn-sm" data-accion="bajar-dia" data-dia="${i}"${i === total - 1 ? ' disabled' : ''}>Bajar día</button><button type="button" class="btn btn-outline-danger btn-sm" data-accion="quitar-dia" data-dia="${i}"${total === 1 ? ' disabled' : ''}>Quitar día</button></div>
+    ${dia.ejercicios.map((e, j) => ejercicioHtml(e, i, j, n)).join('')}
+    <button type="button" class="btn btn-outline-primary btn-sm" data-accion="agregar-fila" data-dia="${i}"${n >= LIMITES.ejercicios ? ' disabled' : ''}>Agregar ejercicio</button>
+  </div></details>`;
+}
+
+function pintarEditor(mensaje = '', abrir = null) {
   if (!editorRaiz) return;
-  editorRaiz.innerHTML = `<div data-dias-rutina>${editorDias.map((dia, i) => `<section class="border rounded p-3 mb-3" aria-labelledby="editor-dia-${i}"><div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-2"><h4 id="editor-dia-${i}" class="h6 m-0">${escapar(dia.dia)}</h4><input type="hidden" name="dia-${i}" value="${escapar(dia.dia)}"><div class="d-flex flex-wrap gap-1"><button type="button" class="btn btn-outline-secondary btn-sm" data-accion="subir-dia" data-dia="${i}">Subir día</button><button type="button" class="btn btn-outline-secondary btn-sm" data-accion="bajar-dia" data-dia="${i}">Bajar día</button><button type="button" class="btn btn-outline-danger btn-sm" data-accion="quitar-dia" data-dia="${i}">Quitar día</button></div></div>${dia.filas.map((fila, j) => `<div class="row g-2 mb-2" data-fila="${i}-${j}"><div class="col-12"><label class="form-label small" for="ejercicio-${i}-${j}">Ejercicio</label><input class="form-control form-control-sm" id="ejercicio-${i}-${j}" name="ejercicio-${i}-${j}" list="lista-ejercicios-rutina" value="${escapar(fila.ejercicio)}" placeholder="Busca o escribe un ejercicio"></div><div class="col-6 col-md-3"><label class="form-label small" for="series-${i}-${j}">Series</label><input class="form-control form-control-sm" id="series-${i}-${j}" name="series-${i}-${j}" value="${escapar(fila.series)}"></div><div class="col-6 col-md-3"><label class="form-label small" for="repeticiones-${i}-${j}">Repeticiones o tiempo</label><input class="form-control form-control-sm" id="repeticiones-${i}-${j}" name="repeticiones-${i}-${j}" value="${escapar(fila.repeticiones)}"></div><div class="col-6 col-md-3"><label class="form-label small" for="descanso-${i}-${j}">Descanso</label><input class="form-control form-control-sm" id="descanso-${i}-${j}" name="descanso-${i}-${j}" value="${escapar(fila.descanso)}"></div><div class="col-6 col-md-3"><label class="form-label small" for="nota-${i}-${j}">Nota</label><input class="form-control form-control-sm" id="nota-${i}-${j}" name="nota-${i}-${j}" value="${escapar(fila.nota)}"></div><div class="col-12 d-flex flex-wrap gap-1"><button type="button" class="btn btn-outline-secondary btn-sm" data-accion="subir-fila" data-dia="${i}" data-fila="${j}">Subir fila</button><button type="button" class="btn btn-outline-secondary btn-sm" data-accion="bajar-fila" data-dia="${i}" data-fila="${j}">Bajar fila</button><button type="button" class="btn btn-outline-danger btn-sm" data-accion="quitar-fila" data-dia="${i}" data-fila="${j}">Quitar fila</button></div></div>`).join('')}<button type="button" class="btn btn-outline-primary btn-sm" data-accion="agregar-fila" data-dia="${i}">Agregar fila a ${escapar(dia.dia)}</button></section>`).join('')}</div><button type="button" class="btn btn-primary" data-accion="agregar-dia">Agregar día</button>${datosLista()}`;
+  const abiertos = new Set([...editorRaiz.querySelectorAll('details[data-dia-panel][open]')].map((d) => Number(d.dataset.diaPanel)));
+  if (!editorRaiz.querySelector('details[data-dia-panel]')) abiertos.add(0);
+  if (abrir !== null) abiertos.add(abrir);
+  editorRaiz.innerHTML = `<div data-dias-rutina>${editorDias.map((dia, i) => diaHtml(dia, i, editorDias.length, abiertos.has(i))).join('')}</div><button type="button" class="btn btn-outline-primary btn-sm" data-accion="agregar-dia"${editorDias.length >= LIMITES.dias ? ' disabled' : ''}>Agregar día</button><datalist id="lista-ejercicios-rutina">${opcionesDatalist()}</datalist>`;
   if (estadoEditor) estadoEditor.textContent = mensaje;
 }
 
 async function cargarEjercicios() {
-  if (ejercicios.length) return;
-  try { ejercicios = extraer(await rutinasModel.ejercicios({ limit: 500 })); } catch { ejercicios = []; }
-  pintarEditor(ejercicios.length ? 'Catálogo de ejercicios cargado.' : 'No hay catálogo de ejercicios; puedes escribir el nombre.');
+  if (!ejercicios.length) {
+    try { ejercicios = extraer(await rutinasModel.ejercicios({ limit: 500 })); } catch { ejercicios = []; }
+  }
+  const lista = editorRaiz?.querySelector('#lista-ejercicios-rutina');
+  if (lista) lista.innerHTML = opcionesDatalist();
 }
 
-async function cargarPlantilla(nivel) {
-  if (editorModificado && !(await confirmarAccion({ titulo: 'Reemplazar ejercicios', mensaje: 'Ya editaste los ejercicios. ¿Reemplazarlos con la plantilla del nivel?', textoConfirmar: 'Reemplazar', tono: 'peligro' }))) return;
-  leerEditor();
+async function plantillaDe(nivel) {
   let plantillas = [];
   try { plantillas = extraer(await rutinasModel.plantillas({ nivelId: nivel })); } catch { plantillas = []; }
   const plantilla = plantillas.find((p) => String(p.nivelId || p.nivel) === String(nivel)) || plantillas[0];
-  editorDias = plantilla ? normalizarDias(plantilla.detalle || plantilla.dias || plantilla) : [];
+  return plantilla ? normalizarDias(plantilla.detalle || plantilla).slice(0, LIMITES.dias) : [];
+}
+
+async function cargarPlantilla(nivel, selector) {
+  leerEditor();
+  if (editorModificado && !(await confirmarAccion({ titulo: 'Reemplazar ejercicios', mensaje: `Ya cambiaste los ejercicios. ¿Reemplazarlos con la plantilla de ${textoNivel(nivel)}?`, textoConfirmar: 'Reemplazar', tono: 'peligro' }))) {
+    if (selector) selector.value = selector.dataset.anterior || selector.value;
+    return;
+  }
+  if (selector) selector.dataset.anterior = nivel;
+  const dias = await plantillaDe(nivel);
+  editorDias = dias.length ? dias : [diaVacio(0)];
   editorModificado = false;
-  pintarEditor(plantilla ? 'Plantilla cargada.' : 'No hay plantilla para este nivel.');
+  editorRaiz.innerHTML = '';
+  pintarEditor(dias.length ? `Plantilla de ${textoNivel(nivel)} cargada.` : 'No hay plantilla para este nivel: escribe los ejercicios.');
 }
 
 function enlazarEditor() {
-  editorRaiz.addEventListener('input', (evento) => { if (evento.target.name) editorModificado = true; });
+  editorRaiz.addEventListener('input', (evento) => {
+    if (!evento.target.name) return;
+    editorModificado = true;
+    if (evento.target.name.endsWith('.nombre') && evento.target.list) {
+      const elegido = ejercicios.find((e) => (e.nombre || '') === evento.target.value);
+      const grupo = editorRaiz.querySelector(`[name="${CSS.escape(evento.target.name.replace(/\.nombre$/, '.grupo'))}"]`);
+      if (elegido && grupo && !grupo.value) grupo.value = elegido.grupoMuscular || elegido.grupo || '';
+    }
+  });
+  editorRaiz.addEventListener('change', (evento) => {
+    const selector = evento.target;
+    if (!selector.name?.endsWith('.modo')) return;
+    editorModificado = true;
+    const campo = editorRaiz.querySelector(`[name="${CSS.escape(selector.name.replace(/\.modo$/, '.repeticiones'))}"]`);
+    if (!campo) return;
+    const seg = selector.value === 'seg';
+    campo.max = String(seg ? LIMITES.tiempo : LIMITES.repeticiones);
+    campo.dataset.mensajeRango = seg ? 'El tiempo es un número entero de 1 a 3600 segundos.' : 'Las repeticiones son un número entero de 1 a 100.';
+  });
   editorRaiz.addEventListener('click', (evento) => {
     const boton = evento.target.closest('button[data-accion]');
     if (!boton) return;
     leerEditor();
     const i = Number(boton.dataset.dia);
     const j = Number(boton.dataset.fila);
+    const dia = editorDias[i];
     let mensaje = '';
+    let abrir = Number.isNaN(i) ? null : i;
     switch (boton.dataset.accion) {
-      case 'agregar-dia': editorDias.push({ dia: `Día ${editorDias.length + 1}`, filas: [filaVacia()] }); mensaje = 'Día agregado.'; break;
-      case 'quitar-dia': if (editorDias.length > 1) { editorDias.splice(i, 1); mensaje = 'Día quitado.'; } else { editorDias = []; mensaje = 'Se quitó el último día.'; } break;
-      case 'subir-dia': if (i > 0) { [editorDias[i - 1], editorDias[i]] = [editorDias[i], editorDias[i - 1]]; mensaje = 'Día movido arriba.'; } break;
-      case 'bajar-dia': if (i < editorDias.length - 1) { [editorDias[i + 1], editorDias[i]] = [editorDias[i], editorDias[i + 1]]; mensaje = 'Día movido abajo.'; } break;
-      case 'agregar-fila': editorDias[i]?.filas.push(filaVacia()); mensaje = 'Fila agregada.'; break;
-      case 'quitar-fila': if (editorDias[i]?.filas.length > 1) editorDias[i].filas.splice(j, 1); else if (editorDias[i]) editorDias[i].filas = []; mensaje = 'Fila quitada.'; break;
-      case 'subir-fila': if (editorDias[i] && j > 0) { [editorDias[i].filas[j - 1], editorDias[i].filas[j]] = [editorDias[i].filas[j], editorDias[i].filas[j - 1]]; mensaje = 'Fila movida arriba.'; } break;
-      case 'bajar-fila': if (editorDias[i] && j < editorDias[i].filas.length - 1) { [editorDias[i].filas[j + 1], editorDias[i].filas[j]] = [editorDias[i].filas[j], editorDias[i].filas[j + 1]]; mensaje = 'Fila movida abajo.'; } break;
+      case 'agregar-dia': if (editorDias.length < LIMITES.dias) { editorDias.push(diaVacio(editorDias.length)); abrir = editorDias.length - 1; mensaje = 'Día agregado.'; } break;
+      case 'quitar-dia': if (editorDias.length > 1) { editorDias.splice(i, 1); abrir = null; mensaje = 'Día quitado.'; } break;
+      case 'subir-dia': if (i > 0) { [editorDias[i - 1], editorDias[i]] = [editorDias[i], editorDias[i - 1]]; abrir = i - 1; mensaje = 'Día movido arriba.'; } break;
+      case 'bajar-dia': if (i < editorDias.length - 1) { [editorDias[i + 1], editorDias[i]] = [editorDias[i], editorDias[i + 1]]; abrir = i + 1; mensaje = 'Día movido abajo.'; } break;
+      case 'agregar-fila': if (dia && dia.ejercicios.length < LIMITES.ejercicios) { dia.ejercicios.push(ejercicioVacio()); mensaje = 'Ejercicio agregado.'; } break;
+      case 'quitar-fila': if (dia && dia.ejercicios.length > 1) { dia.ejercicios.splice(j, 1); mensaje = 'Ejercicio quitado.'; } break;
+      case 'subir-fila': if (dia && j > 0) { [dia.ejercicios[j - 1], dia.ejercicios[j]] = [dia.ejercicios[j], dia.ejercicios[j - 1]]; mensaje = 'Ejercicio movido arriba.'; } break;
+      case 'bajar-fila': if (dia && j < dia.ejercicios.length - 1) { [dia.ejercicios[j + 1], dia.ejercicios[j]] = [dia.ejercicios[j], dia.ejercicios[j + 1]]; mensaje = 'Ejercicio movido abajo.'; } break;
       default: return;
     }
+    if (!mensaje) return;
     editorModificado = true;
-    pintarEditor(mensaje);
+    if (boton.dataset.accion.endsWith('-dia')) editorRaiz.innerHTML = '';
+    pintarEditor(mensaje, abrir);
   });
 }
 
 async function abrirEditor(rutina) {
+  let base = rutina;
+  if (rutina?.id) {
+    const detalle = await rutinasModel.detalle(rutina.id).then((x) => x?.data ?? x).catch(() => null);
+    base = { ...rutina, ...(detalle && typeof detalle === 'object' ? detalle : {}) };
+  }
+  const deFicha = !rutina || (ficha?.rutina && String(ficha.rutina.id) === String(rutina.id));
+  const fechaFinMax = deFicha ? (ficha?.fechaFin || '') : '';
   const inicio = hoyISO();
-  const fechaFinMax = ficha?.fechaFin || '';
   const fin = menorFecha(sumarDias(inicio, 28), fechaFinMax) || sumarDias(inicio, 28);
-  editorDias = rutina ? normalizarDias(rutina.detalle) : normalizarDias(plantillaInicial());
+  const nivelInicial = nivelValor(base) || ficha?.nivelId || 'PRI';
+  let mensajeInicial;
+  if (rutina) {
+    editorDias = normalizarDias(base?.detalle).slice(0, LIMITES.dias);
+    mensajeInicial = 'Rutina guardada cargada. Cambia lo que necesites y guarda.';
+  } else {
+    editorDias = await plantillaDe(nivelInicial);
+    mensajeInicial = editorDias.length ? `Plantilla de ${textoNivel(nivelInicial)} cargada. Puedes asignarla tal cual o editarla.` : 'No hay plantilla para este nivel: escribe los ejercicios.';
+  }
+  if (!editorDias.length) editorDias = [diaVacio(0)];
   editorModificado = false;
-  ejercicios = [];
   editorRaiz = null;
   estadoEditor = null;
+  const objetivo = base?.objetivo || 'Salud general';
+  const opcionesObjetivo = OBJETIVOS.some((o) => o.valor === objetivo) ? OBJETIVOS : [...OBJETIVOS, { valor: objetivo, texto: objetivo }];
   const respuesta = await abrirDialogo({
     titulo: rutina ? 'Editar rutina' : 'Asignar rutina',
-    mensaje: `Cliente: ${ficha?.nombre || ficha?.cedula || ''}`,
+    mensaje: `Cliente: ${ficha && deFicha ? (ficha.nombre || ficha.cedula) : (base?.cliente?.nombre || base?.cliente || base?.clienteId || '')}`,
     campos: [
-      { nombre: 'nivelId', etiqueta: 'Nivel', tipo: 'select', requerido: true, opciones: NIVELES, valor: rutina?.nivelId || ficha?.nivelId || 'PRI' },
-      { nombre: 'objetivo', etiqueta: 'Objetivo', tipo: 'select', requerido: true, opciones: OBJETIVOS, valor: rutina?.objetivo || 'Salud general' },
-      { nombre: 'fechaInicio', etiqueta: 'Desde', tipo: 'date', requerido: true, valor: String(rutina?.fechaInicio || '').slice(0, 10) || inicio },
-      { nombre: 'fechaFin', etiqueta: 'Hasta', tipo: 'date', requerido: true, valor: String(rutina?.fechaFin || '').slice(0, 10) || fin, ayuda: fechaFinMax ? `No puede pasar del ${fechaTexto(fechaFinMax)}.` : '' },
-      { nombre: 'observaciones', etiqueta: 'Observaciones', tipo: 'textarea', maxlength: 200, valor: rutina?.observaciones || '' }
+      { nombre: 'nivelId', etiqueta: 'Nivel', tipo: 'select', requerido: true, opciones: NIVELES, valor: nivelInicial },
+      { nombre: 'objetivo', etiqueta: 'Objetivo', tipo: 'select', requerido: true, opciones: opcionesObjetivo, valor: objetivo },
+      { nombre: 'fechaInicio', etiqueta: 'Desde', tipo: 'date', requerido: true, valor: String(base?.fechaInicio || '').slice(0, 10) || inicio },
+      { nombre: 'fechaFin', etiqueta: 'Hasta', tipo: 'date', requerido: true, valor: String(base?.fechaFin || '').slice(0, 10) || fin, ayuda: fechaFinMax ? `No puede pasar del ${fechaTexto(fechaFinMax)}.` : '' },
+      { nombre: 'detalle.nota', etiqueta: 'Nota general (opcional)', tipo: 'textarea', maxlength: 120, valor: (notaGeneral(base?.detalle) || base?.observaciones || '').slice(0, 120) }
     ],
-    contenido: '<input type="hidden" name="detalle"><div class="pf-editor-rutina" data-editor-rutina></div><p class="small mt-2 mb-0" data-estado-editor role="status" aria-live="polite"></p>',
+    contenido: '<div class="pf-editor-rutina" data-editor-rutina></div><p class="small mt-2 mb-0" data-estado-editor role="status" aria-live="polite"></p>',
     textoConfirmar: rutina ? 'Guardar cambios' : 'Asignar rutina',
+    ubicarCampo,
     alPreparar: (formulario) => {
       editorRaiz = formulario.querySelector('[data-editor-rutina]');
       estadoEditor = formulario.querySelector('[data-estado-editor]');
-      formulario.elements.namedItem('fechaFin').max = fechaFinMax;
+      const campoFin = formulario.elements.namedItem('fechaFin');
+      if (fechaFinMax) { campoFin.max = fechaFinMax; campoFin.dataset.mensajeRango = `La fecha de fin no puede pasar del ${fechaTexto(fechaFinMax)}.`; }
       enlazarEditor();
-      pintarEditor('Escribe los ejercicios por día o elige un nivel para cargar su plantilla.');
+      pintarEditor(mensajeInicial);
       cargarEjercicios();
-      if (!rutina) cargarPlantilla(ficha?.nivelId || 'PRI');
-      formulario.elements.namedItem('nivelId').addEventListener('change', (evento) => cargarPlantilla(evento.target.value));
+      const nivel = formulario.elements.namedItem('nivelId');
+      nivel.dataset.anterior = nivel.value;
+      nivel.addEventListener('change', (evento) => cargarPlantilla(evento.target.value, evento.target));
     },
     validarExtra: (_, v) => {
       leerEditor();
-      if (!v.fechaInicio || !v.fechaFin || v.fechaInicio > v.fechaFin) return 'La fecha inicial debe ser anterior a la final.';
-      if (fechaFinMax && v.fechaFin > fechaFinMax) return `La fecha de fin no puede pasar del ${fechaTexto(fechaFinMax)}.`;
-      if (!editorDias.length) return 'Agrega al menos un día con ejercicios.';
-      const dia = editorDias.find((d) => !d.filas.some((f) => f.ejercicio.trim()));
-      return dia ? `${dia.dia} necesita al menos un ejercicio.` : null;
+      const errores = [];
+      if (v.fechaInicio && v.fechaFin && v.fechaInicio > v.fechaFin) errores.push({ campo: 'fechaFin', mensaje: 'La fecha final debe ser posterior a la inicial.' });
+      if (fechaFinMax && v.fechaFin > fechaFinMax) errores.push({ campo: 'fechaFin', mensaje: `La fecha de fin no puede pasar del ${fechaTexto(fechaFinMax)}.` });
+      return [...errores, ...validarRutina(editorDias)];
     },
-    alConfirmar: async (v, formulario) => {
+    alConfirmar: async (v) => {
       leerEditor();
-      const detalle = diasParaDetalle(editorDias);
-      formulario.elements.namedItem('detalle').value = JSON.stringify(detalle);
-      const cuerpo = { clienteId: ficha?.cedula, nivelId: v.nivelId, objetivo: v.objetivo, detalle, observaciones: v.observaciones.trim(), fechaInicio: v.fechaInicio, fechaFin: v.fechaFin };
-      return rutina ? rutinasModel.editar(rutina.id, cuerpo) : rutinasModel.crear(cuerpo);
+      const cuerpo = { nivelId: v.nivelId, objetivo: v.objetivo, detalle: diasParaDetalle(editorDias, v['detalle.nota']), fechaInicio: v.fechaInicio, fechaFin: v.fechaFin };
+      return rutina ? rutinasModel.editar(rutina.id, cuerpo) : rutinasModel.crear({ clienteId: ficha?.cedula, ...cuerpo });
     }
   });
   if (!respuesta?.resultado) return;
   mostrarMensaje(mensajero(), rutina ? 'Rutina actualizada.' : 'Rutina asignada.', 'exito');
-  await Promise.all([mis?.recargar(), consultarCliente()]);
-}
-
-function plantillaInicial() {
-  return { dias: [{ dia: 'Lunes', filas: [filaVacia()] }] };
+  await Promise.all([mis?.recargar(), ficha ? consultarCliente() : null]);
 }
 
 async function verRutina(rutina) {
   const detalle = await rutinasModel.detalle(rutina.id).then((x) => x?.data ?? x).catch(() => rutina);
-  const vista = rutinaHtml(detalle);
+  const vista = rutinaHtml({ ...rutina, ...(detalle && typeof detalle === 'object' ? detalle : {}) });
   const correo = ficha?.correo || detalle?.cliente?.correo || detalle?.correo || '';
   await abrirDialogo({
-    titulo: `Rutina de ${ficha?.nombre || detalle?.cliente?.nombre || rutina.clienteId}`,
+    titulo: `Rutina de ${ficha?.nombre || detalle?.cliente?.nombre || rutina.clienteId || rutina.cliente || ''}`,
     contenido: `${vista}<div class="d-flex flex-wrap gap-2 mt-3"><button type="button" class="btn btn-outline-primary" data-imprimir-rutina>Imprimir / Guardar PDF</button><button type="button" class="btn btn-outline-secondary" data-enviar-rutina${correo ? '' : ' disabled'}>Enviar por correo</button></div><p class="small mt-2 mb-0" data-correo-rutina role="status" aria-live="polite"></p>`,
     textoConfirmar: 'Cerrar',
     textoCancelar: 'Cerrar',
@@ -302,10 +457,10 @@ async function verRutina(rutina) {
 const mis = crearLista({
   raiz: '#pantalla-mis-clientes', caption: 'Mis clientes con rutina', fijos: { mias: 'S' }, limite: 100,
   cargar: (p) => rutinasModel.listar(p),
-  columnas: [['Cliente', (r) => txt(r.cliente?.nombre || r.cliente || r.clienteId)], ['Nivel', (r) => txt(NIVELES.find((n) => n.valor === r.nivelId)?.texto || r.nivelId || r.nivel)], ['Desde', (r) => fecha(r.fechaInicio)], ['Hasta', (r) => fecha(r.fechaFin)], ['Estado', (r) => txt(estadoRutina(r))], ['Entrenador', (r) => txt(r.empleado?.nombre || r.empleado || r.empleadoId)]],
+  columnas: [['Cliente', (r) => txt(r.cliente?.nombre || r.cliente || r.clienteId)], ['Nivel', (r) => txt(textoNivel(nivelValor(r)) || r.nivel)], ['Desde', (r) => fecha(r.fechaInicio)], ['Hasta', (r) => fecha(r.fechaFin)], ['Estado', (r) => txt(estadoRutina(r))], ['Entrenador', (r) => txt(nombreEntrenador(r) || r.empleado || r.empleadoId)]],
   acciones: (r) => [
-    { texto: 'Ver', permiso: 'rutinas', etiqueta: `Ver la rutina de ${r.clienteId}`, ejecutar: () => verRutina(r) },
-    ...(puedeEditarRutina(r) ? [{ texto: 'Editar', permiso: 'rutinas', etiqueta: `Editar la rutina de ${r.clienteId}`, ejecutar: () => abrirEditor(r) }] : [])
+    { texto: 'Ver', permiso: 'rutinas', etiqueta: `Ver la rutina de ${r.clienteId || r.cliente?.nombre || r.cliente || ''}`, ejecutar: () => verRutina(r) },
+    ...(puedeEditarRutina(r) ? [{ texto: 'Editar', permiso: 'rutinas', etiqueta: `Editar la rutina de ${r.clienteId || r.cliente?.nombre || r.cliente || ''}`, ejecutar: () => abrirEditor(r) }] : [])
   ]
 });
 

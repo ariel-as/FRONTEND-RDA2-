@@ -28,7 +28,7 @@ enlazarBoton('[data-cobrar-comision]', 'aliados:cobrar', async () => {
       { nombre: 'metodoPago', etiqueta: 'Método de pago', tipo: 'select', requerido: true, opciones: [{ valor: 'EF', texto: 'Efectivo' }, { valor: 'TR', texto: 'Transferencia' }] },
       { nombre: 'referencia', etiqueta: 'Referencia (obligatoria en transferencia)', maxlength: 30 }
     ],
-    validarExtra: (_, v) => (v.fechaDesde > v.fechaHasta ? 'La fecha inicial debe ser anterior a la final.' : v.metodoPago === 'TR' && !String(v.referencia || '').trim() ? 'Con transferencia, escribe la referencia.' : null),
+    validarExtra: (_, v) => (v.fechaDesde > v.fechaHasta ? { campo: 'fechaHasta', mensaje: 'La fecha inicial debe ser anterior a la final.' } : v.metodoPago === 'TR' && !String(v.referencia || '').trim() ? { campo: 'referencia', mensaje: 'Con transferencia, escribe la referencia.' } : null),
     alConfirmar: (v) => aliadosModel.cobrar(v.cedula, { fechaDesde: v.fechaDesde, fechaHasta: v.fechaHasta, monto: Number(v.monto), metodoPago: v.metodoPago, ...(String(v.referencia || '').trim() ? { referencia: v.referencia.trim() } : {}) }),
     exito: 'Comisión cobrada.'
   });

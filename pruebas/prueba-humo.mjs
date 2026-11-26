@@ -55,6 +55,13 @@ const RUTINA_FASE3 = {
   planActivo: { id: 'M1', nombre: 'Plan 4 sesiones', incluyeRutina: true, fechaFin: '2026-12-31' },
   rutinaVigente: { id: 9001, objetivo: 'Tonificar', nivel: 'Intermedio', nivelId: 'INT', fechaInicio: '2026-11-25', fechaFin: '2026-12-23', entrenador: 'Entrenador', empleadoId: 5, detalle: { dias: [{ dia: 'Lunes', filas: [{ ejercicio: 'Sentadilla', series: '3', repeticiones: '12', descanso: '60 s', nota: '' }] }, { dia: 'Miércoles', filas: [{ ejercicio: 'Zancadas', series: '3', repeticiones: '10', descanso: '60 s', nota: '' }] }] } }
 };
+function plantillaFase3(nivel) {
+  const e = (nombre, grupo, series, repeticiones, tiempo) => ({ nombre, grupo, series, repeticiones, tiempo, descanso: '90s', nota: '' });
+  return { editable: true, dias: [
+    { nombre: `Día 1 · Torso ${nivel}`, ejercicios: [e('Press banca', 'Pecho', 3, 12, null), e('Remo con barra', 'Espalda', 3, 10, null)] },
+    { nombre: `Día 2 · Pierna ${nivel}`, ejercicios: [e('Sentadilla', 'Piernas', 4, 10, null), e('Plancha', 'Core', 3, null, 45)] }
+  ] };
+}
 const RUTINA_CLIENTE_FASE3 = {
   id: 9001, objetivo: 'Tonificar', nivel: 'INT', fechaInicio: '2026-11-25', fechaFin: '2026-12-23', entrenador: { nombre: 'Entrenador' },
   dias: [{ dia: 'Lunes', detalle: 'Sentadilla · 3 series · 12 repeticiones' }, { dia: 'Miércoles', detalle: 'Zancadas · 3 series · 10 repeticiones' }]
@@ -81,7 +88,7 @@ function respuestaSimulada(url, usuario, metodo = 'GET') {
   if (ruta === '/admin/rutinas/9001') return RUTINA_FASE3.rutinaVigente;
   if (ruta.startsWith('/admin/rutinas/cliente/')) return RUTINA_FASE3;
   if (ruta === '/admin/rutinas/ejercicios') return { data: [{ id: 1, nombre: 'Sentadilla', grupoMuscular: 'Piernas' }, { id: 2, nombre: 'Press banca', grupoMuscular: 'Pecho' }], pagination: { page: 1, totalPages: 1, total: 2 } };
-  if (ruta === '/admin/rutinas/plantillas') return { data: [{ id: 1, nivel: 'INT', objetivo: 'Tonificar', detalle: { dias: [{ dia: 'Lunes', filas: [{ ejercicio: 'Sentadilla', series: '3', repeticiones: '12', descanso: '60 s', nota: '' }] }] } }], pagination: { page: 1, totalPages: 1, total: 1 } };
+  if (ruta === '/admin/rutinas/plantillas') { const nivel = new URL(url).searchParams.get('nivelId') || 'INT'; return { data: [{ id: nivel, nivelId: nivel, objetivo: 'Salud general', detalle: plantillaFase3(nivel) }], pagination: { page: 1, totalPages: 1, total: 1 } }; }
   if (ruta === '/rutinas/mi-rutina') return RUTINA_CLIENTE_FASE3;
   if (/\/meta$/.test(ruta)) return { columnas: [{ nombre: 'id', tipo: 'String', esId: true }, { nombre: 'nombre', tipo: 'String' }], idCampos: ['id'] };
   if (/\/opciones$/.test(ruta)) return [];
@@ -100,6 +107,7 @@ async function visitar(rol, pagina, comprobacion) {
   const contexto = await navegador.newContext();
   const page = await contexto.newPage();
   const llamadas = [];
+  const cuerpos = [];
   const errores = [];
   const rutasMal = [];
   page.on('pageerror', (e) => errores.push(e.message));
@@ -109,6 +117,12 @@ async function visitar(rol, pagina, comprobacion) {
     const ruta = u.pathname.replace(/^.*\/api\/v1/, '');
     const metodo = route.request().method();
     llamadas.push(`${metodo} ${ruta}${u.search}`);
+    const enviado = route.request().postData();
+    if (enviado) cuerpos.push({ metodo, ruta, cuerpo: JSON.parse(enviado) });
+    if (metodo === 'PUT' && ruta === '/admin/rutinas/9001' && enviado?.includes('FORZAR400')) {
+      await route.fulfill({ status: 400, contentType: 'application/json', body: JSON.stringify({ mensaje: 'Datos inválidos.', detalles: [{ campo: 'detalle.dias[1].ejercicios[0].tiempo', mensaje: 'El tiempo es un número entero de 1 a 3600 segundos.' }] }) });
+      return;
+    }
     if (ruta === '/admin/productos' && (u.searchParams.has('porCaducar') || u.searchParams.get('orden') === 'nombre')) rutasMal.push(`${ruta}: parámetros no aceptados`);
     if (ruta === '/admin/inventario/lotes' && [...u.searchParams].some(([nombre, valor]) => ['tipoInventario', 'caducidadDesde', 'caducidadHasta'].includes(nombre) || valor === '')) rutasMal.push(`${ruta}: parámetros no aceptados`);
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(respuestaSimulada(u.href, USUARIOS[rol], metodo)) });
@@ -125,7 +139,7 @@ async function visitar(rol, pagina, comprobacion) {
     const h1 = await page.evaluate(() => [...document.querySelectorAll('h1')].filter((h) => h.offsetParent !== null).length);
     if (h1 !== 1) detalle += ` h1 visibles: ${h1};`;
     if (comprobacion) {
-      const r = await comprobacion(page, llamadas);
+      const r = await comprobacion(page, llamadas, cuerpos);
       if (r !== true) detalle += ` ${r}`;
     }
   } catch (error) {
@@ -271,42 +285,104 @@ await visitar('ADM', 'admin/entradas.html', async (page, llamadas) => {
   return (cliente.includes('Ana Pérez') && invalido === 1 && llamadas.includes('POST /admin/entradas/pase-diario')) || `cliente=${cliente} invalido=${invalido}`;
 });
 
-await visitar('ADM', 'admin/rutinas.html', async (page, llamadas) => {
-  await page.fill('#rutina-cedula', '1712345675');
+const CLAVES_RUTINA = ['clienteId', 'detalle', 'fechaFin', 'fechaInicio', 'nivelId', 'objetivo'];
+function revisarDetalle(detalle) {
+  if (detalle?.editable !== true || !Array.isArray(detalle.dias) || detalle.dias.length < 1 || detalle.dias.length > 7) return 'detalle sin formato';
+  for (const dia of detalle.dias) {
+    if (Object.keys(dia).sort().join() !== 'ejercicios,nombre' || dia.nombre.length < 3 || dia.nombre.length > 30 || dia.ejercicios.length < 1 || dia.ejercicios.length > 10) return `día inválido ${JSON.stringify(dia).slice(0, 80)}`;
+    for (const e of dia.ejercicios) {
+      if (Object.keys(e).sort().join() !== 'descanso,grupo,nombre,nota,repeticiones,series,tiempo') return `claves de ejercicio ${Object.keys(e)}`;
+      if (!Number.isInteger(e.series) || e.series < 1 || e.series > 10) return `series ${e.series}`;
+      const reps = Number.isInteger(e.repeticiones) && e.repeticiones >= 1 && e.repeticiones <= 100 && e.tiempo === null;
+      const tiempo = Number.isInteger(e.tiempo) && e.tiempo >= 1 && e.tiempo <= 3600 && e.repeticiones === null;
+      if (!reps && !tiempo) return `reps/tiempo ${e.repeticiones}/${e.tiempo}`;
+      if (!e.descanso || e.descanso.length > 15 || e.nota.length > 120) return 'descanso o nota';
+    }
+  }
+  return '';
+}
+
+async function buscarFicha(page, cedula) {
+  await page.fill('#rutina-cedula', cedula);
   await page.click('#form-rutina-cliente button[type="submit"]');
   await page.waitForSelector('#ficha-cliente:not([hidden])');
+  await page.waitForTimeout(200);
+}
+
+async function recorridoRutinas(page, llamadas, cuerpos) {
+  const fallos = [];
+  // 1. Asignar la plantilla tal cual, con un solo clic, en los tres niveles.
+  for (const nivel of ['INT', 'PRI', 'AVA']) {
+    cuerpos.length = 0;
+    await buscarFicha(page, '1712345676');
+    if (!(await page.locator('[data-asignar-rutina]').isVisible())) { fallos.push('sin botón asignar'); break; }
+    await page.click('[data-asignar-rutina]');
+    await page.waitForSelector('dialog [data-editor-rutina] details');
+    if (nivel !== 'INT') {
+      await page.selectOption('dialog select[name="nivelId"]', nivel);
+      await page.waitForFunction((n) => document.querySelector('dialog [name="detalle.dias[0].nombre"]')?.value.endsWith(n), nivel);
+    }
+    await page.click('[data-dialogo-confirmar]');
+    await page.waitForSelector('dialog', { state: 'detached' });
+    const post = cuerpos.find((c) => c.metodo === 'POST' && c.ruta === '/admin/rutinas');
+    const claves = post ? Object.keys(post.cuerpo).sort().join() : '';
+    const malDetalle = post ? revisarDetalle(post.cuerpo.detalle) : 'sin POST';
+    if (!post || claves !== CLAVES_RUTINA.join() || post.cuerpo.nivelId !== nivel || post.cuerpo.objetivo !== 'Salud general' || malDetalle || post.cuerpo.detalle.dias.length !== 2 || !post.cuerpo.detalle.dias[0].nombre.endsWith(nivel)) fallos.push(`asignar ${nivel}: ${claves} ${malDetalle}`);
+  }
+  // 2. Editar un ejercicio de la rutina guardada y guardar.
+  cuerpos.length = 0;
+  await buscarFicha(page, '1712345675');
   await page.click('[data-editar-rutina]');
-  await page.waitForSelector('dialog [data-editor-rutina]');
-  const dias = await page.locator('dialog [data-dias-rutina] section').count();
-  await page.click('dialog [data-accion="subir-dia"][data-dia="1"]');
+  await page.waitForSelector('dialog [data-editor-rutina] details');
+  const cargados = await page.locator('dialog details[data-dia-panel]').count();
+  await page.fill('dialog [name="detalle.dias[0].ejercicios[0].nombre"]', 'Sentadilla búlgara');
+  await page.click('[data-dialogo-confirmar]');
+  await page.waitForSelector('dialog', { state: 'detached' });
+  const put = cuerpos.find((c) => c.metodo === 'PUT' && c.ruta === '/admin/rutinas/9001');
+  if (cargados !== 2 || !put || 'clienteId' in put.cuerpo || revisarDetalle(put.cuerpo.detalle) || put.cuerpo.detalle.dias[0].ejercicios[0].nombre !== 'Sentadilla búlgara') fallos.push(`editar: días=${cargados} ${put ? revisarDetalle(put.cuerpo.detalle) : 'sin PUT'}`);
+  // 3. Error forzado: series = 0 en el día 2 lleva a ese campo.
+  cuerpos.length = 0;
+  await page.click('[data-editar-rutina]');
+  await page.waitForSelector('dialog [data-editor-rutina] details');
+  const series = 'detalle.dias[1].ejercicios[0].series';
+  await page.evaluate((n) => { const c = document.querySelector(`dialog [name="${n}"]`); c.value = '0'; c.dispatchEvent(new Event('input', { bubbles: true })); }, series);
+  await page.click('[data-dialogo-confirmar]');
+  await page.waitForTimeout(200);
+  const local = await page.evaluate((n) => {
+    const c = document.querySelector(`dialog [name="${n}"]`);
+    const err = c.nextElementSibling;
+    const enlace = document.querySelector('dialog [data-resumen-errores] a');
+    return { foco: document.activeElement === c, invalido: c.getAttribute('aria-invalid'), abierto: c.closest('details').open, debajo: err?.classList.contains('pf-error') && !err.hidden && err.textContent, enlace: enlace?.getAttribute('href') === '#' + c.id };
+  }, series);
+  if (!local.foco || local.invalido !== 'true' || !local.abierto || !local.debajo || !local.enlace || cuerpos.length) fallos.push(`error local: ${JSON.stringify(local)}`);
+  // 4. Error del servidor (400 con detalles[].campo) lleva al mismo campo.
+  await page.evaluate((n) => { const c = document.querySelector(`dialog [name="${n}"]`); c.value = '3'; c.dispatchEvent(new Event('input', { bubbles: true })); }, series);
+  await page.evaluate(() => { document.querySelector('dialog details[data-dia-panel="1"]').open = false; });
+  await page.fill('dialog [name="detalle.dias[0].ejercicios[0].nota"]', 'FORZAR400');
+  await page.click('[data-dialogo-confirmar]');
+  await page.waitForTimeout(400);
+  const servidor = await page.evaluate(() => {
+    const c = document.querySelector('dialog [name="detalle.dias[1].ejercicios[0].repeticiones"]');
+    return { foco: document.activeElement === c, invalido: c?.getAttribute('aria-invalid'), abierto: c?.closest('details').open, resumen: document.querySelectorAll('dialog [data-resumen-errores] a').length };
+  });
+  if (!servidor.foco || servidor.invalido !== 'true' || !servidor.abierto || servidor.resumen !== 1) fallos.push(`error servidor: ${JSON.stringify(servidor)}`);
   await page.keyboard.press('Escape');
   await page.waitForTimeout(150);
+  // 5. Ver e imprimir.
+  await page.evaluate(() => { window.print = () => { window.__impreso = document.querySelector('#rutina-impresion')?.textContent || ''; }; });
   await page.click('[data-ver-rutina]');
   await page.waitForSelector('dialog .pf-rutina-vista');
-  const correo = await page.locator('dialog [data-enviar-rutina]').isEnabled();
-  const imprimir = await page.locator('dialog [data-imprimir-rutina]').isVisible();
+  const vista = await page.locator('dialog .pf-rutina-vista').innerText();
+  await page.click('dialog [data-imprimir-rutina]');
+  const impreso = await page.evaluate(() => window.__impreso || '');
+  if (!vista.includes('Sentadilla') || !impreso.includes('Sentadilla') || !(await page.locator('dialog [data-enviar-rutina]').isEnabled())) fallos.push('ver/imprimir');
   await page.keyboard.press('Escape');
-  await page.waitForTimeout(150);
-  await page.fill('#rutina-cedula', '1712345676');
-  await page.click('#form-rutina-cliente button[type="submit"]');
-  await page.waitForTimeout(250);
-  const asignar = await page.locator('[data-asignar-rutina]').isVisible();
-  await page.click('[data-asignar-rutina]');
-  await page.waitForSelector('dialog [data-editor-rutina]');
-  return (dias >= 2 && correo && imprimir && asignar && llamadas.includes('GET /admin/rutinas/cliente/1712345675')) || `dias=${dias} correo=${correo} imprimir=${imprimir} asignar=${asignar}`;
-});
+  if (!llamadas.includes('GET /admin/rutinas/cliente/1712345675')) fallos.push('sin ficha');
+  return fallos.length ? fallos.join(' | ') : true;
+}
 
-await visitar('ENT', 'admin/rutinas.html', async (page) => {
-  await page.fill('#rutina-cedula', '1712345675');
-  await page.click('#form-rutina-cliente button[type="submit"]');
-  await page.waitForSelector('#ficha-cliente:not([hidden])');
-  const editar = await page.locator('[data-editar-rutina]').isVisible();
-  await page.click('[data-editar-rutina]');
-  await page.waitForSelector('dialog [data-editor-rutina]');
-  const plantillas = await page.locator('dialog select[name="nivelId"]').count();
-  await page.keyboard.press('Escape');
-  return (editar && plantillas === 1) || `editar=${editar} plantillas=${plantillas}`;
-});
+await visitar('ADM', 'admin/rutinas.html', recorridoRutinas);
+await visitar('ENT', 'admin/rutinas.html', recorridoRutinas);
 
 await navegador.close();
 servidor.kill();

@@ -95,8 +95,8 @@ async function paseDiario() {
     },
     validarExtra: (_, v) => {
       const cedula = v.clienteId.trim();
-      if (cedula && !/^\d{10}$/.test(cedula)) return 'La cédula tiene 10 dígitos.';
-      if (v.metodoPago === 'TR' && !new RegExp(`^${PATRON_REFERENCIA}$`).test(v.referencia.trim())) return 'La referencia tiene entre 4 y 30 letras, números o guiones.';
+      if (cedula && !/^\d{10}$/.test(cedula)) return { campo: 'clienteId', mensaje: 'La cédula tiene 10 dígitos.' };
+      if (v.metodoPago === 'TR' && !new RegExp(`^${PATRON_REFERENCIA}$`).test(v.referencia.trim())) return { campo: 'referencia', mensaje: 'La referencia tiene entre 4 y 30 letras, números o guiones.' };
       return null;
     },
     alConfirmar: async (v) => entradasModel.paseDiario({

@@ -114,7 +114,7 @@ enlazarBoton('[data-cierre-semanal]', 'caja:cierre', async () => {
   const datos = await formulario({
     titulo: 'Cierre semanal de caja', textoConfirmar: 'Revisar resumen',
     campos: [{ nombre: 'fechaDesde', etiqueta: 'Desde', tipo: 'date', requerido: true }, { nombre: 'fechaHasta', etiqueta: 'Hasta', tipo: 'date', requerido: true }, { nombre: 'observacion', etiqueta: 'Observación', tipo: 'textarea', maxlength: 300 }],
-    validarExtra: (_, v) => (v.fechaDesde > v.fechaHasta ? 'La fecha inicial debe ser anterior a la final.' : null),
+    validarExtra: (_, v) => (v.fechaDesde > v.fechaHasta ? { campo: 'fechaHasta', mensaje: 'La fecha inicial debe ser anterior a la final.' } : null),
     alConfirmar: async (v) => ({ v, turnos: await cajaModel.turnos({ desde: v.fechaDesde, hasta: v.fechaHasta, limit: 100 }) }),
     exito: (r) => r
   });

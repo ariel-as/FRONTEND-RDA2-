@@ -32,7 +32,7 @@ const tabla = crearLista({
     ['A', 'M'].includes(o.estado) && { texto: 'Recibir', permiso: 'compras:gestionar', etiqueta: `Recibir mercadería de la orden ${o.id}`, ejecutar: () => formulario({
       titulo: `Recibir mercadería de la orden ${o.id}`, textoConfirmar: 'Registrar recepción', mensaje: 'Puedes recibir todo o solo una parte.',
       campos: [{ nombre: 'lineas', etiqueta: 'Líneas recibidas', tipo: 'textarea', requerido: true, ayuda: AYUDA_RECEPCION }, { nombre: 'observacion', etiqueta: 'Observación', tipo: 'textarea', maxlength: 200 }],
-      validarExtra: (_, v) => leerLineas(v.lineas, true).error || null,
+      validarExtra: (_, v) => { const fallo = leerLineas(v.lineas, true).error; return fallo ? { campo: 'lineas', mensaje: fallo } : null; },
       alConfirmar: (v) => comprasModel.recibir(o.id, { items: leerLineas(v.lineas, true).items, ...(v.observacion ? { observacion: v.observacion.trim() } : {}) }), exito: 'Recepción registrada.' }) },
     ['P', 'A'].includes(o.estado) && { texto: 'Anular', permiso: 'compras:gestionar', tono: 'btn-outline-danger', etiqueta: `Anular la orden ${o.id}`, ejecutar: async () => (await confirmarAccion({ titulo: `Anular la orden ${o.id}`, mensaje: 'Esta acción no se puede deshacer.', textoConfirmar: 'Anular orden', alConfirmar: () => comprasModel.anular(o.id) }) ? 'Orden anulada.' : null) }
   ]
@@ -45,7 +45,7 @@ enlazarBoton('[data-nueva-compra]', 'compras:gestionar', async () => {
     titulo: 'Nueva orden de compra', textoConfirmar: 'Crear orden',
     campos: [{ nombre: 'proveedorId', etiqueta: 'Proveedor', tipo: 'select', requerido: true, opciones: [{ valor: '', texto: 'Selecciona el proveedor' }, ...proveedores.map((x) => ({ valor: x.valor ?? x.id, texto: x.texto ?? x.descripcion ?? x.id }))] },
       { nombre: 'fechaEntrega', etiqueta: 'Fecha de entrega esperada', tipo: 'date' }, { nombre: 'lineas', etiqueta: 'Líneas', tipo: 'textarea', requerido: true, ayuda: AYUDA_LINEAS }],
-    validarExtra: (_, v) => leerLineas(v.lineas, false).error || null,
+    validarExtra: (_, v) => { const fallo = leerLineas(v.lineas, false).error; return fallo ? { campo: 'lineas', mensaje: fallo } : null; },
     alConfirmar: (v) => comprasModel.crear({ proveedorId: v.proveedorId, ...(v.fechaEntrega ? { fechaEntrega: v.fechaEntrega } : {}), items: leerLineas(v.lineas, false).items }),
     exito: 'Orden de compra creada. Un ADM debe autorizarla.'
   });
