@@ -68,7 +68,7 @@
       </div></section>
     </section>
     <section class="tab-pane fade" id="pestana-productos" role="tabpanel" aria-labelledby="tab-productos" tabindex="0">
-      <div class="card shadow-sm"><div class="card-body"><h2 class="h5">Productos del inventario</h2><p class="small text-body-secondary">Primero los que caducan antes; luego el resto por nombre. FEFO caduca, FIFO no.</p><div id="lista-productos-inventario" data-lista aria-busy="false"><p class="text-body-secondary">Cargando productos…</p></div></div></div>
+      <div class="card shadow-sm"><div class="card-body"><div class="d-flex flex-wrap justify-content-between align-items-center gap-2"><h2 class="h5 mb-0">Productos del inventario</h2><select id="orden-productos-inventario" class="form-select w-auto" aria-label="Ordenar productos del inventario"><option value="caducidad">Orden: caducidad</option><option value="nombre">Orden: nombre</option></select></div><p class="small text-body-secondary">Primero los que caducan antes; luego el resto por nombre. FEFO caduca, FIFO no.</p><div id="lista-productos-inventario" data-lista aria-busy="false"><p class="text-body-secondary">Cargando productos…</p></div></div></div>
     </section>
     <section class="tab-pane fade" id="pestana-alertas" role="tabpanel" aria-labelledby="tab-alertas" tabindex="0">
       <div class="card shadow-sm" id="pantalla-alertas"><div class="card-body"><h2 class="h5">Alertas de inventario</h2>

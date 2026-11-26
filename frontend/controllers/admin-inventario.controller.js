@@ -3,7 +3,7 @@ import { inventarioModel } from '../models/fase2.model.js';
 import { adminModel } from '../models/admin.model.js';
 import { puede, esAdm } from '../models/permisos.model.js';
 import { escapar } from '../views/componentes.view.js';
-import { txt, dinero, fecha, estado, tablaHtml, esFefo, tipoInventarioTexto, situacionCaducidad, caducidadHtml, proximaCaducidad, diasParaCaducar, stockTexto } from '../views/lista-api.view.js';
+import { txt, dinero, fecha, estado, tablaHtml, esFefo, tipoInventarioTexto, situacionCaducidad, caducidadHtml, caducidadProductoHtml, proximaCaducidad, stockTexto } from '../views/lista-api.view.js';
 import { confirmarAccion } from './dialogo.controller.js';
 import { crearLista, formulario, enlazarBoton } from './lista-api.controller.js';
 
@@ -119,10 +119,10 @@ const lotes = crearLista({
 
 const productosInventario = crearLista({
   raiz: '#lista-productos-inventario', caption: 'Productos del inventario', paginar: false,
-  cargar: async () => ({ data: productos.map((p) => ({ ...p, __caducidad: proximaCaducidad(p.id, lotesConStock) })) }),
+  cargar: async () => ({ data: productos.map((p) => ({ ...p, __caducidad: p.proximaCaducidad || proximaCaducidad(p.id, lotesConStock) })) }),
   extraer: listaDe,
-  columnas: [['Producto', (p) => txt(p.nombre)], ['Tipo', (p) => txt(esFefo(p) ? 'FEFO' : 'FIFO')], ['Categoría', (p) => txt(p.categoria?.descripcion || p.categoria || p.categoriaId || '')], ['Stock', (p) => stockTexto(p)], ['Caducidad', (p) => caducidadHtml(p.__caducidad)], ['Estado', (p) => estado(ESTADOS_PRODUCTO, p.estado)]],
-  alCargar: (_, filas) => filas.sort((a, b) => String(a.__caducidad || '9999').localeCompare(String(b.__caducidad || '9999')) || String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es'))
+  columnas: [['Producto', (p) => txt(p.nombre)], ['Tipo', (p) => txt(esFefo(p) ? 'FEFO' : 'FIFO')], ['Categoría', (p) => txt(p.categoria?.descripcion || p.categoria || p.categoriaId || '')], ['Stock', (p) => stockTexto(p)], ['Caducidad', (p) => caducidadProductoHtml({ ...p, proximaCaducidad: p.proximaCaducidad || p.__caducidad })], ['Estado', (p) => estado(ESTADOS_PRODUCTO, p.estado)]],
+  alCargar: (_, filas) => filas.sort((a, b) => (s('#orden-productos-inventario')?.value || 'caducidad') === 'nombre' ? String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es') : String(a.proximaCaducidad || a.__caducidad || '9999').slice(0, 10).localeCompare(String(b.proximaCaducidad || b.__caducidad || '9999').slice(0, 10)) || String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es'))
 });
 
 const selectKardex = document.querySelector('#kardex-producto');
@@ -134,6 +134,7 @@ const kardex = crearLista({
 });
 selectKardex?.addEventListener('change', () => kardex?.recargar());
 s('#lotes-tipo')?.addEventListener('change', actualizarRangoCaducidad);
+s('#orden-productos-inventario')?.addEventListener('change', () => productosInventario?.recargar());
 s('[data-limpiar-filtros]')?.addEventListener('click', () => {
   const form = s('#filtros-lotes');
   if (!form) return;
@@ -251,7 +252,7 @@ enlazarBoton('[data-ajustar]', 'inventario:gestionar', async () => {
 
 export async function cargarProductosInventario() {
   try {
-    const [r, c, l] = await Promise.all([adminModel.productos({ limit: 100 }), adminModel.categorias().catch(() => []), inventarioModel.lotes({ conStock: 'S', limit: 100 }).catch(() => [])]);
+    const [r, c, l] = await Promise.all([adminModel.productos({ limit: 100, orden: 'caducidad' }), adminModel.categorias().catch(() => []), inventarioModel.lotes({ conStock: 'S', limit: 100 }).catch(() => [])]);
     productos = listaDe(r);
     categorias = listaDe(c);
     lotesConStock = listaDe(l);

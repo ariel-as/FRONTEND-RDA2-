@@ -2,13 +2,14 @@
 import { mostrarMensaje } from './validacion.controller.js';
 import { confirmarAccion } from './dialogo.controller.js';
 import { escapar } from '../views/componentes.view.js';
-import { stockTexto } from '../views/lista-api.view.js';
+import { stockTexto, caducidadProductoHtml, esFefo } from '../views/lista-api.view.js';
 import { paginacionAdmin } from '../views/admin.view.js';
 
 const s = (x)=>document.querySelector(x);
 const money = (n)=> `$${Number(n||0).toFixed(2)}`;
 let pagina = 1;
 let totalPages = 1;
+let orden = 'caducidad';
 
 export async function iniciarProductosAdmin(){
   if (document.body.dataset.pagina !== 'productos-admin') return;
@@ -24,6 +25,7 @@ export async function iniciarProductosAdmin(){
     listar();
   });
   s('#filtro-estado')?.addEventListener('change', ()=>{ pagina = 1; listar(); });
+  s('#filtro-orden')?.addEventListener('change', ()=>{ pagina = 1; orden = s('#filtro-orden')?.value || 'caducidad'; listar(); });
   s('#controlaCaducidad')?.addEventListener('change', actualizarCaducidad);
 }
 
@@ -54,18 +56,22 @@ function actualizarCaducidad(){
 
 async function listar(){
   const tbody = s('[data-tabla-productos] tbody') || s('[data-tabla-productos]');
-  const estado = s('#filtro-estado')?.value;
+  const filtro = s('#filtro-estado')?.value;
   const region = s('#mensaje-productos');
   if(tbody) tbody.setAttribute('aria-busy','true');
   try{
-    const res = await adminModel.productos({ page: pagina, limit: 20, ...(estado ? { estado } : {}) });
-    const lista = res?.data || res || [];
+    const params = { page: pagina, limit: 20, orden };
+    if (filtro === 'porCaducar') params.porCaducar = 'S';
+    else if (filtro) params.estado = filtro;
+    const res = await adminModel.productos(params);
+    let lista = res?.data || res || [];
+    if (orden === 'caducidad') lista = [...lista].sort((a, b) => String(a.proximaCaducidad || '9999').slice(0, 10).localeCompare(String(b.proximaCaducidad || '9999').slice(0, 10)) || String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es'));
     const paginacion = res?.pagination || {};
     totalPages = paginacion.totalPages || 1;
     pagina = paginacion.page || pagina;
     if(tbody) tbody.innerHTML = lista.length ? lista.map(p=>{
-      return `<tr><th scope="row">${escapar(p.nombre)}<div class="small text-body-secondary">${escapar(p.id)}</div></th><td>${escapar(p.categoria?.descripcion||p.categoria||p.categoriaId||'')}</td><td>${money(p.precio)}</td><td>${money(p.precioConIva ?? p.precio)}</td><td>${stockTexto(p)}</td><td>${p.estado==='A'?'A la venta':p.estado==='P'?'Pendiente':'Inactivo'}</td><td>${p.publicarWeb==='S'||p.publicarWeb===true?'Sí':'No'}</td><td class="text-nowrap"><button class="btn btn-outline-primary btn-sm" data-editar="${escapar(p.id)}" aria-label="Editar producto ${escapar(p.nombre)} (${escapar(p.id)})">Editar</button> <button class="btn btn-outline-danger btn-sm" data-desactivar="${escapar(p.id)}" aria-label="Desactivar producto ${escapar(p.nombre)} (${escapar(p.id)})" ${p.estado==='I'?'disabled':''}>Desactivar</button></td></tr>`;
-    }).join('') : '<tr><td colspan="8" class="text-center text-body-secondary">No hay productos.</td></tr>';
+      return `<tr><th scope="row">${escapar(p.nombre)}<div class="small text-body-secondary">${escapar(p.id)}</div></th><td>${escapar(p.categoria?.descripcion||p.categoria||p.categoriaId||'')}</td><td>${money(p.precio)}</td><td>${money(p.precioConIva ?? p.precio)}</td><td>${stockTexto(p)}</td><td>${caducidadProductoHtml(p)}</td><td>${esFefo(p) ? 'FEFO' : 'FIFO'}</td><td>${p.estado==='A'?'A la venta':p.estado==='P'?'Pendiente':'Inactivo'}</td><td>${p.publicarWeb==='S'||p.publicarWeb===true?'Sí':'No'}</td><td class="pf-celda-acciones"><button class="btn btn-outline-primary btn-sm" data-editar="${escapar(p.id)}" aria-label="Editar producto ${escapar(p.nombre)} (${escapar(p.id)})">Editar</button> <button class="btn btn-outline-danger btn-sm" data-desactivar="${escapar(p.id)}" aria-label="Desactivar producto ${escapar(p.nombre)} (${escapar(p.id)})" ${p.estado==='I'?'disabled':''}>Desactivar</button></td></tr>`;
+    }).join('') : '<tr><td colspan="10" class="text-center text-body-secondary">No hay productos.</td></tr>';
     const cont = s('[data-paginacion-productos]');
     if (cont) cont.innerHTML = paginacionAdmin({ page: pagina, totalPages });
   }catch(e){ mostrarMensaje(region, e.mensaje||'No se pudieron cargar los productos.', 'error'); }

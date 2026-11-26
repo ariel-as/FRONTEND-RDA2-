@@ -2072,6 +2072,13 @@ html[data-tema="claro"] .pf-iniciales { background: #f4f4f5; color: #92400e; }
 .pf-admin .table > thead th { font-weight: 700; white-space: nowrap; }
 .pf-admin td:has(> .pf-num), .pf-admin th:has(> .pf-num) { text-align: right; white-space: nowrap; }
 .pf-admin .pf-celda-acciones { white-space: nowrap; }
+@media (min-width: 640px) {
+  .pf-tabla-apilable > thead th:first-child, .pf-tabla-apilable > tbody th:first-child { position: sticky; left: 0; z-index: 2; min-width: 11rem; }
+  .pf-tabla-apilable > thead th:first-child { background: var(--bs-tertiary-bg); }
+  .pf-tabla-apilable > tbody th:first-child { background: var(--bs-body-bg); box-shadow: 0.25rem 0 0.5rem -0.25rem rgb(0 0 0 / 20%); }
+  .pf-tabla-apilable > tbody td { white-space: normal; min-width: 7rem; }
+  .pf-tabla-apilable > tbody .pf-celda-acciones { min-width: 13rem; white-space: normal; }
+}
 
 /* Colores de marca: primario amarillo con texto oscuro. */
 .pf-admin .btn-primary { --bs-btn-bg: var(--pf-amarillo); --bs-btn-border-color: var(--pf-amarillo); --bs-btn-color: #111111; --bs-btn-hover-bg: #eab308; --bs-btn-hover-border-color: #eab308; --bs-btn-hover-color: #111111; --bs-btn-active-bg: #ca8a04; --bs-btn-active-border-color: #ca8a04; --bs-btn-active-color: #111111; --bs-btn-disabled-bg: #fde68a; --bs-btn-disabled-border-color: #fde68a; --bs-btn-disabled-color: #3f3f46; font-weight: 700; }

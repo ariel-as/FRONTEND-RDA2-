@@ -51,6 +51,22 @@ export function caducidadHtml(fechaCaducidad) {
   return `${fecha(fechaCaducidad)}<span class="small d-block">${escapar(situacionCaducidad(fechaCaducidad))}</span>`;
 }
 
+export function situacionConDias(fechaCaducidad, dias) {
+  const n = Number(dias);
+  if (!fechaCaducidad) return 'No caduca';
+  if (Number.isFinite(n)) return n < 0 ? `Caducó hace ${Math.abs(n)} ${Math.abs(n) === 1 ? 'día' : 'días'}` : n === 0 ? 'Caduca hoy' : n === 1 ? 'Caduca en 1 día' : `Caduca en ${n} días`;
+  return situacionCaducidad(fechaCaducidad);
+}
+
+export function caducidadProductoHtml(producto = {}) {
+  const fechaCaducidad = producto.proximaCaducidad;
+  if (!fechaCaducidad) return txt('No caduca');
+  const dias = producto.diasParaCaducar ?? diasParaCaducar(fechaCaducidad);
+  const n = Number(dias);
+  const etiqueta = Number.isFinite(n) && n < 0 ? '<span class="badge text-bg-danger">Caducado</span>' : Number.isFinite(n) && n <= 30 ? '<span class="badge text-bg-warning">Por caducar</span>' : '';
+  return `${fecha(fechaCaducidad)}<span class="small d-block">${escapar(situacionConDias(fechaCaducidad, dias))}</span>${etiqueta ? `<span class="d-block mt-1">${etiqueta}</span>` : ''}`;
+}
+
 export function proximaCaducidad(productoId, lotes = []) {
   const candidatos = lotes.filter((l) => String(l.productoId) === String(productoId) && l.fechaCaducidad && Number(l.cantidadDisponible ?? l.cantidad ?? 0) > 0)
     .sort((a, b) => String(a.fechaCaducidad).localeCompare(String(b.fechaCaducidad)));
