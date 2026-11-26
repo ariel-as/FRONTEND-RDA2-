@@ -65,10 +65,10 @@ export function stockTexto(producto) {
   return `<span class="pf-num">${stock}</span>`;
 }
 
-export function tablaHtml({ caption, columnas, filas, acciones }) {
+export function tablaHtml({ caption, columnas, filas, acciones, vacio = 'No hay registros.' }) {
   const head = `<tr>${columnas.map(([t]) => `<th scope="col">${escapar(t)}</th>`).join('')}${acciones ? '<th scope="col">Acciones</th>' : ''}</tr>`;
   const cuerpo = filas.length ? filas.map((f, i) => `<tr>${columnas.map(([t, fn], j) => (j === 0 ? `<th scope="row" data-label="${escapar(t)}">${fn(f)}</th>` : `<td data-label="${escapar(t)}">${fn(f)}</td>`)).join('')}${acciones ? `<td class="pf-celda-acciones" data-label="Acciones">${acciones(f, i) || '<span class="text-body-secondary">Sin acciones</span>'}</td>` : ''}</tr>`).join('')
-    : `<tr><td colspan="${columnas.length + (acciones ? 1 : 0)}" class="text-center text-body-secondary">No hay registros.</td></tr>`;
+    : `<tr><td colspan="${columnas.length + (acciones ? 1 : 0)}" class="text-center text-body-secondary">${escapar(vacio)}</td></tr>`;
   return `<div class="table-responsive"><table class="table table-hover align-middle pf-tabla-apilable"><caption class="visually-hidden">${escapar(caption)}</caption><thead class="table-light">${head}</thead><tbody>${cuerpo}</tbody></table></div>`;
 }
 

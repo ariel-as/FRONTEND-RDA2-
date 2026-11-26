@@ -49,6 +49,7 @@ export function crearLista(opciones) {
         caption: opciones.caption,
         columnas: opciones.columnas,
         filas,
+        vacio: opciones.vacio,
         // Con más de dos acciones se muestra la primera y el resto queda en «Más acciones».
         acciones: conAcciones ? (f, i) => {
           const botones = accionesFila[i];

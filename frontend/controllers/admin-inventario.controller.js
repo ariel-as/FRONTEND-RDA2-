@@ -8,7 +8,7 @@ import { confirmarAccion } from './dialogo.controller.js';
 import { crearLista, formulario, enlazarBoton } from './lista-api.controller.js';
 
 const VER_COSTOS = puede(['inventario:gestionar', 'compras', 'reportes:todos']);
-const ESTADOS_LOTE = { D: 'Disponible', I: 'Bloqueado', C: 'Caducado o dado de baja' };
+const ESTADOS_LOTE = { D: 'Disponible', A: 'Activo', C: 'Caducado o dado de baja', B: 'Bloqueado' };
 const ESTADOS_PRODUCTO = { A: 'A la venta', P: 'Pendiente', I: 'Inactivo' };
 const listaDe = (respuesta) => (Array.isArray(respuesta) ? respuesta : (respuesta?.data ?? []));
 const s = (selector) => document.querySelector(selector);
@@ -26,21 +26,28 @@ function mostrarPestana(selector) {
 
 function actualizarRangoCaducidad() {
   const tipo = s('#lotes-tipo')?.value;
-  const fieldset = s('#rango-caducidad');
+  const contenedor = s('#rango-caducidad');
+  if (contenedor) contenedor.hidden = tipo !== 'FEFO';
+  const fieldset = contenedor?.querySelector('fieldset');
   if (fieldset) fieldset.disabled = tipo !== 'FEFO';
   if (tipo !== 'FEFO') {
-    s('#lotes-desde')?.setAttribute('value', '');
-    s('#lotes-hasta')?.setAttribute('value', '');
-    if (s('#lotes-desde')) s('#lotes-desde').value = '';
-    if (s('#lotes-hasta')) s('#lotes-hasta').value = '';
+    ['#lotes-desde', '#lotes-hasta'].forEach((selector) => {
+      const control = s(selector);
+      if (!control) return;
+      control.value = '';
+      control.removeAttribute('value');
+    });
   }
 }
 
 function aplicarParametrosUrl() {
   const q = new URLSearchParams(location.search);
-  ['tipoInventario', 'productoId', 'categoriaId', 'estado', 'caducidadDesde', 'caducidadHasta'].forEach((nombre) => {
+  const alias = { tipoInventario: 'metodoSalida', caducidadDesde: 'caducaDesde', caducidadHasta: 'caducaHasta' };
+  ['metodoSalida', 'productoId', 'categoriaId', 'estado', 'caducaDesde', 'caducaHasta'].forEach((nombre) => {
     const control = s(`#filtros-lotes [name="${CSS.escape(nombre)}"]`);
-    if (control && q.has(nombre)) control.value = q.get(nombre);
+    if (!control) return;
+    const valor = q.get(nombre) ?? q.get(Object.keys(alias).find((k) => alias[k] === nombre) || '');
+    if (valor !== null) control.value = valor;
   });
   ['porCaducar', 'conStock'].forEach((nombre) => {
     const control = s(`#filtros-lotes [name="${CSS.escape(nombre)}"]`);
@@ -60,31 +67,19 @@ function nombreCategoria(lote) {
 }
 
 function cargarLotes(params) {
-  const limpios = { ...params, limit: params.limit || 100 };
-  if (limpios.tipoInventario !== 'FEFO') {
-    delete limpios.caducidadDesde;
-    delete limpios.caducidadHasta;
+  const permitidos = ['page', 'limit', 'metodoSalida', 'productoId', 'categoriaId', 'estado', 'caducaDesde', 'caducaHasta', 'porCaducar', 'conStock'];
+  const limpios = {};
+  permitidos.forEach((nombre) => { if (params[nombre] !== undefined && params[nombre] !== null && params[nombre] !== '') limpios[nombre] = params[nombre]; });
+  limpios.limit = limpios.limit || 100;
+  if (limpios.metodoSalida !== 'FEFO') {
+    delete limpios.caducaDesde;
+    delete limpios.caducaHasta;
   }
   return inventarioModel.lotes(limpios);
 }
 
 function extraerLotes(respuesta) {
-  let filas = listaDe(respuesta);
-  const tipo = s('#lotes-tipo')?.value;
-  const categoria = s('#lotes-categoria')?.value;
-  const desde = s('#lotes-desde')?.value;
-  const hasta = s('#lotes-hasta')?.value;
-  if (tipo) filas = filas.filter((l) => (esFefo(l) ? 'FEFO' : 'FIFO') === tipo);
-  if (categoria) filas = filas.filter((l) => String(l.categoriaId ?? l.producto?.categoriaId ?? nombreCategoria(l)) === String(categoria));
-  if (desde) filas = filas.filter((l) => l.fechaCaducidad && String(l.fechaCaducidad).slice(0, 10) >= desde);
-  if (hasta) filas = filas.filter((l) => l.fechaCaducidad && String(l.fechaCaducidad).slice(0, 10) <= hasta);
-  if (s('#lotes-caducar')?.checked) filas = filas.filter((l) => {
-    const dias = diasParaCaducar(l.fechaCaducidad);
-    const aviso = Number(l.producto?.diasAlertaCad ?? l.diasAlertaCad ?? l.producto?.diasAlerta ?? 7);
-    return dias !== null && dias <= aviso;
-  });
-  if (s('#lotes-stock')?.checked) filas = filas.filter((l) => Number(l.cantidadDisponible ?? 0) > 0);
-  return filas.sort((a, b) => String(a.fechaCaducidad || '9999').localeCompare(String(b.fechaCaducidad || '9999')) || String(a.producto?.nombre || nombreProducto(a.productoId)).localeCompare(String(b.producto?.nombre || nombreProducto(b.productoId)), 'es'));
+  return listaDe(respuesta).sort((a, b) => String(a.fechaCaducidad || '9999').localeCompare(String(b.fechaCaducidad || '9999')) || String(a.producto?.nombre || nombreProducto(a.productoId)).localeCompare(String(b.producto?.nombre || nombreProducto(b.productoId)), 'es'));
 }
 
 async function verKardex(lote) {
@@ -102,9 +97,9 @@ async function verKardex(lote) {
 function accionesLote(l) {
   return [
     { texto: 'Ver kárdex', etiqueta: `Ver kárdex del lote ${l.id}`, ejecutar: () => verKardex(l) },
-    l.estado !== 'C' && { texto: l.estado === 'I' ? 'Desbloquear' : 'Bloquear', permiso: 'inventario:gestionar', etiqueta: `${l.estado === 'I' ? 'Desbloquear' : 'Bloquear'} el lote ${l.id}`,
-      ejecutar: async () => (await confirmarAccion({ titulo: `${l.estado === 'I' ? 'Desbloquear' : 'Bloquear'} lote ${l.id}`, mensaje: l.estado === 'I' ? 'El lote volverá a usarse en las ventas.' : 'El lote no se usará en las ventas mientras esté bloqueado.', textoConfirmar: l.estado === 'I' ? 'Desbloquear' : 'Bloquear', tono: 'primario',
-        alConfirmar: () => inventarioModel.bloqueo(l.id, l.estado !== 'I') }) ? 'Estado del lote actualizado.' : null) },
+    l.estado !== 'C' && { texto: l.estado === 'B' ? 'Desbloquear' : 'Bloquear', permiso: 'inventario:gestionar', etiqueta: `${l.estado === 'B' ? 'Desbloquear' : 'Bloquear'} el lote ${l.id}`,
+      ejecutar: async () => (await confirmarAccion({ titulo: `${l.estado === 'B' ? 'Desbloquear' : 'Bloquear'} lote ${l.id}`, mensaje: l.estado === 'B' ? 'El lote volverá a usarse en las ventas.' : 'El lote no se usará en las ventas mientras esté bloqueado.', textoConfirmar: l.estado === 'B' ? 'Desbloquear' : 'Bloquear', tono: 'primario',
+        alConfirmar: () => inventarioModel.bloqueo(l.id, l.estado !== 'B') }) ? 'Estado del lote actualizado.' : null) },
     l.estado !== 'C' && esAdm() && { texto: 'Dar de baja por caducidad', permiso: 'inventario:gestionar', tono: 'btn-outline-danger', etiqueta: `Dar de baja el lote ${l.id}`,
       ejecutar: () => formulario({ titulo: `Dar de baja el lote ${l.id}`, mensaje: 'Se registra la salida en el kárdex. No se puede deshacer.', tono: 'peligro', textoConfirmar: 'Dar de baja',
         campos: [{ nombre: 'observacion', etiqueta: 'Observación', tipo: 'textarea', requerido: true, maxlength: 200 }],
@@ -116,6 +111,7 @@ const lotes = crearLista({
   raiz: '#pantalla-lotes', filtros: '#filtros-lotes', caption: 'Lotes de productos',
   cargar: cargarLotes,
   extraer: extraerLotes,
+  vacio: 'No hay lotes con estos filtros',
   columnas: [['Lote', (l) => txt(l.id)], ['Producto', (l) => txt(l.producto?.nombre || l.producto || nombreProducto(l.productoId))], ['Tipo', (l) => txt(tipoInventarioTexto(l))], ['Ingreso', (l) => fecha(l.fechaIngreso)], ['Caducidad', (l) => caducidadHtml(l.fechaCaducidad)],
     ['Situación', (l) => txt(l.fechaCaducidad ? situacionCaducidad(l.fechaCaducidad) : 'No caduca')], ['Disponible', (l) => txt(`${l.cantidadDisponible ?? ''} de ${l.cantidadInicial ?? ''}`)], ...(VER_COSTOS ? [['Costo unitario', (l) => dinero(l.costoUnit)]] : []), ['Estado', (l) => estado(ESTADOS_LOTE, l.estado)]],
   acciones: accionesLote
@@ -138,6 +134,14 @@ const kardex = crearLista({
 });
 selectKardex?.addEventListener('change', () => kardex?.recargar());
 s('#lotes-tipo')?.addEventListener('change', actualizarRangoCaducidad);
+s('[data-limpiar-filtros]')?.addEventListener('click', () => {
+  const form = s('#filtros-lotes');
+  if (!form) return;
+  form.reset();
+  form.querySelectorAll('input[type="checkbox"]').forEach((c) => { c.checked = false; });
+  actualizarRangoCaducidad();
+  lotes?.recargar();
+});
 
 function normalizarAlertas(respuesta) {
   const datos = respuesta?.data ?? respuesta ?? {};
