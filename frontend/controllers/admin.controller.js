@@ -204,21 +204,21 @@ export async function iniciarDashboard(){
       verPedidos ? adminModel.pedidos({limit:5}) : Promise.resolve([]),
       inventarioModel.alertas().catch(() => null)
     ]);
+    const alertas = normalizarAlertas(respuestaAlertas);
     const map = {
       '[data-total-productos]': resumen.productosActivos ?? resumen.productos ?? 0,
-      '[data-total-bajo-stock]': resumen.bajoStock ?? 0,
+      '[data-total-bajo-stock]': alertas.sinStock || resumen.bajoStock || 0,
       '[data-total-pedidos]': resumen.pedidosPendientes ?? resumen.pedidos ?? 0,
       '[data-total-clientes]': resumen.clientesActivos ?? resumen.clientes ?? 0,
       '[data-total-inscripciones]': resumen.inscripcionesPendientes ?? resumen.inscripciones ?? 0,
       '[data-total-mensajes]': resumen.mensajesPendientes ?? 0
     };
     Object.entries(map).forEach(([sel,val])=>{ const n=select(sel); if(n) n.textContent = val; });
-    const alertas = normalizarAlertas(respuestaAlertas);
     select('[data-alerta-por-caducar]')?.replaceChildren(String(alertas.porCaducar));
     select('[data-alerta-caducados]')?.replaceChildren(String(alertas.caducados));
     select('[data-alerta-sin-stock]')?.replaceChildren(String(alertas.sinStock));
     const partes = [];
-    if (alertas.porCaducar) partes.push(`${alertas.porCaducar} ${alertas.porCaducar === 1 ? 'lote caduca' : 'lotes caducan'} esta semana`);
+    if (alertas.porCaducar) partes.push(`${alertas.porCaducar} ${alertas.porCaducar === 1 ? 'lote por caducar' : 'lotes por caducar'}`);
     if (alertas.caducados) partes.push(`${alertas.caducados} ${alertas.caducados === 1 ? 'lote caducado' : 'lotes caducados'} con unidades`);
     if (alertas.sinStock) partes.push(`${alertas.sinStock} ${alertas.sinStock === 1 ? 'producto' : 'productos'} sin stock o en stock mínimo`);
     const aviso = select('#mensaje-alertas-inventario');

@@ -3,7 +3,7 @@ import { inventarioModel } from '../models/fase2.model.js';
 import { adminModel } from '../models/admin.model.js';
 import { puede, esAdm } from '../models/permisos.model.js';
 import { escapar } from '../views/componentes.view.js';
-import { txt, dinero, fecha, estado, tablaHtml, esFefo, tipoInventarioTexto, situacionCaducidad, caducidadHtml, caducidadProductoHtml, proximaCaducidad, stockTexto } from '../views/lista-api.view.js';
+import { txt, dinero, fecha, estado, tablaHtml, esFefo, tipoInventarioTexto, situacionCaducidad, situacionConDias, caducidadHtml, caducidadProductoHtml, proximaCaducidad, stockTexto } from '../views/lista-api.view.js';
 import { confirmarAccion } from './dialogo.controller.js';
 import { crearLista, formulario, enlazarBoton } from './lista-api.controller.js';
 
@@ -15,7 +15,7 @@ const s = (selector) => document.querySelector(selector);
 let productos = [];
 let categorias = [];
 let lotesConStock = [];
-let filasAlerta = [];
+let filasAlerta = {};
 
 function mostrarPestana(selector) {
   const boton = s(selector);
@@ -54,6 +54,7 @@ function aplicarParametrosUrl() {
     if (control && q.get(nombre) === 'S') control.checked = true;
   });
   if (q.has('pestana')) mostrarPestana(`#tab-${q.get('pestana')}`);
+  if (q.has('alerta')) mostrarPestana('#tab-alertas');
   actualizarRangoCaducidad();
 }
 
@@ -153,20 +154,43 @@ function normalizarAlertas(respuesta) {
   };
 }
 
-function esLote(fila) {
-  return Boolean(fila?.id && (fila.fechaCaducidad || fila.cantidadInicial !== undefined || fila.estado));
+function columnasAlertas(grupo) {
+  if (grupo === 'sinStock') return [
+    ['Producto', (p) => txt(p.nombre || nombreProducto(p.id ?? p.productoId))],
+    ['Código', (p) => txt(p.id ?? p.productoId)],
+    ['Stock / mínimo', (p) => txt(`${p.stock ?? p.cantidadDisponible ?? 0} / ${p.stockMin ?? p.stock_min ?? 0}`)],
+    ['Próxima caducidad', (p) => caducidadProductoHtml(p)],
+    ['Situación', (p) => txt(Number(p.stock ?? p.cantidadDisponible ?? 0) <= Number(p.stockMin ?? p.stock_min ?? 0) ? 'Stock mínimo' : 'Sin stock')]
+  ];
+  return [
+    ['Lote', (l) => txt(l.id)],
+    ['Producto', (l) => txt(l.producto?.nombre || l.producto || nombreProducto(l.productoId))],
+    ['Cantidad', (l) => txt(l.cantidadDisponible ?? l.stock ?? '')],
+    ['Caducidad', (l) => caducidadHtml(l.fechaCaducidad)],
+    ['Situación', (l) => txt(situacionConDias(l.fechaCaducidad, l.diasParaCaducar))]
+  ];
 }
 
-function accionesAlerta(fila) {
-  if (!esLote(fila)) return '';
-  const botones = [`<button type="button" class="btn btn-sm btn-outline-primary me-1 mb-1" data-accion-alerta="kardex" data-fila="${escapar(fila.id)}">Ver kárdex</button>`];
-  if (puede('inventario:gestionar')) botones.push(`<button type="button" class="btn btn-sm btn-outline-secondary me-1 mb-1" data-accion-alerta="bloqueo" data-fila="${escapar(fila.id)}">Bloquear</button>`);
-  if (esAdm()) botones.push(`<button type="button" class="btn btn-sm btn-outline-danger me-1 mb-1" data-accion-alerta="baja" data-fila="${escapar(fila.id)}">Dar de baja por caducidad</button>`);
-  return botones.join('');
+function accionesAlerta(fila, grupo) {
+  const id = escapar(fila.id ?? fila.productoId ?? '');
+  const g = escapar(grupo);
+  const boton = (accion, texto, tono = 'btn-outline-primary') => `<button type="button" class="btn btn-sm ${tono} me-1 mb-1" data-accion-alerta="${accion}" data-alerta-grupo="${g}" data-alerta-id="${id}">${texto}</button>`;
+  if (grupo === 'sinStock') {
+    return [puede('inventario:gestionar') && boton('recibir', 'Recibir mercadería'), boton('kardex', 'Ver kárdex')].filter(Boolean).join('');
+  }
+  return [boton('kardex', 'Ver kárdex'), puede('inventario:gestionar') && boton('bloqueo', 'Bloquear', 'btn-outline-secondary'), esAdm() && boton('baja', 'Dar de baja', 'btn-outline-danger')].filter(Boolean).join('');
 }
 
-function columnasAlertas() {
-  return [['Producto', (l) => txt(l.producto?.nombre || l.producto || nombreProducto(l.productoId))], ['Lote', (l) => txt(l.id || l.productoId)], ['Cantidad', (l) => txt(l.cantidadDisponible ?? l.stock ?? '')], ['Caducidad', (l) => caducidadHtml(l.fechaCaducidad)], ['Situación', (l) => txt(l.fechaCaducidad ? situacionCaducidad(l.fechaCaducidad) : (l.stock <= Number(l.stockMin ?? 0) ? 'Stock mínimo' : 'Sin stock'))]];
+async function recibirMercaderia(productoId = '') {
+  const m = await formulario({
+    titulo: 'Recibir mercadería sin orden', textoConfirmar: 'Registrar ingreso',
+    campos: [{ nombre: 'productoId', etiqueta: 'Producto', tipo: 'select', requerido: true, valor: productoId, opciones: [{ valor: '', texto: 'Selecciona un producto' }, ...productos.map((p) => ({ valor: p.id, texto: `${p.nombre} (${p.id})` }))] }, { nombre: 'cantidad', etiqueta: 'Cantidad', tipo: 'number', paso: '1', min: 1, requerido: true }, { nombre: 'costoUnit', etiqueta: 'Costo unitario', tipo: 'number', min: 0, requerido: true },
+      { nombre: 'fechaCaducidad', etiqueta: 'Fecha de caducidad (si el producto la controla)', tipo: 'date' }, { nombre: 'numFabricante', etiqueta: 'Lote del fabricante', maxlength: 30 }, { nombre: 'observacion', etiqueta: 'Observación', tipo: 'textarea', maxlength: 200 }],
+    alConfirmar: (v) => inventarioModel.recibir({ productoId: v.productoId, cantidad: Number(v.cantidad), costoUnit: Number(v.costoUnit), ...(v.fechaCaducidad ? { fechaCaducidad: v.fechaCaducidad } : {}), ...(v.numFabricante ? { numFabricante: v.numFabricante.trim() } : {}), ...(v.observacion ? { observacion: v.observacion.trim() } : {}) }),
+    exito: 'Mercadería registrada.'
+  });
+  if (m) recargarTodo();
+  return m;
 }
 
 async function cargarAlertas() {
@@ -176,9 +200,9 @@ async function cargarAlertas() {
   cont.setAttribute('aria-busy', 'true');
   try {
     const alertas = normalizarAlertas(await inventarioModel.alertas());
-    filasAlerta = [...alertas.porCaducar, ...alertas.caducados, ...alertas.sinStock];
+    filasAlerta = alertas;
     const grupos = [['porCaducar', 'Lotes por caducar', alertas.porCaducar], ['caducados', 'Caducados con unidades', alertas.caducados], ['sinStock', 'Sin stock o en stock mínimo', alertas.sinStock]];
-    cont.innerHTML = grupos.map(([clave, titulo, filas]) => `<section class="mb-4" data-grupo-alerta="${clave}" aria-labelledby="titulo-alerta-${clave}"><h3 id="titulo-alerta-${clave}" class="h6">${escapar(titulo)} <span class="badge text-bg-secondary">${filas.length}</span></h3>${tablaHtml({ caption: titulo, columnas: columnasAlertas(), filas, acciones: accionesAlerta })}</section>`).join('');
+    cont.innerHTML = grupos.map(([clave, titulo, filas]) => `<section class="mb-4" data-grupo-alerta="${clave}" aria-labelledby="titulo-alerta-${clave}"><h3 id="titulo-alerta-${clave}" class="h6">${escapar(titulo)} <span class="badge text-bg-secondary">${filas.length}</span></h3>${tablaHtml({ caption: titulo, columnas: columnasAlertas(clave), filas, acciones: (f) => accionesAlerta(f, clave) })}</section>`).join('');
     if (mensaje) {
       const partes = [];
       if (alertas.porCaducar.length) partes.push(`${alertas.porCaducar.length} lotes por caducar`);
@@ -187,6 +211,8 @@ async function cargarAlertas() {
       mensaje.textContent = partes.length ? `${partes.join(' · ')}.` : '';
       mensaje.hidden = !partes.length;
     }
+    const activa = new URLSearchParams(location.search).get('alerta');
+    if (activa) s(`[data-grupo-alerta="${CSS.escape(activa)}"]`)?.scrollIntoView({ block: 'start' });
   } catch (error) {
     if (mensaje) { mensaje.textContent = error.mensaje || 'No se pudieron cargar las alertas.'; mensaje.hidden = false; }
     cont.innerHTML = '<p class="text-body-secondary">No hay alertas disponibles.</p>';
@@ -198,11 +224,15 @@ async function cargarAlertas() {
 s('#pantalla-alertas [data-alertas]')?.addEventListener('click', async (evento) => {
   const boton = evento.target.closest('[data-accion-alerta]');
   if (!boton) return;
-  const fila = filasAlerta.find((l) => String(l.id) === String(boton.dataset.fila));
+  const fila = filasAlerta[boton.dataset.alertaGrupo]?.find((l) => String(l.id ?? l.productoId) === String(boton.dataset.alertaId));
   if (!fila) return;
   const accion = boton.dataset.accionAlerta;
   try {
-    if (accion === 'kardex') await verKardex(fila);
+    if (accion === 'kardex') {
+      if (boton.dataset.alertaGrupo === 'sinStock') await verKardex({ productoId: fila.id ?? fila.productoId, producto: fila.nombre });
+      else await verKardex(fila);
+    }
+    if (accion === 'recibir') await recibirMercaderia(String(fila.id ?? fila.productoId ?? ''));
     if (accion === 'bloqueo') {
       const confirmado = await confirmarAccion({ titulo: `Bloquear lote ${fila.id}`, mensaje: 'El lote dejará de usarse en las ventas hasta que se desbloquee.', textoConfirmar: 'Bloquear' });
       if (confirmado) { await inventarioModel.bloqueo(fila.id, true); await cargarAlertas(); }
@@ -226,17 +256,7 @@ function recargarTodo() {
   cargarAlertas();
 }
 
-enlazarBoton('[data-recibir]', 'inventario:gestionar', async () => {
-  const m = await formulario({
-    titulo: 'Recibir mercadería sin orden', textoConfirmar: 'Registrar ingreso',
-    campos: [{ nombre: 'productoId', etiqueta: 'Producto', tipo: 'select', requerido: true, opciones: [{ valor: '', texto: 'Selecciona un producto' }, ...productos.map((p) => ({ valor: p.id, texto: `${p.nombre} (${p.id})` }))] }, { nombre: 'cantidad', etiqueta: 'Cantidad', tipo: 'number', paso: '1', min: 1, requerido: true }, { nombre: 'costoUnit', etiqueta: 'Costo unitario', tipo: 'number', min: 0, requerido: true },
-      { nombre: 'fechaCaducidad', etiqueta: 'Fecha de caducidad (si el producto la controla)', tipo: 'date' }, { nombre: 'numFabricante', etiqueta: 'Lote del fabricante', maxlength: 30 }, { nombre: 'observacion', etiqueta: 'Observación', tipo: 'textarea', maxlength: 200 }],
-    alConfirmar: (v) => inventarioModel.recibir({ productoId: v.productoId, cantidad: Number(v.cantidad), costoUnit: Number(v.costoUnit), ...(v.fechaCaducidad ? { fechaCaducidad: v.fechaCaducidad } : {}), ...(v.numFabricante ? { numFabricante: v.numFabricante.trim() } : {}), ...(v.observacion ? { observacion: v.observacion.trim() } : {}) }),
-    exito: 'Mercadería registrada.'
-  });
-  if (m) recargarTodo();
-  return m;
-});
+enlazarBoton('[data-recibir]', 'inventario:gestionar', recibirMercaderia);
 
 enlazarBoton('[data-ajustar]', 'inventario:gestionar', async () => {
   const m = await formulario({
