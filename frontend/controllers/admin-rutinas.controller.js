@@ -14,6 +14,8 @@ const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', '
 const hoyISO = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/Guayaquil' });
 const sumarDias = (iso, cantidad) => { const d = new Date(`${iso}T12:00:00`); d.setDate(d.getDate() + cantidad); return d.toLocaleDateString('en-CA'); };
 const menorFecha = (a, b) => (!a ? b : (!b ? a : (a < b ? a : b)));
+const fechaTexto = (v) => { const t = String(v || '').slice(0, 10); const m = /^(d{4})-(d{2})-(d{2})$/.exec(t); return m ? `${m[3]}/${m[2]}/${m[1]}` : (t || '-'); };
+const nombreEntrenador = (r) => (typeof r?.entrenador === 'string' ? r.entrenador : (r?.entrenador?.nombre || r?.empleado?.nombre || ''));
 const mensajero = () => document.querySelector('[data-mensaje]');
 
 function filaVacia() { return { ejercicio: '', series: '', repeticiones: '', descanso: '', nota: '' }; }
@@ -46,7 +48,7 @@ function rutinaHtml(rutina) {
   const dias = normalizarDias(rutina?.detalle);
   const nivel = NIVELES.find((n) => n.valor === (rutina?.nivelId || rutina?.nivel))?.texto || rutina?.nivel || rutina?.nivelId || '-';
   return `<article class="pf-rutina-vista"><h3>${escapar(rutina?.objetivo || 'Rutina')}</h3>
-    <p>Nivel: ${escapar(nivel)} · Del ${escapar(fecha(rutina?.fechaInicio))} al ${escapar(fecha(rutina?.fechaFin))}${rutina?.empleado?.nombre || rutina?.entrenador?.nombre ? ` · Entrenador: ${escapar(rutina?.empleado?.nombre || rutina?.entrenador?.nombre)}` : ''}</p>
+    <p>Nivel: ${escapar(nivel)} · Del ${escapar(fecha(rutina?.fechaInicio))} al ${escapar(fecha(rutina?.fechaFin))}${nombreEntrenador(rutina) ? ` · Entrenador: ${escapar(nombreEntrenador(rutina))}` : ''}</p>
     ${rutina?.observaciones ? `<p>${escapar(rutina.observaciones)}</p>` : ''}
     ${dias.map((dia, indice) => `<section aria-labelledby="rutina-vista-dia-${indice}"><h4 id="rutina-vista-dia-${indice}">${escapar(dia.dia)}</h4><ul>${dia.filas.map((fila) => `<li><strong>${escapar(fila.ejercicio)}</strong>${[fila.series && `${escapar(fila.series)} series`, fila.repeticiones && escapar(fila.repeticiones), fila.descanso && `Descanso: ${escapar(fila.descanso)}`, fila.nota && escapar(fila.nota)].filter(Boolean).map((parte) => `<span>${parte}</span>`).join('')}</li>`).join('')}</ul></section>`).join('')}
     ${!dias.length ? `<p>${escapar(String(rutina?.detalle || 'Sin detalle.'))}</p>` : ''}</article>`;
@@ -75,28 +77,28 @@ function puedeGestionar() { return esAdm() || tieneRol('ENT'); }
 
 function puedeEditarRutina(rutina) {
   const usuario = usuarioActual() || {};
-  if (!puedeGestionar()) return false;
   if (esAdm(usuario)) return true;
-  if (!rutina) return true;
-  const dueños = [rutina.empleadoId, rutina.empleado?.id, rutina.empleado?.cedula, rutina.entrenadorId, rutina.entrenador?.id].map((valor) => String(valor || '')).filter(Boolean);
-  return !dueños.length || dueños.includes(String(usuario.id || '')) || dueños.includes(String(usuario.cedula || ''));
+  if (!rutina || !tieneRol('ENT')) return false;
+  const propio = usuario.empleadoId ?? usuario.empleado?.id;
+  return propio !== undefined && propio !== null && propio !== '' && String(rutina.empleadoId ?? '') === String(propio);
 }
 
 function normalizarFicha(respuesta) {
   const r = respuesta || {};
-  const cliente = r.cliente || r.clienteFicha || r;
-  const membresia = r.membresia || r.plan || r.membresiaActiva || {};
-  const rutina = r.rutina || r.rutinaVigente || r.rutinaActual || null;
+  const plan = r.planActivo || null;
+  const rv = r.rutinaVigente || null;
   return {
-    cedula: String(cliente.cedula || cliente.id || r.clienteId || ''),
-    nombre: [cliente.nombre, cliente.apellido].filter(Boolean).join(' ') || cliente.nombre || cliente.login || '',
-    nivelId: cliente.nivelId || r.nivelId || 'PRI',
-    tienePlan: Boolean(membresia.id || membresia.nombre || membresia.membresiaId),
-    incluyeRutina: membresia.incluyeRutina === undefined ? true : (membresia.incluyeRutina === 'S' || membresia.incluyeRutina === true),
-    plan: membresia.nombre || membresia.plan || '',
-    fechaFin: String(membresia.fechaFin || '').slice(0, 10),
-    correo: cliente.correo || r.correo || '',
-    rutina
+    cedula: String(r.cedula || r.clienteId || ''),
+    nombre: r.nombre || '',
+    correo: r.correo || '',
+    nivel: r.nivel || '',
+    nivelId: r.nivelId || 'PRI',
+    tienePlan: Boolean(plan),
+    incluyeRutina: plan?.incluyeRutina === true,
+    planId: plan?.id ?? null,
+    plan: plan?.nombre || '',
+    fechaFin: String(plan?.fechaFin || '').slice(0, 10),
+    rutina: rv ? { id: rv.id, objetivo: rv.objetivo || '', detalle: rv.detalle, fechaInicio: rv.fechaInicio, fechaFin: rv.fechaFin, nivel: rv.nivel || '', nivelId: rv.nivelId || '', entrenador: rv.entrenador || '', empleadoId: rv.empleadoId ?? null } : null
   };
 }
 
@@ -113,22 +115,22 @@ function pintarFicha() {
   if (!ficha) { cont.hidden = true; return; }
   cont.hidden = false;
   cont.querySelector('[data-ficha-nombre]').textContent = ficha.nombre || ficha.cedula;
-  cont.querySelector('[data-ficha-nivel]').textContent = NIVELES.find((n) => n.valor === ficha.nivelId)?.texto || ficha.nivelId;
-  cont.querySelector('[data-ficha-plan]').textContent = ficha.tienePlan ? `${ficha.plan || 'Plan activo'}${ficha.fechaFin ? ` · hasta ${fecha(ficha.fechaFin)}` : ''} · ${ficha.incluyeRutina ? 'Incluye rutina' : 'No incluye rutina'}` : 'Sin plan activo';
-  cont.querySelector('[data-ficha-rutina]').textContent = ficha.rutina ? `${ficha.rutina.objetivo || 'Rutina'} · ${fecha(ficha.rutina.fechaInicio)} a ${fecha(ficha.rutina.fechaFin)}${ficha.rutina.empleado?.nombre ? ` · ${ficha.rutina.empleado.nombre}` : ''}` : 'Sin rutina vigente';
+  cont.querySelector('[data-ficha-nivel]').textContent = ficha.nivel || NIVELES.find((n) => n.valor === ficha.nivelId)?.texto || ficha.nivelId;
+  cont.querySelector('[data-ficha-plan]').textContent = ficha.tienePlan ? `${ficha.plan || 'Plan activo'}${ficha.fechaFin ? ` · hasta ${fechaTexto(ficha.fechaFin)}` : ''} · ${ficha.incluyeRutina ? 'Incluye rutina' : 'No incluye rutina'}` : 'Sin plan activo';
+  cont.querySelector('[data-ficha-rutina]').textContent = ficha.rutina ? `${ficha.rutina.objetivo || 'Rutina'} · ${fechaTexto(ficha.rutina.fechaInicio)} a ${fechaTexto(ficha.rutina.fechaFin)}${ficha.rutina.entrenador ? ` · ${ficha.rutina.entrenador}` : ''}` : 'Sin rutina vigente';
   const motivo = cont.querySelector('[data-ficha-motivo]');
   const asignar = cont.querySelector('[data-asignar-rutina]');
   const editar = cont.querySelector('[data-editar-rutina]');
   const ver = cont.querySelector('[data-ver-rutina]');
   let textoMotivo = '';
-  if (!ficha.tienePlan) textoMotivo = 'El cliente no tiene una membresía activa, por eso no se le puede asignar una rutina.';
-  else if (!ficha.incluyeRutina) textoMotivo = 'El plan activo no incluye rutina, por eso no se muestra el botón de asignación.';
-  else if (ficha.rutina && !puedeEditarRutina(ficha.rutina)) textoMotivo = 'La rutina vigente pertenece a otro entrenador.';
+  if (!ficha.tienePlan) textoMotivo = 'El cliente no tiene una membresía activa';
+  else if (!ficha.incluyeRutina) textoMotivo = 'Su plan no incluye rutina';
   else if (!puedeGestionar()) textoMotivo = 'Tu rol solo puede ver rutinas.';
+  else if (ficha.rutina && !puedeEditarRutina(ficha.rutina)) textoMotivo = 'La rutina vigente pertenece a otro entrenador.';
   motivo.hidden = !textoMotivo;
   motivo.textContent = textoMotivo;
-  asignar.hidden = !(textoMotivo === 'Tu rol solo puede ver rutinas.' ? false : !textoMotivo && puedeGestionar() && !ficha.rutina);
-  editar.hidden = !(textoMotivo === 'Tu rol solo puede ver rutinas.' ? false : !textoMotivo && puedeGestionar() && Boolean(ficha.rutina));
+  asignar.hidden = !(ficha.tienePlan && ficha.incluyeRutina && !ficha.rutina && puedeGestionar());
+  editar.hidden = !(ficha.rutina && puedeEditarRutina(ficha.rutina));
   ver.hidden = !ficha.rutina;
 }
 
@@ -233,10 +235,10 @@ async function abrirEditor(rutina) {
     titulo: rutina ? 'Editar rutina' : 'Asignar rutina',
     mensaje: `Cliente: ${ficha?.nombre || ficha?.cedula || ''}`,
     campos: [
-      { nombre: 'nivelId', etiqueta: 'Nivel', tipo: 'select', requerido: true, opciones: NIVELES, valor: ficha?.nivelId || 'PRI' },
+      { nombre: 'nivelId', etiqueta: 'Nivel', tipo: 'select', requerido: true, opciones: NIVELES, valor: rutina?.nivelId || ficha?.nivelId || 'PRI' },
       { nombre: 'objetivo', etiqueta: 'Objetivo', tipo: 'select', requerido: true, opciones: OBJETIVOS, valor: rutina?.objetivo || 'Salud general' },
       { nombre: 'fechaInicio', etiqueta: 'Desde', tipo: 'date', requerido: true, valor: String(rutina?.fechaInicio || '').slice(0, 10) || inicio },
-      { nombre: 'fechaFin', etiqueta: 'Hasta', tipo: 'date', requerido: true, valor: String(rutina?.fechaFin || '').slice(0, 10) || fin, ayuda: fechaFinMax ? `No puede pasar del ${fecha(fechaFinMax)}.` : '' },
+      { nombre: 'fechaFin', etiqueta: 'Hasta', tipo: 'date', requerido: true, valor: String(rutina?.fechaFin || '').slice(0, 10) || fin, ayuda: fechaFinMax ? `No puede pasar del ${fechaTexto(fechaFinMax)}.` : '' },
       { nombre: 'observaciones', etiqueta: 'Observaciones', tipo: 'textarea', maxlength: 200, valor: rutina?.observaciones || '' }
     ],
     contenido: '<input type="hidden" name="detalle"><div class="pf-editor-rutina" data-editor-rutina></div><p class="small mt-2 mb-0" data-estado-editor role="status" aria-live="polite"></p>',
@@ -248,12 +250,13 @@ async function abrirEditor(rutina) {
       enlazarEditor();
       pintarEditor('Escribe los ejercicios por día o elige un nivel para cargar su plantilla.');
       cargarEjercicios();
+      if (!rutina) cargarPlantilla(ficha?.nivelId || 'PRI');
       formulario.elements.namedItem('nivelId').addEventListener('change', (evento) => cargarPlantilla(evento.target.value));
     },
     validarExtra: (_, v) => {
       leerEditor();
       if (!v.fechaInicio || !v.fechaFin || v.fechaInicio > v.fechaFin) return 'La fecha inicial debe ser anterior a la final.';
-      if (fechaFinMax && v.fechaFin > fechaFinMax) return `La fecha de fin no puede pasar del ${fecha(fechaFinMax)}.`;
+      if (fechaFinMax && v.fechaFin > fechaFinMax) return `La fecha de fin no puede pasar del ${fechaTexto(fechaFinMax)}.`;
       if (!editorDias.length) return 'Agrega al menos un día con ejercicios.';
       const dia = editorDias.find((d) => !d.filas.some((f) => f.ejercicio.trim()));
       return dia ? `${dia.dia} necesita al menos un ejercicio.` : null;

@@ -29,7 +29,7 @@ const SITIO = `http://127.0.0.1:${PUERTO}/`;
 const USUARIOS = {
   ADM: { id: 1, login: 'adm@pf.ec', rol: 'admin', roles: ['ADM'] },
   REC: { id: 2, login: 'rec@pf.ec', rol: 'staff', roles: ['REC'], permisos: ['resumen:ver', 'gimnasio:leer', 'catalogos:leer', 'empleados:leer', 'asistencia:marcar', 'clientes:leer', 'clientes:editar', 'planes:leer', 'inscripciones:leer', 'inscripciones:gestionar', 'entradas:gestionar', 'aforo:ver', 'clases:leer', 'rutinas:leer', 'aliados:leer', 'aliados:cobrar', 'inventario:leer', 'pedidos:leer', 'pedidos:gestionar', 'ventas:leer', 'ventas:crear', 'facturas:leer', 'facturas:generar', 'caja:operar', 'caja:leer', 'mensajes:gestionar', 'reportes:clientes', 'reportes:entradas'] },
-  ENT: { id: 5, login: 'ent@pf.ec', rol: 'staff', roles: ['ENT'], permisos: ['*'], nombre: 'Elena', cedula: '1712345676', correo: 'ent@pf.ec' },
+  ENT: { id: 5, empleadoId: 5, login: 'ent@pf.ec', rol: 'staff', roles: ['ENT'], permisos: ['*'], nombre: 'Elena', cedula: '1712345676', correo: 'ent@pf.ec' },
   REC_SIN_PERMISOS: { id: 3, login: 'rec2@pf.ec', rol: 'staff', roles: ['REC'] },
   CON: { id: 4, login: 'con@pf.ec', rol: 'staff', roles: ['CON'], permisos: ['resumen:ver', 'gimnasio:leer', 'catalogos:leer', 'empleados:leer', 'asistencia:reporte', 'clientes:leer', 'planes:leer', 'inscripciones:leer', 'aliados:leer', 'aliados:cobrar', 'inventario:leer', 'compras:leer', 'pedidos:leer', 'ventas:leer', 'facturas:leer', 'facturas:generar', 'facturas:sri', 'caja:leer', 'caja:cierre', 'reportes:clientes', 'reportes:entradas', 'reportes:todos', 'tablas:leer'] },
   CLI: { id: 9, login: 'cli@pf.ec', rol: 'user', roles: ['CLI'], nombre: 'Ana', cedula: '1710034065', correo: 'cli@pf.ec' }
@@ -51,10 +51,9 @@ const PRODUCTOS_FASE3 = [
   { id: 'PF0003', codigo: 'PF0003', nombre: 'Camiseta PF', categoriaId: 'C3', tipoInventario: 'FIFO', proximaCaducidad: '', diasParaCaducar: null, stock: 2, stockMin: 5, estado: 'A' }
 ];
 const RUTINA_FASE3 = {
-  id: 9001,
-  cliente: { cedula: '1712345675', nombre: 'Ana', apellido: 'Pérez', nivelId: 'INT', correo: 'ana@pf.ec' },
-  membresia: { id: 'M1', nombre: 'Plan 4 sesiones', fechaFin: '2026-12-31', incluyeRutina: 'S' },
-  rutina: { id: 9001, objetivo: 'Tonificar', nivelId: 'INT', fechaInicio: '2026-11-25', fechaFin: '2026-12-23', empleado: { id: 5, nombre: 'Entrenador' }, detalle: { dias: [{ dia: 'Lunes', filas: [{ ejercicio: 'Sentadilla', series: '3', repeticiones: '12', descanso: '60 s', nota: '' }] }, { dia: 'Miércoles', filas: [{ ejercicio: 'Zancadas', series: '3', repeticiones: '10', descanso: '60 s', nota: '' }] }] } }
+  cedula: '1712345675', nombre: 'Ana Pérez', correo: 'ana@pf.ec', nivel: 'Intermedio', nivelId: 'INT',
+  planActivo: { id: 'M1', nombre: 'Plan 4 sesiones', incluyeRutina: true, fechaFin: '2026-12-31' },
+  rutinaVigente: { id: 9001, objetivo: 'Tonificar', nivel: 'Intermedio', nivelId: 'INT', fechaInicio: '2026-11-25', fechaFin: '2026-12-23', entrenador: 'Entrenador', empleadoId: 5, detalle: { dias: [{ dia: 'Lunes', filas: [{ ejercicio: 'Sentadilla', series: '3', repeticiones: '12', descanso: '60 s', nota: '' }] }, { dia: 'Miércoles', filas: [{ ejercicio: 'Zancadas', series: '3', repeticiones: '10', descanso: '60 s', nota: '' }] }] } }
 };
 const RUTINA_CLIENTE_FASE3 = {
   id: 9001, objetivo: 'Tonificar', nivel: 'INT', fechaInicio: '2026-11-25', fechaFin: '2026-12-23', entrenador: { nombre: 'Entrenador' },
@@ -77,9 +76,10 @@ function respuestaSimulada(url, usuario, metodo = 'GET') {
   if (ruta === '/admin/entradas') return { data: [{ id: 40, cliente: 'Consumidor final', fecha: '2026-11-25T10:00:00Z', metodoPago: 'EF', total: 3 }], pagination: { page: 1, totalPages: 1, total: 1 } };
   if (metodo === 'POST' && ruta === '/admin/entradas/pase-diario') return { id: 41, fecha: '2026-11-25T10:05:00Z', metodoPago: 'EF', total: 3 };
   if (/^\/admin\/clientes\/\d+\/acceso$/.test(ruta)) return { nombre: 'Ana Pérez', cliente: { nombre: 'Ana Pérez' } };
-  if (ruta === '/admin/rutinas') return { data: [{ id: 9001, cliente: 'Ana Pérez', nivel: 'INT', fechaInicio: '2026-11-25', fechaFin: '2026-12-23', estado: 'Vigente', empleadoId: 5, detalle: RUTINA_FASE3.rutina.detalle }], pagination: { page: 1, totalPages: 1, total: 1 } };
-  if (ruta === '/admin/rutinas/cliente/1712345676') return { ...RUTINA_FASE3, rutina: null };
-  if (ruta.startsWith('/admin/rutinas/cliente/') || ruta === '/admin/rutinas/9001') return RUTINA_FASE3;
+  if (ruta === '/admin/rutinas') return { data: [{ id: 9001, cliente: 'Ana Pérez', nivel: 'INT', fechaInicio: '2026-11-25', fechaFin: '2026-12-23', estado: 'Vigente', empleadoId: 5, detalle: RUTINA_FASE3.rutinaVigente.detalle }], pagination: { page: 1, totalPages: 1, total: 1 } };
+  if (ruta === '/admin/rutinas/cliente/1712345676') return { ...RUTINA_FASE3, rutinaVigente: null };
+  if (ruta === '/admin/rutinas/9001') return RUTINA_FASE3.rutinaVigente;
+  if (ruta.startsWith('/admin/rutinas/cliente/')) return RUTINA_FASE3;
   if (ruta === '/admin/rutinas/ejercicios') return { data: [{ id: 1, nombre: 'Sentadilla', grupoMuscular: 'Piernas' }, { id: 2, nombre: 'Press banca', grupoMuscular: 'Pecho' }], pagination: { page: 1, totalPages: 1, total: 2 } };
   if (ruta === '/admin/rutinas/plantillas') return { data: [{ id: 1, nivel: 'INT', objetivo: 'Tonificar', detalle: { dias: [{ dia: 'Lunes', filas: [{ ejercicio: 'Sentadilla', series: '3', repeticiones: '12', descanso: '60 s', nota: '' }] }] } }], pagination: { page: 1, totalPages: 1, total: 1 } };
   if (ruta === '/rutinas/mi-rutina') return RUTINA_CLIENTE_FASE3;
