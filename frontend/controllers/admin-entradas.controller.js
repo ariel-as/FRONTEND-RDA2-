@@ -10,7 +10,7 @@ import { formatearPrecio } from '../models/carrito.model.js';
 import { mostrarFactura } from './factura.controller.js';
 
 const PRECIO_PASE = 3;
-const PATRON_REFERENCIA = '[A-Za-z0-9-]{4,30}';
+const PATRON_REFERENCIA = '[A-Za-z0-9\\-]{4,30}';
 
 async function mostrarClientePase(cedula, nodo) {
   if (!/^\d{10}$/.test(cedula)) { nodo.textContent = 'Sin cédula: se facturará a CONSUMIDOR FINAL.'; return; }

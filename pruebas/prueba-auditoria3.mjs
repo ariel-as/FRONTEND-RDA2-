@@ -131,7 +131,7 @@ try {
   await page.waitForFunction(() => document.querySelector('#nivel option[value="PRI"]'));
   comprobar(await page.locator('a[href="../admin/login.html"]').count() >= 1, 'R6: el login de cliente conserva el enlace al panel');
   await page.locator('footer a[href="../index.html#tienda"]').click();
-  await page.waitForFunction(() => location.hash === '#tienda' && Math.abs(document.querySelector('#tienda').getBoundingClientRect().top - document.querySelector('.pf-encabezado').getBoundingClientRect().height) <= 2, null, { timeout: 6000 });
+  await page.waitForFunction(() => location.hash === '#tienda' && document.querySelector('#tienda') && Math.abs(document.querySelector('#tienda').getBoundingClientRect().top - document.querySelector('.pf-encabezado').getBoundingClientRect().height) <= 2, null, { timeout: 6000 });
   comprobar(true, 'R3: Inscripción → Tienda se alinea tras cargar los datos');
   await page.goto(`${base}/cliente/login.html`, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => document.querySelector('#nivel option[value="PRI"]'));

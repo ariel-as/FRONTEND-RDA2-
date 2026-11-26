@@ -65,8 +65,9 @@ async function listar(){
     if (filtro && !['porCaducar', 'caducados'].includes(filtro)) params.estado = filtro;
     const res = await adminModel.productos(params);
     let lista = res?.data || res || [];
-    if (filtro === 'porCaducar') lista = lista.filter((p) => Number(p.diasParaCaducar) >= 0 && Number(p.diasParaCaducar) <= 30);
-    if (filtro === 'caducados') lista = lista.filter((p) => Number(p.diasParaCaducar) < 0);
+    const diasCaducidad = (p) => (p.diasParaCaducar === null || p.diasParaCaducar === undefined || p.diasParaCaducar === '' ? NaN : Number(p.diasParaCaducar));
+    if (filtro === 'porCaducar') lista = lista.filter((p) => diasCaducidad(p) >= 0 && diasCaducidad(p) <= 30);
+    if (filtro === 'caducados') lista = lista.filter((p) => diasCaducidad(p) < 0);
     if (orden === 'caducidad') lista = [...lista].sort((a, b) => String(a.proximaCaducidad || '9999').slice(0, 10).localeCompare(String(b.proximaCaducidad || '9999').slice(0, 10)) || String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es'));
     else lista = [...lista].sort((a, b) => String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es'));
     const paginacion = res?.pagination || {};

@@ -16,6 +16,7 @@
     "humo": "node pruebas/prueba-humo.mjs"
   },
   "devDependencies": {
+    "axe-core": "4.10.3",
     "playwright": "1.65.1"
   }
 }

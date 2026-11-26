@@ -68,4 +68,4 @@ const indice = leer('index.html');
 comprobar(['og:type', 'og:title', 'og:description', 'og:image', 'og:locale'].every((etiqueta) => indice.includes(`property="${etiqueta}"`)), 'Open Graph: etiquetas obligatorias presentes');
 comprobar(indice.includes('logo-planeta-compact.webp') && indice.includes('hero-gimnasio.webp') && indice.includes('fetchpriority="high"'), 'imágenes: WebP, logo compacto y prioridad de carga del hero');
 
-console.log('\nPruebas de Auditoría 5: comprobaciones estáticas superadas. axe-core no instalado: no se ejecutaron reglas de axe reales.');
+console.log('\nPruebas de Auditoría 5: comprobaciones estáticas superadas. axe-core se ejecuta en la prueba de humo.');
