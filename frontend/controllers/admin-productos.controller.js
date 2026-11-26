@@ -60,12 +60,15 @@ async function listar(){
   const region = s('#mensaje-productos');
   if(tbody) tbody.setAttribute('aria-busy','true');
   try{
-    const params = { page: pagina, limit: 20, orden };
-    if (filtro === 'porCaducar') params.porCaducar = 'S';
-    else if (filtro) params.estado = filtro;
+    const params = { page: pagina, limit: 20 };
+    if (orden === 'caducidad') params.orden = 'caducidad';
+    if (filtro && !['porCaducar', 'caducados'].includes(filtro)) params.estado = filtro;
     const res = await adminModel.productos(params);
     let lista = res?.data || res || [];
+    if (filtro === 'porCaducar') lista = lista.filter((p) => Number(p.diasParaCaducar) >= 0 && Number(p.diasParaCaducar) <= 30);
+    if (filtro === 'caducados') lista = lista.filter((p) => Number(p.diasParaCaducar) < 0);
     if (orden === 'caducidad') lista = [...lista].sort((a, b) => String(a.proximaCaducidad || '9999').slice(0, 10).localeCompare(String(b.proximaCaducidad || '9999').slice(0, 10)) || String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es'));
+    else lista = [...lista].sort((a, b) => String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es'));
     const paginacion = res?.pagination || {};
     totalPages = paginacion.totalPages || 1;
     pagina = paginacion.page || pagina;
