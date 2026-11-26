@@ -1,5 +1,5 @@
 import './admin.controller.js';
-import { inscripcionesModel, facturasModel, planesModel, lista as extraer } from '../models/fase2.model.js';
+import { inscripcionesModel, facturasModel, adminMembresiasModel, lista as extraer } from '../models/fase2.model.js';
 import { formatearPrecio } from '../models/carrito.model.js';
 import { escapar } from '../views/componentes.view.js';
 import { txt, dinero, fecha, estado } from '../views/lista-api.view.js';
@@ -18,7 +18,7 @@ const VER_DINERO = puedeVerDinero();
 export const ESTADOS_INSCRIPCION = { P: 'Pendiente de pago', A: 'Activa', V: 'Vencida o sin ingresos', S: 'Suspendida', X: 'Anulada' };
 const CEDULA = '[0-9]{10}';
 let planes = [];
-const cargarPlanes = async () => { if (!planes.length) { try { planes = extraer(await planesModel.listar()); } catch { planes = []; } } return planes; };
+const cargarPlanes = async () => { if (!planes.length) { try { planes = extraer(await adminMembresiasModel.listar()); } catch { planes = []; } } return planes; };
 const precioPlan = (id) => Number(planes.find((p) => String(p.id) === String(id))?.precioConIva ?? planes.find((p) => String(p.id) === String(id))?.precio ?? 0);
 
 // Campos de plan + pagos con total estimado; el servidor responde 400 con el total correcto si no cuadra.

@@ -169,7 +169,9 @@ async function cargarFilas(inst) {
       const valor = document.querySelector(selector)?.value;
       if (campo && valor) params[campo] = valor;
     });
-    const respuesta = await adminModel.tablaFilas(inst.tabla, params);
+    const respuesta = typeof inst.config.cargarFilas === 'function'
+      ? await inst.config.cargarFilas(params, inst)
+      : await adminModel.tablaFilas(inst.tabla, params);
     const filas = respuesta?.data || respuesta || [];
     if (typeof inst.config.completarFilas === 'function') await inst.config.completarFilas(filas, inst);
     const paginacion = respuesta?.pagination || { page: 1, totalPages: 1 };

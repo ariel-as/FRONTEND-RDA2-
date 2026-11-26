@@ -1,45 +1,117 @@
 import './admin.controller.js';
-import { entradasModel, clientesModel } from '../models/fase2.model.js';
+import { entradasModel, clientesModel, facturasModel } from '../models/fase2.model.js';
 import { puede } from '../models/permisos.model.js';
 import { escapar } from '../views/componentes.view.js';
 import { txt, fecha } from '../views/lista-api.view.js';
 import { mostrarMensaje, validarCedula } from './validacion.controller.js';
 import { crearLista } from './lista-api.controller.js';
-import { inscripcionesModel } from '../models/fase2.model.js';
-import { adminModel } from '../models/admin.model.js';
-import { crearPagos } from './pagos.controller.js';
 import { abrirDialogo } from './dialogo.controller.js';
 import { formatearPrecio } from '../models/carrito.model.js';
+import { mostrarFactura } from './factura.controller.js';
 
-// Plan diario: el plan activo de un solo día o un solo ingreso.
-async function planDiario() {
+const PRECIO_PASE = 3;
+const PATRON_REFERENCIA = '[A-Za-z0-9-]{4,30}';
+
+async function mostrarClientePase(cedula, nodo) {
+  if (!/^\d{10}$/.test(cedula)) { nodo.textContent = 'Sin cédula: se facturará a CONSUMIDOR FINAL.'; return; }
+  nodo.textContent = 'Consultando cliente…';
   try {
-    const r = await adminModel.tablaFilas('membresia', { estado: 'A', limit: 100 });
-    const planes = r?.data || r || [];
-    return planes.find((p) => /diari|d[ií]a/i.test(p.nombre || '')) || planes.find((p) => p.unidadDuracion === 'D' && Number(p.duracion) === 1) || planes.find((p) => p.tipo === 'I' && Number(p.numIngresos) === 1) || null;
-  } catch { return null; }
+    const r = await clientesModel.acceso(cedula).then((x) => x?.data ?? x);
+    nodo.textContent = r?.cliente?.nombre
+      ? `Cliente: ${r.cliente.nombre}${r.cliente.estado === 'I' ? ' (inactivo)' : ''}.`
+      : 'Cédula no registrada: se facturará a CONSUMIDOR FINAL.';
+  } catch {
+    nodo.textContent = 'Cédula no registrada: se facturará a CONSUMIDOR FINAL.';
+  }
 }
 
-// Cobrar pase diario en un solo paso: alta rápida si hace falta, inscripción con cobro y entrada.
-async function cobrarPaseDiario(cedula, existe) {
-  const plan = await planDiario();
-  if (!plan) { mostrarRechazo('No hay un plan diario activo. Créalo en Planes y promociones.'); return; }
-  const totalPlan = Number(plan.precioConIva ?? plan.precio ?? 0) || 0;
-  let pagos = null;
-  const r = await abrirDialogo({
-    titulo: 'Cobrar pase diario', mensaje: `${plan.nombre}: total estimado ${formatearPrecio(totalPlan)} (el servidor confirma el total).`, textoConfirmar: 'Cobrar y registrar entrada',
-    campos: existe ? [] : [{ nombre: 'nombre', etiqueta: 'Nombres', requerido: true, maxlength: 60 }, { nombre: 'apellido', etiqueta: 'Apellidos', requerido: true, maxlength: 60 }],
-    contenido: '<div data-contenedor-pagos></div>',
-    alPreparar: (f) => { pagos = crearPagos(f.querySelector('[data-contenedor-pagos]'), { total: totalPlan, id: 'pagos-pase' }); },
-    validarExtra: () => (pagos.validar() ? null : 'Revisa la forma de pago.'),
-    alFallar: (fallo, _, nodo) => pagos?.ajustarDesdeError(fallo, nodo),
-    alConfirmar: async (v) => {
-      if (!existe) await clientesModel.crear({ cedula, nombre: v.nombre.trim(), apellido: v.apellido.trim() });
-      const ins = await inscripcionesModel.crear({ clienteId: cedula, membresiaId: String(plan.id), pagos: pagos.obtener() }).then((x) => x?.data ?? x);
-      return ins;
+async function imprimirComprobante(pase) {
+  const nodo = document.querySelector('#comprobante-pase-diario');
+  if (!nodo) return;
+  const cliente = pase.cliente?.nombre || pase.cliente || pase.clienteId || 'CONSUMIDOR FINAL';
+  nodo.innerHTML = `<article class="pf-comprobante-tarjeta"><h1>Planeta Fitness</h1><h2>Comprobante de pase diario</h2><dl><dt>Cliente</dt><dd>${escapar(String(cliente))}</dd><dt>Fecha</dt><dd>${escapar(fecha(pase.fecha, true))}</dd><dt>Entrada</dt><dd>${escapar(String(pase.id ?? ''))}</dd><dt>Forma de pago</dt><dd>${escapar(pase.metodoPago === 'TR' ? 'Transferencia' : 'Efectivo')}</dd>${pase.referencia ? `<dt>Referencia</dt><dd>${escapar(String(pase.referencia))}</dd>` : ''}<dt>Total</dt><dd>${formatearPrecio(PRECIO_PASE)}</dd></dl></article>`;
+  nodo.hidden = false;
+  const limpiar = () => { nodo.innerHTML = ''; nodo.hidden = true; };
+  window.addEventListener('afterprint', limpiar, { once: true });
+  window.print();
+}
+
+async function generarFacturaPase(pase, nodo) {
+  if (!puede('facturas:generar')) { nodo.textContent = 'Tu rol no puede generar facturas.'; return; }
+  try {
+    const f = await facturasModel.generar({ entradaId: pase.id }).then((x) => x?.data ?? x);
+    if (f?.id) await mostrarFactura(f.id).catch(() => {});
+    nodo.textContent = 'Factura generada con número y clave del SRI (simulados).';
+  } catch (error) {
+    nodo.textContent = error.mensaje || 'No se pudo generar la factura.';
+  }
+}
+
+async function ofrecerComprobante(pase) {
+  await abrirDialogo({
+    titulo: 'Pase diario registrado',
+    mensaje: 'Pase diario cobrado y entrada registrada.',
+    contenido: `<div class="d-flex flex-wrap gap-2"><button type="button" class="btn btn-outline-primary" data-imprimir-pase>Imprimir comprobante</button><button type="button" class="btn btn-outline-secondary" data-generar-factura-pase${puede('facturas:generar') ? '' : ' disabled'}>Generar factura</button></div><p class="small mt-2 mb-0" data-opcion-pase role="status" aria-live="polite"></p>`,
+    textoConfirmar: 'Cerrar',
+    textoCancelar: 'Cerrar',
+    alPreparar: (formulario) => {
+      formulario.querySelector('[data-imprimir-pase]').addEventListener('click', () => imprimirComprobante(pase));
+      formulario.querySelector('[data-generar-factura-pase]').addEventListener('click', () => generarFacturaPase(pase, formulario.querySelector('[data-opcion-pase]')));
     }
   });
-  if (r?.resultado?.id) await registrar({ clienteId: cedula, inscripcionId: r.resultado.id }, cedula);
+}
+
+async function paseDiario() {
+  mostrarRechazo('');
+  const r = await abrirDialogo({
+    titulo: 'Cobrar pase diario',
+    mensaje: `Pase diario: ${formatearPrecio(PRECIO_PASE)}. La cédula es opcional.`,
+    campos: [
+      { nombre: 'clienteId', etiqueta: 'Cédula del cliente (opcional)', maxlength: 10, patron: '[0-9]{10}', mensajePatron: 'La cédula tiene 10 dígitos.' },
+      { nombre: 'metodoPago', etiqueta: 'Forma de pago', tipo: 'select', requerido: true, valor: 'EF', opciones: [{ valor: 'EF', texto: 'Efectivo (EF)' }, { valor: 'TR', texto: 'Transferencia (TR)' }] },
+      { nombre: 'referencia', etiqueta: 'Referencia de transferencia', requerido: true, maxlength: 30, patron: PATRON_REFERENCIA, mensajePatron: 'La referencia tiene entre 4 y 30 letras, números o guiones.', ayuda: 'Solo para transferencias: de 4 a 30 letras, números o guiones.' }
+    ],
+    contenido: '<p class="small mb-0" data-cliente-pase role="status" aria-live="polite">Sin cédula: se facturará a CONSUMIDOR FINAL.</p>',
+    alPreparar: (formulario) => {
+      const cedula = formulario.elements.namedItem('clienteId');
+      const metodo = formulario.elements.namedItem('metodoPago');
+      const referencia = formulario.elements.namedItem('referencia');
+      const grupoReferencia = referencia.closest('.pf-dialogo-campo');
+      const aviso = formulario.querySelector('[data-cliente-pase]');
+      const actualizarReferencia = () => {
+        const transferencia = metodo.value === 'TR';
+        grupoReferencia.hidden = !transferencia;
+        referencia.required = transferencia;
+      };
+      actualizarReferencia();
+      metodo.addEventListener('change', actualizarReferencia);
+      let consultada = '';
+      cedula.addEventListener('input', () => {
+        const valor = cedula.value.trim();
+        if (valor === consultada) return;
+        consultada = valor;
+        mostrarClientePase(valor, aviso);
+      });
+    },
+    validarExtra: (_, v) => {
+      const cedula = v.clienteId.trim();
+      if (cedula && !/^\d{10}$/.test(cedula)) return 'La cédula tiene 10 dígitos.';
+      if (v.metodoPago === 'TR' && !new RegExp(`^${PATRON_REFERENCIA}$`).test(v.referencia.trim())) return 'La referencia tiene entre 4 y 30 letras, números o guiones.';
+      return null;
+    },
+    alConfirmar: async (v) => entradasModel.paseDiario({
+      ...(v.clienteId.trim() ? { clienteId: v.clienteId.trim() } : {}),
+      metodoPago: v.metodoPago,
+      ...(v.metodoPago === 'TR' ? { referencia: v.referencia.trim() } : {})
+    }).then((x) => x?.data ?? x)
+  });
+  const pase = r?.resultado;
+  if (!pase) return;
+  mostrarMensaje(region, 'Pase diario cobrado y entrada registrada.', 'exito');
+  await Promise.all([pintarAforo(), adentro?.recargar()]);
+  await ofrecerComprobante(pase);
+  campo.value = '';
+  campo.focus();
 }
 
 const region = document.querySelector('[data-mensaje]');
@@ -95,8 +167,7 @@ async function consultar() {
     if (!ins.length) {
       acceso.innerHTML = '';
       mostrarRechazo(`${nombre} no tiene inscripciones activas.`);
-      acceso.innerHTML = `<div class="d-flex flex-wrap gap-2"><button type="button" class="btn btn-primary" data-pase-diario>Cobrar pase diario</button><a class="btn btn-outline-primary" href="inscripciones.html?cedula=${encodeURIComponent(cedula)}">Vender un plan</a><a class="btn btn-outline-secondary" href="inscripciones.html?estado=P&canal=W&clienteId=${encodeURIComponent(cedula)}">Ver inscripciones web pendientes</a></div>`;
-      acceso.querySelector('[data-pase-diario]').addEventListener('click', () => cobrarPaseDiario(cedula, true));
+      acceso.innerHTML = `<div class="d-flex flex-wrap gap-2"><a class="btn btn-outline-primary" href="inscripciones.html?cedula=${encodeURIComponent(cedula)}">Vender un plan</a><a class="btn btn-outline-secondary" href="inscripciones.html?estado=P&canal=W&clienteId=${encodeURIComponent(cedula)}">Ver inscripciones web pendientes</a></div>`;
       return;
     }
     acceso.innerHTML = `<h3 class="h6">${escapar(nombre)}${r.cliente?.estado === 'I' ? ' (cliente inactivo)' : ''}</h3>` + ins.map((i, n) => `
@@ -117,8 +188,8 @@ async function consultar() {
     acceso.innerHTML = '';
     if (error.status === 404) {
       mostrarRechazo('La cédula no está registrada.');
-      acceso.innerHTML = `<div class="d-flex flex-wrap gap-2"><button type="button" class="btn btn-primary" data-pase-diario>Cobrar pase diario</button><a class="btn btn-outline-primary" href="clientes.html?cedula=${encodeURIComponent(cedula)}">Registrar cliente</a></div>`;
-      acceso.querySelector('[data-pase-diario]').addEventListener('click', () => cobrarPaseDiario(cedula, false));
+      acceso.innerHTML = '<div class="d-flex flex-wrap gap-2"><a class="btn btn-outline-primary" href="clientes.html?cedula=">Registrar cliente</a></div>';
+      acceso.querySelector('a').href += encodeURIComponent(cedula);
     } else mostrarRechazo(error.mensaje || 'No se pudo consultar la cédula.');
   }
 }
@@ -142,3 +213,4 @@ if (document.body.dataset.sinAcceso !== 'true') {
     });
   }
 }
+document.querySelector('[data-pase-diario]')?.addEventListener('click', paseDiario);

@@ -1,5 +1,6 @@
 import './admin.controller.js';
 import { iniciarPantalla } from './admin-generico.controller.js';
+import { adminMembresiasModel } from '../models/fase2.model.js';
 import { formatearPrecio } from '../models/carrito.model.js';
 
 const SI_NO = { S: 'Sí', N: 'No' };
@@ -10,8 +11,9 @@ iniciarPantalla({
   raiz: '#pantalla-membresia',
   tabla: 'membresia',
   titulo: 'Planes',
+  cargarFilas: () => adminMembresiasModel.listar(),
   columnas: ['id', 'nombre', 'tipo', 'duracion', 'numIngresos', 'numPersonas', 'precio', 'pagaIva', 'publicarWeb', 'estado'],
-  etiquetas: { id: 'Código', numPersonas: 'Personas', numIngresos: 'Ingresos', publicarWeb: 'Web' },
+  etiquetas: { id: 'Código', numPersonas: 'Personas', numIngresos: 'Ingresos', publicarWeb: 'En la web' },
   ayudas: { precio: 'Escribe el precio sin IVA. La tabla muestra el precio con IVA calculado.' },
   formatoCelda: { numIngresos: (valor, fila) => (fila.tipo === 'T' ? 'No aplica' : (valor ?? 'No aplica')),
     precio: (valor, fila) => `${formatearPrecio(fila.precioConIva ?? valor)} (con IVA)` },

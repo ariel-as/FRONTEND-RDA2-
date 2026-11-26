@@ -37,6 +37,7 @@
   </div></section>
   <section class="card shadow-sm mb-3" aria-labelledby="titulo-registro" data-permiso="entradas:gestionar"><div class="card-body">
     <h2 id="titulo-registro" class="h5">Registrar entrada</h2>
+    <button type="button" class="btn btn-primary btn-lg mb-3" data-pase-diario>Cobrar pase diario ($3.00)</button>
     <form id="form-cedula" class="d-flex flex-wrap gap-2 align-items-end" novalidate>
       <div><label class="form-label" for="cedula-entrada">Cédula del cliente</label><input class="form-control pf-entrada-cedula" id="cedula-entrada" name="cedula" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" data-mensaje-patron="La cédula tiene 10 dígitos." autocomplete="off" required></div>
       <button type="submit" class="btn btn-primary btn-lg">Consultar</button>
@@ -49,6 +50,7 @@
     <div data-lista aria-busy="false"></div>
   </div></section>
 </main>
+<section id="comprobante-pase-diario" hidden></section>
 <footer class="border-top py-4 mt-5"><p class="container text-center text-body-secondary mb-0">© <span data-anio>2026</span> Planeta Fitness</p></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script type="module" src="../controllers/admin-entradas.controller.js"></script>

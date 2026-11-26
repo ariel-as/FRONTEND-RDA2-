@@ -2129,3 +2129,15 @@ html[data-bs-theme="dark"] .pf-admin .btn-outline-danger { --bs-btn-color: #ff8a
     transition-duration: 0.01ms !important;
   }
 }
+
+#comprobante-pase-diario { display: none; }
+#comprobante-pase-diario[hidden] { display: none; }
+.pf-comprobante-tarjeta { max-width: 32rem; margin: 0 auto; font-family: inherit; }
+.pf-comprobante-tarjeta h1 { font-size: 1.5rem; font-weight: 700; }
+.pf-comprobante-tarjeta h2 { font-size: 1.1rem; margin-top: 0.5rem; }
+.pf-comprobante-tarjeta dl { display: grid; grid-template-columns: 10rem 1fr; gap: 0.35rem 1rem; margin-top: 1rem; }
+.pf-comprobante-tarjeta dt { font-weight: 700; }
+@media print {
+  body > *:not(#comprobante-pase-diario) { visibility: hidden; }
+  #comprobante-pase-diario { display: block !important; visibility: visible; position: absolute; inset: 0; width: 100%; padding: 2rem; }
+}
