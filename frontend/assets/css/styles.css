@@ -2138,6 +2138,31 @@ html[data-bs-theme="dark"] .pf-admin .btn-outline-danger { --bs-btn-color: #ff8a
 .pf-comprobante-tarjeta dl { display: grid; grid-template-columns: 10rem 1fr; gap: 0.35rem 1rem; margin-top: 1rem; }
 .pf-comprobante-tarjeta dt { font-weight: 700; }
 @media print {
-  body > *:not(#comprobante-pase-diario) { visibility: hidden; }
+  body[data-pagina="entradas-admin"] > *:not(#comprobante-pase-diario) { visibility: hidden; }
   #comprobante-pase-diario { display: block !important; visibility: visible; position: absolute; inset: 0; width: 100%; padding: 2rem; }
+}
+.pf-rutina-vista h3 { font-size: 1.25rem; font-weight: 700; }
+.pf-rutina-vista section { margin-top: 1rem; }
+.pf-rutina-vista h4 { font-size: 1rem; font-weight: 700; }
+.pf-rutina-vista ul { margin: 0.35rem 0 0 1.25rem; }
+.pf-rutina-vista li { margin-bottom: 0.25rem; }
+.pf-rutina-vista li span { display: inline-block; margin-left: 0.75rem; }
+.pf-editor-rutina .form-label { margin-bottom: 0.15rem; }
+#rutina-impresion { display: none; }
+#rutina-impresion[hidden] { display: none; }
+@media print {
+  body[data-pagina="rutinas-admin"] > *:not(#rutina-impresion),
+  body[data-pagina="mi-cuenta"] > *:not(#rutina-impresion) { visibility: hidden; }
+  #rutina-impresion { display: block !important; visibility: visible; position: absolute; inset: 0; width: 100%; padding: 2rem; color: #000000; }
+  #rutina-impresion .pf-tarjeta,
+  #rutina-impresion .pf-rutina-vista { border: 0; padding: 0; color: #000000; }
+  #rutina-impresion h1,
+  #rutina-impresion h2,
+  #rutina-impresion h3,
+  #rutina-impresion h4,
+  #rutina-impresion p,
+  #rutina-impresion dt,
+  #rutina-impresion dd,
+  #rutina-impresion li,
+  #rutina-impresion strong { color: #000000 !important; }
 }

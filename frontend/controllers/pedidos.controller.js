@@ -56,7 +56,17 @@ export async function iniciarMiCuenta(){
 
 async function cargarRutina(){
   const cont = select('[data-mi-rutina]'); if (!cont) return;
-  try { const r = await rutinasModel.miRutina(); cont.innerHTML = tarjetaRutina(r?.data ?? r); }
+  try {
+    const r = await rutinasModel.miRutina();
+    cont.innerHTML = tarjetaRutina(r?.data ?? r);
+    cont.querySelector('[data-imprimir-rutina]')?.addEventListener('click', () => {
+      const nodo = select('#rutina-impresion'); if (!nodo) return;
+      nodo.innerHTML = cont.querySelector('.pf-tarjeta')?.outerHTML || '';
+      nodo.hidden = false;
+      window.addEventListener('afterprint', () => { nodo.innerHTML = ''; nodo.hidden = true; }, { once: true });
+      window.print();
+    });
+  }
   catch (e){ cont.innerHTML = tarjetaRutina(null, e.status === 404 ? '' : (e.mensaje || 'No se pudo cargar tu rutina.')); }
   finally { cont.setAttribute('aria-busy', 'false'); }
 }

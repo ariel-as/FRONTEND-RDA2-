@@ -108,6 +108,9 @@ export const rutinasModel = {
   crear: (body) => post('/admin/rutinas', body),
   detalle: (id) => get(`/admin/rutinas/${e(id)}`),
   editar: (id, body) => put(`/admin/rutinas/${e(id)}`, body),
+  cliente: (cedula) => get(`/admin/rutinas/cliente/${e(cedula)}`),
+  plantillas: (p) => get('/admin/rutinas/plantillas', p),
+  ejercicios: (p) => get('/admin/rutinas/ejercicios', p),
   miRutina: () => get('/rutinas/mi-rutina')
 };
 export const aliadosModel = {

@@ -28,15 +28,23 @@
 </div></nav></header>
 <main id="contenido" class="container py-4">
   <h1 class="h3">Rutinas</h1>
-  <p class="text-body-secondary">Solo para clientes con un plan que incluya rutina; el servidor lo comprueba. Escribe el detalle por día para que el cliente vea su semana.</p>
+  <p class="text-body-secondary">Asigna y edita rutinas por días con plantillas y el catálogo de ejercicios. ADM puede editar cualquier rutina; ENT solo las suyas; el resto las ve en solo lectura.</p>
   <p data-mensaje class="pf-mensaje" role="status" aria-live="polite" hidden></p>
-  <div class="mb-3"><button type="button" class="btn btn-primary" data-nueva-rutina hidden>Nueva rutina</button></div>
-  <section class="card shadow-sm" id="pantalla-rutinas" aria-labelledby="titulo-pantalla-rutinas"><div class="card-body">
-    <h2 id="titulo-pantalla-rutinas" class="h5">Rutinas</h2>
-    <form id="filtros-pantalla-rutinas" class="d-flex flex-wrap gap-2 align-items-end mb-2"><div><label class="form-label" for="rutinas-clienteId">Cédula del cliente</label><input class="form-control" type="search" id="rutinas-clienteId" name="clienteId" inputmode="numeric" maxlength="10"></div><button type="submit" class="btn btn-outline-primary">Buscar</button></form>
+  <section class="card shadow-sm mb-3" aria-labelledby="titulo-cliente"><div class="card-body">
+    <h2 id="titulo-cliente" class="h5">Ficha del cliente</h2>
+    <form id="form-rutina-cliente" class="d-flex flex-wrap gap-2 align-items-end mb-3" novalidate><div><label class="form-label" for="rutina-cedula">Cédula del cliente</label><input class="form-control" type="search" id="rutina-cedula" name="clienteId" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" data-mensaje-patron="La cédula tiene 10 dígitos." autocomplete="off" required></div><button type="submit" class="btn btn-outline-primary">Buscar</button></form>
+    <div id="ficha-cliente" hidden aria-live="polite">
+      <dl class="row mb-2"><dt class="col-sm-3">Nombre</dt><dd class="col-sm-9" data-ficha-nombre></dd><dt class="col-sm-3">Nivel</dt><dd class="col-sm-9" data-ficha-nivel></dd><dt class="col-sm-3">Plan activo</dt><dd class="col-sm-9" data-ficha-plan></dd><dt class="col-sm-3">Rutina vigente</dt><dd class="col-sm-9" data-ficha-rutina></dd></dl>
+      <p class="text-body-secondary" data-ficha-motivo hidden></p>
+      <div class="d-flex flex-wrap gap-2"><button type="button" class="btn btn-primary" data-asignar-rutina hidden>Asignar rutina</button><button type="button" class="btn btn-primary" data-editar-rutina hidden>Editar rutina</button><button type="button" class="btn btn-outline-primary" data-ver-rutina hidden>Ver rutina</button></div>
+    </div>
+  </div></section>
+  <section class="card shadow-sm" id="pantalla-mis-clientes" aria-labelledby="titulo-mis-clientes"><div class="card-body">
+    <h2 id="titulo-mis-clientes" class="h5">Mis clientes con rutina</h2>
     <div data-lista aria-busy="false"></div>
   </div></section>
 </main>
+<section id="rutina-impresion" hidden></section>
 <footer class="border-top py-4 mt-5"><p class="container text-center text-body-secondary mb-0">© <span data-anio>2026</span> Planeta Fitness</p></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script type="module" src="../controllers/admin-rutinas.controller.js"></script>

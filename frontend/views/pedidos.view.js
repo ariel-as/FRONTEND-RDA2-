@@ -92,7 +92,7 @@ export function tarjetaRutina(r, error = '') {
     : `<p class="mt-2 whitespace-pre-line text-sm">${escapar(r.detalle || '')}</p>`;
   return `<article class="pf-tarjeta p-5"><h3 class="m-0 text-lg font-bold text-white">${escapar(r.objetivo || 'Rutina')}</h3>
     <p class="text-sm text-neutral-300">Nivel: ${escapar(r.nivel || r.nivelId || '-')} · Del ${escapar(fechaCorta(r.fechaInicio))} al ${escapar(fechaCorta(r.fechaFin))}${r.entrenador || r.empleado ? ` · Entrenador: ${escapar(r.entrenador?.nombre || r.entrenador || r.empleado?.nombre || r.empleado)}` : ''}</p>
-    ${semana}</article>`;
+    ${semana}</article><button type="button" class="pf-boton pf-boton-secundario mt-3" data-imprimir-rutina>Imprimir / Guardar PDF</button>`;
 }
 
 export function tarjetasNotificaciones(lista) {
