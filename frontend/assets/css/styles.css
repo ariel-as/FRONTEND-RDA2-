@@ -2173,3 +2173,13 @@ html[data-bs-theme="dark"] .pf-admin .btn-outline-danger { --bs-btn-color: #ff8a
   #rutina-impresion li,
   #rutina-impresion strong { color: #000000 !important; }
 }
+
+/* Combobox de productos en la venta de mostrador */
+.pf-combobox { position: relative; }
+.pf-combobox-lista { position: absolute; z-index: 1056; left: 0; right: 0; top: 100%; max-height: 18rem; overflow-y: auto; margin: .25rem 0 0; padding: .25rem 0; background: var(--bs-body-bg); color: var(--bs-body-color); border: 1px solid var(--bs-border-color); border-radius: .375rem; box-shadow: 0 .5rem 1rem rgba(0,0,0,.15); }
+.pf-combobox-lista [role="option"] { display: flex; justify-content: space-between; gap: .75rem; padding: .4rem .75rem; cursor: pointer; }
+.pf-combobox-lista [role="option"][aria-selected="true"] { background: var(--bs-primary); color: #fff; }
+.pf-combobox-lista [role="option"][aria-disabled="true"] { opacity: .6; cursor: not-allowed; }
+.pf-combobox-lista .pf-combobox-vacio { padding: .4rem .75rem; }
+.pf-factura-tabla td.pf-num, .pf-factura-tabla th.pf-num, .pf-factura-totales td { text-align: right; }
+.pf-factura-totales { margin-left: auto; width: auto; min-width: 16rem; }
