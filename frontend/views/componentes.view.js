@@ -46,7 +46,7 @@ export function imagenProductoHtml({ nombre = '', imagenUrl = null, respaldo = '
   return respaldo ? imagenConWebp(respaldo, atributos) : '';
 }
 // Si una imagen con respaldo no carga (evento error), se cambia una sola vez por la imagen fija.
-if (typeof document !== 'undefined') {
+if (typeof document?.addEventListener === 'function') {
   document.addEventListener('error', (evento) => {
     const img = evento.target;
     if (img?.tagName !== 'IMG' || !img.dataset.respaldo) return;
