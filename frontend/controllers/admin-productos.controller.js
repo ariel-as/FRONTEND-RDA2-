@@ -1,7 +1,8 @@
 ﻿import { adminModel } from '../models/admin.model.js';
 import { mostrarMensaje } from './validacion.controller.js';
 import { confirmarAccion } from './dialogo.controller.js';
-import { escapar } from '../views/componentes.view.js';
+import { escapar, imagenProductoHtml, urlImagenValida, rutaArchivo } from '../views/componentes.view.js';
+import { imagenProducto, rutaImagen } from '../models/presentacion.model.js';
 import { stockTexto, caducidadProductoHtml, esFefo } from '../views/lista-api.view.js';
 import { paginacionAdmin } from '../views/admin.view.js';
 
@@ -10,6 +11,8 @@ const money = (n)=> `$${Number(n||0).toFixed(2)}`;
 let pagina = 1;
 let totalPages = 1;
 let orden = 'caducidad';
+let productosListados = [];
+const respaldoProducto = (id) => rutaImagen(imagenProducto(id));
 
 export async function iniciarProductosAdmin(){
   if (document.body.dataset.pagina !== 'productos-admin') return;
@@ -18,6 +21,7 @@ export async function iniciarProductosAdmin(){
   s('#formulario-producto')?.addEventListener('submit', onSubmit);
   s('[data-nuevo-producto]')?.addEventListener('click', ()=> resetForm());
   s('[data-tabla-productos]')?.addEventListener('click', onTablaClick);
+  enlazarImagen();
   s('[data-paginacion-productos]')?.addEventListener('click', (e)=>{
     const boton = e.target.closest('[data-page]');
     if (!boton || boton.disabled) return;
@@ -70,11 +74,12 @@ async function listar(){
     if (filtro === 'caducados') lista = lista.filter((p) => diasCaducidad(p) < 0);
     if (orden === 'caducidad') lista = [...lista].sort((a, b) => String(a.proximaCaducidad || '9999').slice(0, 10).localeCompare(String(b.proximaCaducidad || '9999').slice(0, 10)) || String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es'));
     else lista = [...lista].sort((a, b) => String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es'));
+    productosListados = lista;
     const paginacion = res?.pagination || {};
     totalPages = paginacion.totalPages || 1;
     pagina = paginacion.page || pagina;
     if(tbody) tbody.innerHTML = lista.length ? lista.map(p=>{
-      return `<tr><th scope="row">${escapar(p.nombre)}<div class="small text-body-secondary">${escapar(p.id)}</div></th><td>${escapar(p.categoria?.descripcion||p.categoria||p.categoriaId||'')}</td><td>${money(p.precio)}</td><td>${money(p.precioConIva ?? p.precio)}</td><td>${stockTexto(p)}</td><td>${caducidadProductoHtml(p)}</td><td>${esFefo(p) ? 'FEFO' : 'FIFO'}</td><td>${p.estado==='A'?'A la venta':p.estado==='P'?'Pendiente':'Inactivo'}</td><td>${p.publicarWeb==='S'||p.publicarWeb===true?'Sí':'No'}</td><td class="pf-celda-acciones"><button class="btn btn-outline-primary btn-sm" data-editar="${escapar(p.id)}" aria-label="Editar producto ${escapar(p.nombre)} (${escapar(p.id)})">Editar</button> <button class="btn btn-outline-danger btn-sm" data-desactivar="${escapar(p.id)}" aria-label="Desactivar producto ${escapar(p.nombre)} (${escapar(p.id)})" ${p.estado==='I'?'disabled':''}>Desactivar</button></td></tr>`;
+      return `<tr><th scope="row"><div class="d-flex align-items-center gap-2">${imagenProductoHtml({ nombre: p.nombre, imagenUrl: p.imagenUrl, respaldo: respaldoProducto(p.id), clase: 'pf-img-mini', ancho: 40, alto: 40 })}<div>${escapar(p.nombre)}<div class="small text-body-secondary">${escapar(p.id)}</div></div></div></th><td>${escapar(p.categoria?.descripcion||p.categoria||p.categoriaId||'')}</td><td>${money(p.precio)}</td><td>${money(p.precioConIva ?? p.precio)}</td><td>${stockTexto(p)}</td><td>${caducidadProductoHtml(p)}</td><td>${esFefo(p) ? 'FEFO' : 'FIFO'}</td><td>${p.estado==='A'?'A la venta':p.estado==='P'?'Pendiente':'Inactivo'}</td><td>${p.publicarWeb==='S'||p.publicarWeb===true?'Sí':'No'}</td><td class="pf-celda-acciones"><button class="btn btn-outline-primary btn-sm" data-editar="${escapar(p.id)}" aria-label="Editar producto ${escapar(p.nombre)} (${escapar(p.id)})">Editar</button> <button class="btn btn-outline-danger btn-sm" data-desactivar="${escapar(p.id)}" aria-label="Desactivar producto ${escapar(p.nombre)} (${escapar(p.id)})" ${p.estado==='I'?'disabled':''}>Desactivar</button></td></tr>`;
     }).join('') : '<tr><td colspan="10" class="text-center text-body-secondary">No hay productos.</td></tr>';
     const cont = s('[data-paginacion-productos]');
     if (cont) cont.innerHTML = paginacionAdmin({ page: pagina, totalPages });
@@ -93,6 +98,7 @@ function resetForm(){
   if (unidad) unidad.value = 'UND';
   s('#titulo-form').textContent='Agregar producto';
   actualizarCaducidad();
+  actualizarVistaImagen();
 }
 
 async function onTablaClick(e){
@@ -103,9 +109,12 @@ async function onTablaClick(e){
       const res = await adminModel.tablaFila('producto', id);
       const p = res?.data || res;
       const f=s('#formulario-producto'); f.dataset.modo='editar'; f.dataset.idOriginal=id; f.dataset.stockOriginal=String(p?.stock ?? '');
+      const listado = productosListados.find((x) => String(x.id) === String(id));
+      f.querySelector('#imagenUrl').value = p?.imagenUrl ?? listado?.imagenUrl ?? '';
       for(const [k,v] of Object.entries(p||{})){ const el=f.querySelector(`[name="${k}"]`); if(!el) continue; if(el.type==='checkbox') el.checked = v==='S'||v===true; else el.value = v ?? ''; }
       f.querySelector('#id').readOnly=true; s('#titulo-form').textContent=`Editar ${p?.nombre||id}`;
       actualizarCaducidad();
+      actualizarVistaImagen();
       f.scrollIntoView({behavior:'smooth'});
     }catch(err){ mostrarMensaje(s('#mensaje-productos'), err.mensaje||'No se pudo cargar el producto.', 'error'); }
   }
@@ -126,7 +135,8 @@ async function onSubmit(e){
     pagaIva: val(f,'pagaIva'), stock: val(f,'stock')!==undefined?Number(val(f,'stock')):undefined,
     stockMin: val(f,'stockMin')!==undefined?Number(val(f,'stockMin')):undefined, costoUnit: val(f,'costoUnit')?Number(val(f,'costoUnit')):undefined,
     motivoAjuste: val(f,'motivoAjuste'), controlaCaducidad: val(f,'controlaCaducidad'), diasAlertaCad: val(f,'diasAlertaCad')?Number(val(f,'diasAlertaCad')):undefined,
-    fechaCaducidad: val(f,'fechaCaducidad'), publicarWeb: val(f,'publicarWeb'), estado: val(f,'estado'), descripcion: val(f,'descripcion')
+    fechaCaducidad: val(f,'fechaCaducidad'), publicarWeb: val(f,'publicarWeb'), estado: val(f,'estado'), descripcion: val(f,'descripcion'),
+    imagenUrl: urlImagenValida(f.querySelector('#imagenUrl')?.value || '') ?? (f.dataset.modo==='editar' ? null : undefined)
   };
   Object.keys(body).forEach(k=> body[k]===undefined && delete body[k]);
   const stockOriginal = f.dataset.stockOriginal;
@@ -143,3 +153,31 @@ async function onSubmit(e){
 }
 
 if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', iniciarProductosAdmin); else iniciarProductosAdmin();
+
+// Enlace de la imagen: vista previa al escribir, aviso si no carga y botón para quitarla.
+function actualizarVistaImagen(){
+  const f=s('#formulario-producto'); const vista=s('[data-vista-imagen]'); const aviso=s('[data-imagen-error]'); const campo=s('#imagenUrl');
+  if(!f||!vista||!campo) return;
+  const url = urlImagenValida(campo.value);
+  const respaldo = rutaArchivo(respaldoProducto(f.querySelector('#id')?.value || ''));
+  vista.alt = f.querySelector('#nombre')?.value || 'Vista previa de la imagen del producto';
+  campo.removeAttribute('aria-invalid');
+  aviso.hidden = true;
+  vista.dataset.probando = url || '';
+  vista.src = url || respaldo;
+  s('[data-quitar-imagen]').disabled = !campo.value;
+}
+function enlazarImagen(){
+  const vista=s('[data-vista-imagen]'); const campo=s('#imagenUrl'); if(!vista||!campo) return;
+  campo.addEventListener('input', actualizarVistaImagen);
+  s('#nombre')?.addEventListener('input', () => { vista.alt = s('#nombre').value || 'Vista previa de la imagen del producto'; });
+  vista.addEventListener('error', () => {
+    if (!vista.dataset.probando) return;
+    vista.dataset.probando = '';
+    s('[data-imagen-error]').hidden = false;
+    campo.setAttribute('aria-invalid', 'true');
+    vista.src = rutaArchivo(respaldoProducto(s('#id')?.value || ''));
+  });
+  s('[data-quitar-imagen]')?.addEventListener('click', () => { campo.value=''; actualizarVistaImagen(); campo.focus(); });
+  actualizarVistaImagen();
+}

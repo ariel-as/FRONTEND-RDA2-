@@ -4,7 +4,8 @@ import { ofrecerFactura, mostrarFactura, idsSinFactura } from './factura.control
 import { adminModel } from '../models/admin.model.js';
 import { puede } from '../models/permisos.model.js';
 import { formatearPrecio } from '../models/carrito.model.js';
-import { escapar } from '../views/componentes.view.js';
+import { escapar, imagenProductoHtml } from '../views/componentes.view.js';
+import { imagenProducto, rutaImagen } from '../models/presentacion.model.js';
 import { txt, dinero, fecha, estado, tablaHtml } from '../views/lista-api.view.js';
 import { mostrarMensaje } from './validacion.controller.js';
 import { confirmarAccion } from './dialogo.controller.js';
@@ -130,7 +131,7 @@ function pintarOpciones() {
   if (activo >= visibles.length) activo = -1;
   lista.innerHTML = visibles.length ? visibles.map((p, i) => {
     const stock = stockDe(p);
-    return `<li role="option" id="venta-op-${i}" data-indice="${i}" aria-selected="${i === activo}"${stock <= 0 ? ' aria-disabled="true"' : ''}><span>${escapar(p.nombre)}</span><span class="small text-nowrap">${formatearPrecio(precio(p))} · ${stock > 0 ? `Stock ${stock}` : 'Agotado'}</span></li>`;
+    return `<li role="option" id="venta-op-${i}" data-indice="${i}" aria-selected="${i === activo}"${stock <= 0 ? ' aria-disabled="true"' : ''}><span class="d-flex align-items-center gap-2">${imagenProductoHtml({ nombre: p.nombre, imagenUrl: p.imagenUrl, respaldo: rutaImagen(imagenProducto(p.id)), clase: 'pf-img-combo', ancho: 32, alto: 32 })}<span>${escapar(p.nombre)}</span></span><span class="small text-nowrap">${formatearPrecio(precio(p))} · ${stock > 0 ? `Stock ${stock}` : 'Agotado'}</span></li>`;
   }).join('') : `<li class="pf-combobox-vacio small" role="presentation">${productos.length ? 'Sin coincidencias.' : 'No hay productos.'}</li>`;
   if (activo >= 0) { input.setAttribute('aria-activedescendant', `venta-op-${activo}`); lista.querySelector(`#venta-op-${activo}`)?.scrollIntoView({ block: 'nearest' }); }
   else input.removeAttribute('aria-activedescendant');

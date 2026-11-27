@@ -37,6 +37,25 @@ function rutaWebp(ruta) {
   return rutaArchivo(valor.replace(/\.jpe?g$/i, '.webp'));
 }
 
+// Imagen de producto: usa imagenUrl (solo https) y, si falta o falla al cargar, la imagen fija.
+export const urlImagenValida = (url) => (typeof url === 'string' && /^https:\/\/\S+$/i.test(url.trim()) ? url.trim() : null);
+export function imagenProductoHtml({ nombre = '', imagenUrl = null, respaldo = '', clase = '', ancho = 64, alto = 64 } = {}) {
+  const atributos = `class="pf-img-producto ${clase}" alt="${escapar(nombre)}" loading="lazy" referrerpolicy="no-referrer" width="${ancho}" height="${alto}"`;
+  const url = urlImagenValida(imagenUrl);
+  if (url) return `<img ${atributos} src="${escapar(url)}" data-respaldo="${escapar(rutaArchivo(respaldo))}">`;
+  return respaldo ? imagenConWebp(respaldo, atributos) : '';
+}
+// Si una imagen con respaldo no carga (evento error), se cambia una sola vez por la imagen fija.
+if (typeof document !== 'undefined') {
+  document.addEventListener('error', (evento) => {
+    const img = evento.target;
+    if (img?.tagName !== 'IMG' || !img.dataset.respaldo) return;
+    const respaldo = img.dataset.respaldo;
+    delete img.dataset.respaldo;
+    img.src = respaldo;
+  }, true);
+}
+
 function imagenConWebp(ruta, atributos) {
   const webp = rutaWebp(ruta);
   const fuente = webp ? `<source type="image/webp" srcset="${escapar(webp)}">` : '';
@@ -55,7 +74,7 @@ export function tarjetaProducto(producto) {
     : `<button type="button" class="pf-boton pf-boton-primario w-full" disabled aria-disabled="true" aria-label="${motivo}: ${escapar(producto.nombre)}">${motivo}</button>`;
   return `
     <article class="pf-tarjeta h-full flex flex-col overflow-hidden" data-producto="${escapar(producto.id)}">
-      ${imagenConWebp(producto.imagen, `class="pf-imagen-tarjeta" alt="${escapar(producto.nombre)} de Planeta Fitness" loading="lazy" width="600" height="600"`)}
+      ${imagenProductoHtml({ nombre: producto.nombre, imagenUrl: producto.imagenUrl, respaldo: producto.imagen, clase: 'pf-imagen-tarjeta', ancho: 600, alto: 600 })}
       <div class="flex flex-col gap-3 p-5 flex-1">
         <p class="pf-etiqueta">${escapar(producto.categoria || producto.categoriaId || '')}${insignias}</p>
         <h4 class="text-lg font-bold text-white">${escapar(producto.nombre)}</h4>

@@ -35,6 +35,7 @@ export function agregarProducto(producto, cantidad = 1) {
     precio: Number(producto.precio),
     porcentajeIva: producto.porcentajeIva,
     imagen: producto.imagen || '',
+    imagenUrl: producto.imagenUrl || null,
     tipo: producto.tipo || 'producto',
     membresiaId: producto.membresiaId || (producto.tipo === 'plan' ? String(producto.id) : undefined),
     stock: producto.stock

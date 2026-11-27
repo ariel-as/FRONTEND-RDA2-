@@ -1,6 +1,6 @@
 import { carrito, formatearPrecio, esPlan, CANTIDAD_MAXIMA } from '../models/carrito.model.js';
 import { raizSitio } from '../models/storage.model.js';
-import { escapar, rutaArchivo, actualizarContadorCarrito, etiquetaIva } from './componentes.view.js';
+import { escapar, rutaArchivo, actualizarContadorCarrito, etiquetaIva, imagenProductoHtml, urlImagenValida } from './componentes.view.js';
 
 export function inyectarEstructuraPanel() {
   if (document.querySelector('[data-modal-acceso]')) return;
@@ -51,7 +51,7 @@ export function pintarPanelCarrito() {
   const vacio = document.querySelector('[data-panel-vacio-state]'); if (vacio) vacio.hidden = items.length > 0;
   lista.innerHTML = items.map((item)=>`
       <li class="pf-linea" data-linea-panel="${escapar(item.id)}">
-        ${item.imagen ? `<img src="${escapar(rutaArchivo(item.imagen))}" alt="${escapar(item.nombre)}" width="64" height="64">` : `<span class="pf-linea-sin-imagen" aria-hidden="true">${escapar((item.nombre||'?').charAt(0).toUpperCase())}</span>`}
+        ${item.imagen || urlImagenValida(item.imagenUrl) ? imagenProductoHtml({ nombre: item.nombre, imagenUrl: item.imagenUrl, respaldo: item.imagen, clase: 'pf-img-carrito', ancho: 64, alto: 64 }) : `<span class="pf-linea-sin-imagen" aria-hidden="true">${escapar((item.nombre||'?').charAt(0).toUpperCase())}</span>`}
         <div class="pf-linea-detalle"><p class="m-0 font-bold text-white">${escapar(item.nombre)}</p><p class="m-0 text-sm text-neutral-400">${escapar(esPlan(item)?'Plan mensual':'Producto')} ${formatearPrecio(item.precio)} c/u · ${etiquetaIva(item.porcentajeIva)}${esPlan(item) || !Number.isFinite(Number(item.stock)) ? '' : ` · ${Number(item.stock) <= 0 ? 'Sin stock' : `Quedan ${Number(item.stock)}`}`}</p><div class="pf-linea-precios">${controlCantidad(item)}<span class="pf-precio">${formatearPrecio(item.precio*item.cantidad)}</span></div><button type="button" class="pf-quitar" data-quitar="${escapar(item.id)}" aria-label="Eliminar del carrito: ${escapar(item.nombre)}">Eliminar del carrito</button></div>
       </li>`).join('');
   const etiqueta = document.querySelector('[data-panel-articulos]'); if (etiqueta) etiqueta.textContent = `(${articulos})`;

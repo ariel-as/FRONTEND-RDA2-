@@ -2183,3 +2183,11 @@ html[data-bs-theme="dark"] .pf-admin .btn-outline-danger { --bs-btn-color: #ff8a
 .pf-combobox-lista .pf-combobox-vacio { padding: .4rem .75rem; }
 .pf-factura-tabla td.pf-num, .pf-factura-tabla th.pf-num, .pf-factura-totales td { text-align: right; }
 .pf-factura-totales { margin-left: auto; width: auto; min-width: 16rem; }
+
+/* Imágenes de producto (imagenUrl o imagen fija): tamaño fijo y recorte */
+.pf-img-producto { object-fit: cover; flex: none; background-color: var(--bs-secondary-bg, #2a2a2a); }
+.pf-img-mini { width: 40px; height: 40px; border-radius: .25rem; }
+.pf-img-combo { width: 32px; height: 32px; border-radius: .25rem; }
+.pf-img-carrito { width: 64px; height: 64px; }
+.pf-img-vista { width: 96px; height: 96px; border-radius: .375rem; border: 1px solid var(--bs-border-color); }
+.pf-combobox-lista [role="option"] { align-items: center; }
