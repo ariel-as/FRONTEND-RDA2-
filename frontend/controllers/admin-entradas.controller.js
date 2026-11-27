@@ -52,8 +52,7 @@ async function ofrecerComprobante(pase) {
     titulo: 'Pase diario registrado',
     mensaje: 'Pase diario cobrado y entrada registrada.',
     contenido: `<div class="d-flex flex-wrap gap-2"><button type="button" class="btn btn-outline-primary" data-imprimir-pase>Imprimir comprobante</button><button type="button" class="btn btn-outline-secondary" data-generar-factura-pase${puede('facturas:generar') ? '' : ' disabled'}>Generar factura</button></div><p class="small mt-2 mb-0" data-opcion-pase role="status" aria-live="polite"></p>`,
-    textoConfirmar: 'Cerrar',
-    textoCancelar: 'Cerrar',
+    soloCerrar: true,
     alPreparar: (formulario) => {
       formulario.querySelector('[data-imprimir-pase]').addEventListener('click', () => imprimirComprobante(pase));
       formulario.querySelector('[data-generar-factura-pase]').addEventListener('click', () => generarFacturaPase(pase, formulario.querySelector('[data-opcion-pase]')));

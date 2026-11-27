@@ -440,8 +440,7 @@ async function verRutina(rutina) {
   await abrirDialogo({
     titulo: `Rutina de ${ficha?.nombre || detalle?.cliente?.nombre || rutina.clienteId || rutina.cliente || ''}`,
     contenido: `${vista}<div class="d-flex flex-wrap gap-2 mt-3"><button type="button" class="btn btn-outline-primary" data-imprimir-rutina>Imprimir / Guardar PDF</button><button type="button" class="btn btn-outline-secondary" data-enviar-rutina${correo ? '' : ' disabled'}>Enviar por correo</button></div><p class="small mt-2 mb-0" data-correo-rutina role="status" aria-live="polite"></p>`,
-    textoConfirmar: 'Cerrar',
-    textoCancelar: 'Cerrar',
+    soloCerrar: true,
     alPreparar: (formulario) => {
       formulario.querySelector('[data-imprimir-rutina]').addEventListener('click', () => imprimirRutina(vista));
       formulario.querySelector('[data-enviar-rutina]').addEventListener('click', () => {

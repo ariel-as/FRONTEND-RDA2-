@@ -35,7 +35,7 @@ export async function mostrarFactura(id) {
     ${lineas.length ? detalleHtml({ lineas }) : ''}
     <dl class="row small mb-0"><dt class="col-6">Subtotal</dt><dd class="col-6 text-end">${formatearPrecio(f.subtotalIva ?? f.subtotal ?? 0)}</dd><dt class="col-6">Descuento</dt><dd class="col-6 text-end">${formatearPrecio(f.descuento ?? 0)}</dd><dt class="col-6">IVA ${escapar(f.porcentajeIva ?? '')} %</dt><dd class="col-6 text-end">${formatearPrecio(f.valorIva ?? 0)}</dd><dt class="col-6">Total</dt><dd class="col-6 text-end fw-bold">${formatearPrecio(f.total ?? 0)}</dd></dl>
   </article>`;
-  await abrirDialogo({ titulo: `Factura ${txt(numeroFactura(f))}`, contenido: html, textoConfirmar: 'Imprimir', textoCancelar: 'Cerrar', alConfirmar: async () => { window.print(); } });
+  await abrirDialogo({ titulo: `Factura ${txt(numeroFactura(f))}`, contenido: html, textoConfirmar: 'Imprimir', alConfirmar: async () => { window.print(); } });
 }
 
 export function numeroPendiente(item) {
@@ -80,7 +80,7 @@ export async function idsSinFactura() {
 export async function elegirOperacionesSinFactura() {
   const { ventas, inscripciones } = await operacionesSinFactura();
   if (!ventas.length && !inscripciones.length) {
-    await abrirDialogo({ titulo: 'Generar factura', mensaje: 'No hay ventas ni inscripciones pendientes de factura.', textoConfirmar: 'Cerrar', textoCancelar: 'Cerrar' });
+    await abrirDialogo({ titulo: 'Generar factura', mensaje: 'No hay ventas ni inscripciones pendientes de factura.', soloCerrar: true });
     return null;
   }
   const opcion = (o, tipo) => ({ valor: String(numeroPendiente(o)), texto: `${tipo} ${numeroPendiente(o)} · ${clientePendiente(o)} · ${formatearPrecio(o.total ?? 0)}` });

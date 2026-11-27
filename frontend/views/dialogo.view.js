@@ -34,7 +34,7 @@ function campoHtml(campo, id) {
 }
 
 // Estructura del diálogo propio (reemplaza confirm() y prompt()).
-export function crearDialogoHtml({ titulo, mensaje = '', campos = [], contenido = '', textoConfirmar = 'Confirmar', textoCancelar = 'Cancelar', tono = 'primario' }) {
+export function crearDialogoHtml({ titulo, mensaje = '', campos = [], contenido = '', textoConfirmar = 'Confirmar', textoCancelar = 'Cancelar', tono = 'primario', soloCerrar = false }) {
   const id = `dialogo-pf-${++contador}`;
   const dialogo = document.createElement('dialog');
   dialogo.className = 'pf-dialogo border-0 rounded p-0';
@@ -50,8 +50,10 @@ export function crearDialogoHtml({ titulo, mensaje = '', campos = [], contenido 
     <p class="pf-mensaje" data-dialogo-region role="status" aria-live="polite" hidden></p>
     <p class="pf-dialogo-error" data-dialogo-error role="alert" hidden></p>
     <div class="d-flex flex-wrap gap-2 justify-content-end mt-3 pf-dialogo-acciones">
-      <button type="button" class="${clasesBoton('secundario')}" data-dialogo-cancelar formnovalidate>${escapar(textoCancelar)}</button>
-      <button type="submit" class="${clasesBoton(tono)}" data-dialogo-confirmar>${escapar(textoConfirmar)}</button>
+      ${soloCerrar
+        ? `<button type="button" class="${clasesBoton('primario')}" data-dialogo-cancelar formnovalidate>Cerrar</button>`
+        : `<button type="button" class="${clasesBoton('secundario')}" data-dialogo-cancelar formnovalidate>${escapar(textoCancelar)}</button>
+      <button type="submit" class="${clasesBoton(tono)}" data-dialogo-confirmar>${escapar(textoConfirmar)}</button>`}
     </div>
   </form>`;
   return dialogo;

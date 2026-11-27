@@ -38,6 +38,17 @@ export function crearLista(opciones) {
     return p;
   };
 
+  // «Detalle» (la primera) y la principal (tono btn-primary o, si no hay, la siguiente no secundaria) quedan visibles.
+  // Todas las demás van a «Más acciones»: ninguna acción se pierde.
+  function repartirAcciones(botones) {
+    const todos = botones.map((a, j) => ({ a, j }));
+    if (botones.length <= 2 && !botones.some((a) => a.secundaria)) return { visibles: todos, enMenu: [] };
+    const resto = todos.slice(1);
+    const principal = resto.find(({ a }) => !a.secundaria && a.tono === 'btn-primary') || resto.find(({ a }) => !a.secundaria);
+    const visibles = [todos[0], principal].filter(Boolean);
+    return { visibles, enMenu: todos.filter((x) => !visibles.includes(x)) };
+  }
+
   async function recargar() {
     cont.setAttribute('aria-busy', 'true');
     try {
@@ -50,15 +61,10 @@ export function crearLista(opciones) {
         columnas: opciones.columnas,
         filas,
         vacio: opciones.vacio,
-        // Con más de dos acciones se muestra la primera y el resto queda en «Más acciones».
         acciones: conAcciones ? (f, i) => {
-          const botones = accionesFila[i];
-          const boton = (a, j) => `<button type="button" class="btn btn-sm ${a.tono || 'btn-outline-primary'} me-1 mb-1" data-fila="${i}" data-accion-lista="${j}"${ariaAccion(a)}>${escapar(a.texto)}</button>`;
-          const indicePrincipal = botones.findIndex((a) => !a.secundaria);
-          const conSecundarias = botones.some((a) => a.secundaria);
-          if (botones.length <= 2 && !conSecundarias) return botones.map(boton).join('');
-          const enMenu = botones.map((a, j) => ({ a, j })).filter(({ a }) => indicePrincipal < 0 || a.secundaria);
-          const principal = indicePrincipal >= 0 ? boton(botones[indicePrincipal], indicePrincipal) : '';
+          const boton = ({ a, j }) => `<button type="button" class="btn btn-sm ${a.tono || 'btn-outline-primary'} me-1 mb-1" data-fila="${i}" data-accion-lista="${j}"${ariaAccion(a)}>${escapar(a.texto)}</button>`;
+          const { visibles, enMenu } = repartirAcciones(accionesFila[i]);
+          const principal = visibles.map(boton).join('');
           if (!enMenu.length) return principal;
           return principal + `<button type="button" class="btn btn-sm btn-outline-secondary mb-1" data-fila="${i}" data-mas-acciones aria-haspopup="dialog">Más acciones<span class="visually-hidden"> (${enMenu.length})</span></button>`;
         } : null
@@ -91,11 +97,10 @@ export function crearLista(opciones) {
   // Menú de acciones en un diálogo (no se recorta dentro de la tabla con desplazamiento).
   async function elegirAccion(i) {
     const botones = accionesFila[i] || [];
-    const indicePrincipal = botones.findIndex((a) => !a.secundaria);
-    const enMenu = botones.map((a, j) => ({ a, j })).filter(({ a }) => indicePrincipal < 0 || a.secundaria);
+    const { enMenu } = repartirAcciones(botones);
     let elegida = null;
     await abrirDialogo({
-      titulo: 'Acciones', textoConfirmar: 'Cerrar', textoCancelar: 'Volver',
+      titulo: 'Más acciones', soloCerrar: true,
       contenido: `<div class="d-grid gap-2">${enMenu.map(({ a, j }) => `<button type="button" class="btn ${a.tono || 'btn-outline-primary'}" data-elegir="${j}"${ariaAccion(a)}>${escapar(a.texto)}</button>`).join('')}</div>`,
       alPreparar: (form, dialogo) => form.querySelectorAll('[data-elegir]').forEach((b) => b.addEventListener('click', () => { elegida = botones[Number(b.dataset.elegir)]; dialogo.close(); }))
     });
@@ -120,7 +125,7 @@ export async function formulario({ titulo, mensaje, campos, contenido, textoConf
 // Muestra el detalle completo que devuelve el servidor.
 export async function verDetalle(titulo, cargar, extra = '') {
   const datos = await cargar();
-  await abrirDialogo({ titulo, contenido: `${extra}<div class="pf-detalle">${detalleHtml(datos?.data ?? datos)}</div>`, textoConfirmar: 'Cerrar', textoCancelar: 'Volver' });
+  await abrirDialogo({ titulo, contenido: `${extra}<div class="pf-detalle">${detalleHtml(datos?.data ?? datos)}</div>`, soloCerrar: true });
   return null;
 }
 

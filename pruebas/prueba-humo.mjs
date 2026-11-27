@@ -74,6 +74,7 @@ function respuestaSimulada(url, usuario, metodo = 'GET') {
   if (ruta === '/admin/resumen') return { productosActivos: 3, bajoStock: 2, porCaducar: 1, caducados: 1, rutinas: 1 };
   if (ruta === '/admin/aforo') return { personasAdentro: 12, aforoMax: 40 };
   if (ruta === '/pedidos' || ruta === '/pedidos/mis-pedidos') return { data: PEDIDOS, pagination: { page: 1, totalPages: 1, total: 3 } };
+  if (ruta === '/admin/inscripciones') return { data: [{ id: 77, plan: 'Plan mensual con acompañante', membresiaId: 'M2', titular: { nombre: 'Ana Pérez Salazar', clienteId: '1712345675' }, fechaInicio: '2026-11-26', fechaFin: '2026-12-26', ingresosTotal: null, canal: 'W', total: 45, estado: 'P' }], pagination: { page: 1, totalPages: 1, total: 1 } };
   if (ruta === '/inscripciones/mis-inscripciones') return [{ id: 5, plan: 'Plan para 2 personas', fechaInicio: '2026-11-01', fechaFin: '2026-12-01', estado: 'A', valor: 60 }];
   if (ruta === '/membresias') return [{ id: 'MI2', nombre: 'Plan para 2 personas', personas: 2, precio: 60, precioConIva: 60, porcentajeIva: 0, beneficios: [] }];
   if (ruta === '/admin/membresias') return { data: [{ id: 'MI2', nombre: 'Plan para 2 personas', personas: 2, precio: 60, precioConIva: 60, porcentajeIva: 0, beneficios: [], enLaWeb: 'Sí', estado: 'A' }, { id: 'PD', nombre: 'Pase diario', personas: 1, precio: 3, precioConIva: 3, porcentajeIva: 0, beneficios: ['Entrada diaria'], enLaWeb: 'No', estado: 'A' }], pagination: { page: 1, totalPages: 1, total: 2 } };
@@ -283,6 +284,29 @@ await visitar('ADM', 'admin/entradas.html', async (page, llamadas) => {
   await page.click('[data-dialogo-confirmar]');
   await page.waitForTimeout(300);
   return (cliente.includes('Ana Pérez') && invalido === 1 && llamadas.includes('POST /admin/entradas/pase-diario')) || `cliente=${cliente} invalido=${invalido}`;
+});
+
+await visitar('ADM', 'admin/inscripciones.html', async (page, llamadas) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.selectOption('#filtro-inscripcion-estado', 'P');
+  await page.selectOption('#filtro-inscripcion-canal', 'W');
+  await page.waitForTimeout(400);
+  const filtrado = llamadas.some((l) => l.startsWith('GET /admin/inscripciones?') && l.includes('estado=P') && l.includes('canal=W'));
+  const fila = page.locator('#pantalla-inscripciones tbody tr').first();
+  const visibles = await fila.locator('.pf-celda-acciones button').evaluateAll((b) => b.map((x) => x.firstChild.textContent.trim()));
+  const ancho = await page.evaluate(() => { const c = document.querySelector('#pantalla-inscripciones .table-responsive'); return c.scrollWidth - c.clientWidth; });
+  await fila.locator('button', { hasText: 'Cobrar' }).click();
+  await page.waitForSelector('dialog .pf-dialogo-titulo');
+  const cobro = await page.locator('dialog .pf-dialogo-titulo').innerText();
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(200);
+  await fila.locator('[data-mas-acciones]').click();
+  await page.waitForSelector('dialog [data-elegir]');
+  const menu = await page.locator('dialog [data-elegir]').allInnerTexts();
+  const pie = await page.locator('dialog .pf-dialogo-acciones button').allInnerTexts();
+  await page.keyboard.press('Escape');
+  const resto = ['Agregar acompañante', 'Quitar acompañante', 'Anular'].every((t) => menu.includes(t));
+  return (filtrado && visibles.join() === 'Detalle,Cobrar,Más acciones' && ancho <= 0 && cobro.includes('Cobrar') && resto && pie.join() === 'Cerrar') || JSON.stringify({ filtrado, visibles, ancho, cobro, menu, pie });
 });
 
 const CLAVES_RUTINA = ['clienteId', 'detalle', 'fechaFin', 'fechaInicio', 'nivelId', 'objetivo'];

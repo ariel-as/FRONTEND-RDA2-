@@ -77,10 +77,10 @@ tabla = crearLista({
     i.estado === 'P' && { texto: 'Cobrar', permiso: 'inscripciones:gestionar', tono: 'btn-primary', etiqueta: `Cobrar la inscripción ${i.id}`, ejecutar: () => dialogoConPagos({
       titulo: `Cobrar la inscripción ${i.id}`, mensaje: `${i.plan || ''} · Titular: ${i.titular?.nombre || ''}`, campos: [], totalInicial: i.total, idPagos: `pagos-ins-${i.id}`,
       alConfirmar: (_, pagos) => inscripcionesModel.cobrar(i.id, pagos), exito: 'Inscripción cobrada.' }).then(async (m) => { if (m) { const f = await ofrecerFactura({ inscripcionId: i.id }); if (f) { await actualizarSinFactura(); tabla.recargar(); } return f ? `${m} ${f}` : m; } return m; }) },
-    ['A', 'P'].includes(i.estado) && { texto: 'Agregar acompañante', permiso: 'inscripciones:gestionar', etiqueta: `Agregar acompañante a la inscripción ${i.id}`, ejecutar: () => formulario({
+    ['A', 'P'].includes(i.estado) && { texto: 'Agregar acompañante', secundaria: true, permiso: 'inscripciones:gestionar', etiqueta: `Agregar acompañante a la inscripción ${i.id}`, ejecutar: () => formulario({
       titulo: 'Agregar acompañante', campos: [{ nombre: 'clienteId', etiqueta: 'Cédula del acompañante', requerido: true, maxlength: 10 }], reglas: { clienteId: validarCedula },
       alConfirmar: (v) => inscripcionesModel.agregarIntegrante(i.id, v.clienteId.trim()), exito: 'Acompañante agregado.' }) },
-    ['A', 'P'].includes(i.estado) && { texto: 'Quitar acompañante', permiso: 'inscripciones:gestionar', etiqueta: `Quitar acompañante de la inscripción ${i.id}`, ejecutar: () => formulario({
+    ['A', 'P'].includes(i.estado) && { texto: 'Quitar acompañante', secundaria: true, permiso: 'inscripciones:gestionar', etiqueta: `Quitar acompañante de la inscripción ${i.id}`, ejecutar: () => formulario({
       titulo: 'Quitar acompañante', mensaje: 'Solo se puede quitar a un acompañante que todavía no tenga entradas.', tono: 'peligro', textoConfirmar: 'Quitar',
       campos: [{ nombre: 'cedula', etiqueta: 'Cédula del acompañante', requerido: true, maxlength: 10, patron: CEDULA, mensajePatron: 'La cédula tiene 10 dígitos.' }],
       alConfirmar: (v) => inscripcionesModel.quitarIntegrante(i.id, v.cedula.trim()), exito: 'Acompañante quitado.' }) },
@@ -88,17 +88,17 @@ tabla = crearLista({
       titulo: `Renovar la inscripción ${i.id}`, conPlan: true, totalInicial: precioPlan(i.membresiaId), idPagos: `pagos-renovar-${i.id}`,
       campos: [{ nombre: 'membresiaId', etiqueta: 'Plan', tipo: 'select', requerido: true, opciones: opcionesPlanes(), valor: i.membresiaId }, { nombre: 'promocionId', etiqueta: 'Número de promoción (opcional)', tipo: 'number', paso: '1', min: 1 }, { nombre: 'empAutorizaId', etiqueta: 'Cédula del ADM que autoriza (si la promoción lo pide)', maxlength: 10, patron: CEDULA, mensajePatron: 'La cédula tiene 10 dígitos.' }],
       alConfirmar: (v, pagos) => inscripcionesModel.renovar(i.id, { membresiaId: v.membresiaId, ...(v.promocionId ? { promocionId: Number(v.promocionId) } : {}), ...(v.empAutorizaId ? { empAutorizaId: v.empAutorizaId } : {}), pagos }), exito: 'Inscripción renovada.' }); } },
-    i.estado === 'A' && { texto: 'Suspender', permiso: 'inscripciones:gestionar', etiqueta: `Suspender la inscripción ${i.id}`, ejecutar: () => formulario({
+    i.estado === 'A' && { texto: 'Suspender', secundaria: true, permiso: 'inscripciones:gestionar', etiqueta: `Suspender la inscripción ${i.id}`, ejecutar: () => formulario({
       titulo: `Suspender la inscripción ${i.id}`, mensaje: 'Suspensión por motivo médico. Los días suspendidos se recuperan al final del plan.', textoConfirmar: 'Suspender',
       campos: [{ nombre: 'fechaInicio', etiqueta: 'Desde', tipo: 'date', requerido: true }, { nombre: 'fechaFin', etiqueta: 'Hasta', tipo: 'date', requerido: true }, { nombre: 'motivo', etiqueta: 'Motivo', tipo: 'textarea', requerido: true, maxlength: 200 }, { nombre: 'certificado', etiqueta: 'Número o detalle del certificado médico', requerido: true, maxlength: 100 }],
       validarExtra: (_, v) => (v.fechaInicio > v.fechaFin ? { campo: 'fechaFin', mensaje: 'La fecha inicial debe ser anterior a la final.' } : null),
       alConfirmar: (v) => inscripcionesModel.suspender(i.id, { fechaInicio: v.fechaInicio, fechaFin: v.fechaFin, motivo: v.motivo.trim(), certificado: v.certificado.trim() }), exito: 'Inscripción suspendida.' }) },
-    i.estado === 'S' && { texto: 'Anular suspensión', permiso: 'inscripciones:anular', tono: 'btn-outline-danger', etiqueta: `Anular suspensión de la inscripción ${i.id}`, ejecutar: () => formulario({
+    i.estado === 'S' && { texto: 'Anular suspensión', secundaria: true, permiso: 'inscripciones:anular', tono: 'btn-outline-danger', etiqueta: `Anular suspensión de la inscripción ${i.id}`, ejecutar: () => formulario({
       titulo: 'Anular suspensión', mensaje: 'El número de suspensión aparece en el detalle de la inscripción.', tono: 'peligro', textoConfirmar: 'Anular suspensión',
       campos: [{ nombre: 'suspensionId', etiqueta: 'Número de suspensión', tipo: 'number', paso: '1', min: 1, requerido: true }, { nombre: 'motivo', etiqueta: 'Motivo', tipo: 'textarea', requerido: true, maxlength: 200 }],
       alConfirmar: (v) => inscripcionesModel.anularSuspension(v.suspensionId, v.motivo.trim()), exito: 'Suspensión anulada.' }) },
     i.estado !== 'X' && sinFactura?.has(`inscripcion:${i.id}`) && { texto: 'Generar factura', permiso: 'facturas:generar', secundaria: true, etiqueta: `Generar factura de la inscripción ${i.id}`, ejecutar: async () => { const m = await ofrecerFactura({ inscripcionId: i.id }); if (m) { await actualizarSinFactura(); tabla.recargar(); } return m; } },
-    i.estado !== 'X' && { texto: 'Anular', permiso: 'inscripciones:anular', tono: 'btn-outline-danger', etiqueta: `Anular la inscripción ${i.id}`, ejecutar: () => formulario({
+    i.estado !== 'X' && { texto: 'Anular', secundaria: true, permiso: 'inscripciones:anular', tono: 'btn-outline-danger', etiqueta: `Anular la inscripción ${i.id}`, ejecutar: () => formulario({
       titulo: `Anular la inscripción ${i.id}`, mensaje: 'Esta acción no se puede deshacer.', tono: 'peligro', textoConfirmar: 'Anular inscripción',
       campos: [{ nombre: 'motivo', etiqueta: 'Motivo', tipo: 'textarea', requerido: true, maxlength: 200 }],
       alConfirmar: (v) => inscripcionesModel.anular(i.id, v.motivo.trim()), exito: 'Inscripción anulada.' }) }

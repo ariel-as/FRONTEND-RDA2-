@@ -13,6 +13,8 @@ import { construirValidador, mostrarMensaje, mostrarError, enfocarCampo, pintarR
  *   validarExtra puede devolver un texto, { campo, mensaje } o una lista de ellos.
  *   ubicarCampo(ruta, form) traduce rutas del servidor a un campo del formulario.
  *
+ * - soloCerrar: true para diálogos que solo muestran información (un único botón «Cerrar»).
+ *
  * Devuelve una promesa: null si se canceló, o { valores, resultado } si se confirmó.
  */
 export function abrirDialogo(opciones = {}) {
@@ -86,7 +88,7 @@ export function abrirDialogo(opciones = {}) {
         pintarResumenErrores(form, []);
         if (typeof opciones.alConfirmar !== 'function') { cerrar({ valores, resultado: null }); return true; }
         ocupado = true;
-        botonConfirmar.disabled = true;
+        if (botonConfirmar) botonConfirmar.disabled = true;
         form.setAttribute('aria-busy', 'true');
         mostrarMensaje(dialogo.querySelector('[data-dialogo-region]'), 'Procesando…', 'info');
         try {
@@ -103,7 +105,7 @@ export function abrirDialogo(opciones = {}) {
           if (typeof opciones.alFallar === 'function') opciones.alFallar(fallo, form, error);
           return false;
         } finally {
-          botonConfirmar.disabled = false;
+          if (botonConfirmar) botonConfirmar.disabled = false;
           form.removeAttribute('aria-busy');
         }
       }
