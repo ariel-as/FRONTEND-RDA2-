@@ -16,7 +16,6 @@ const ESTADOS = { C: 'Completada', X: 'Anulada' };
 const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Guayaquil' });
 let productos = [];
 let lineas = [];
-const centavos = (v) => Math.round(Number(v || 0) * 100);
 const stockDe = (producto) => (producto?.disponible === false ? 0 : Math.max(0, Number(producto?.stock ?? 0)));
 const cantidadEnLineas = (id) => lineas.filter((l) => String(l.producto.id) === String(id)).reduce((total, l) => total + l.cantidad, 0);
 
@@ -54,9 +53,66 @@ async function cargarProductos() {
 }
 // Precio con IVA de /admin/productos: es el que cobra el servidor.
 const precio = (p) => Number(p?.precioConIva ?? 0);
-const subtotalLinea = (l) => centavos(precio(l.producto)) * l.cantidad - centavos(l.descuento);
-const estimado = () => lineas.reduce((a, l) => a + subtotalLinea(l), 0) / 100;
-const ivaIncluido = () => lineas.reduce((a, l) => { const pct = Number(l.producto.porcentajeIva || 0); return a + Math.round(subtotalLinea(l) * pct / (100 + pct)); }, 0) / 100;
+
+// Los totales los calcula el servidor con POST /admin/ventas/cotizacion; el navegador no suma importes.
+const clienteVenta = () => document.querySelector('#venta-cliente')?.value.trim() || '9999999999';
+const itemsVenta = () => lineas.map((l) => ({ productoId: String(l.producto.id), cantidad: l.cantidad, ...(l.descuento ? { descuento: l.descuento } : {}) }));
+let cotizacion = null;
+let cotizando = false;
+let errorCotizacion = '';
+let erroresStock = {};
+let turnoCotizacion = 0;
+let esperaCotizacion = null;
+const numero = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
+function leerCotizacion(r) {
+  const d = r?.data ?? r ?? {};
+  const items = d.items || d.lineas || d.detalles || [];
+  const subtotales = {};
+  items.forEach((it, i) => {
+    const id = String(it.productoId ?? it.producto?.id ?? lineas[i]?.producto.id ?? '');
+    subtotales[id] = numero(it.totalConIva ?? it.total ?? it.subtotalConIva ?? it.subtotal);
+  });
+  return { total: numero(d.total) ?? 0, iva: numero(d.valorIva ?? d.iva ?? d.ivaIncluido ?? d.totalIva) ?? 0, subtotales };
+}
+function leerErroresStock(fallo) {
+  const mapa = {};
+  const lista = Array.isArray(fallo?.detalles) ? fallo.detalles : fallo?.detalles ? [fallo.detalles] : [];
+  lista.forEach((d) => {
+    const indice = /items\[(\d+)\]/.exec(String(d?.campo || d?.field || d?.path || ''))?.[1];
+    const id = d?.productoId ?? d?.producto?.id ?? (indice !== undefined ? lineas[Number(indice)]?.producto.id : null);
+    if (id !== null && id !== undefined) mapa[String(id)] = d?.mensaje || d?.message || fallo.mensaje;
+  });
+  if (!Object.keys(mapa).length) {
+    const linea = lineas.find((l) => String(fallo?.mensaje || '').includes(l.producto.nombre) || String(fallo?.mensaje || '').includes(String(l.producto.id)));
+    if (linea) mapa[String(linea.producto.id)] = fallo.mensaje;
+  }
+  return mapa;
+}
+async function cotizar() {
+  const turno = ++turnoCotizacion;
+  if (!lineas.length) { cotizando = false; cotizacion = null; errorCotizacion = ''; erroresStock = {}; pintarLineas(); return; }
+  try {
+    const r = await ventasModel.cotizar({ clienteId: clienteVenta(), items: itemsVenta() });
+    if (turno !== turnoCotizacion) return;
+    cotizacion = leerCotizacion(r); errorCotizacion = ''; erroresStock = {};
+  } catch (fallo) {
+    if (turno !== turnoCotizacion) return;
+    cotizacion = null;
+    erroresStock = fallo?.status === 409 ? leerErroresStock(fallo) : {};
+    errorCotizacion = Object.keys(erroresStock).length ? 'Corrige las cantidades marcadas para ver el total.' : (fallo?.mensaje || 'No se pudo calcular el total.');
+  }
+  cotizando = false;
+  pintarLineas();
+}
+// Cada cambio del carrito pinta la tabla y pide una cotización nueva tras ~300 ms.
+function cambiarCarrito() {
+  clearTimeout(esperaCotizacion);
+  turnoCotizacion += 1;
+  cotizando = lineas.length > 0;
+  cotizacion = null; errorCotizacion = ''; erroresStock = {};
+  pintarLineas();
+  if (lineas.length) esperaCotizacion = setTimeout(cotizar, 300);
+}
 
 // Combobox accesible de productos: filtra por nombre al escribir y permite abrir la lista completa.
 const comboInput = () => document.querySelector('#venta-producto');
@@ -138,35 +194,45 @@ function enlazarCombo() {
 
 function pintarLineas() {
   const cont = document.querySelector('[data-lineas]');
+  const enfocado = cont.contains(document.activeElement) ? document.activeElement.id : '';
   // La tabla y el resumen se ven desde el inicio, aunque no haya líneas.
   cont.innerHTML = tablaHtml({
     caption: 'Líneas de la venta',
-    columnas: [['Producto', (l) => `${txt(l.producto.nombre)}<span class="small d-block">${stockDe(l.producto) > 0 ? `Quedan ${stockDe(l.producto)}` : 'Sin stock'}</span>`], ['Precio con IVA', (l) => dinero(precio(l.producto))],
-      ['Cantidad', (l) => `<label class="visually-hidden" for="cant-${escapar(l.producto.id)}">Cantidad de ${escapar(l.producto.nombre)}, máximo ${stockDe(l.producto)}</label><input class="form-control form-control-sm" style="max-width:6rem" type="number" min="1" step="1" max="${stockDe(l.producto)}" id="cant-${escapar(l.producto.id)}" data-cantidad="${escapar(l.producto.id)}" value="${l.cantidad}">`],
-      ['Descuento', (l) => dinero(l.descuento)], ['Subtotal', (l) => dinero(subtotalLinea(l) / 100)]],
+    columnas: [['Producto', (l) => `${txt(l.producto.nombre)}<span class="small d-block">${stockDe(l.producto) > 0 ? `Quedan ${stockDe(l.producto)}` : 'Sin stock'}</span>${erroresStock[String(l.producto.id)] ? `<span class="small d-block text-danger fw-semibold" id="error-linea-${escapar(l.producto.id)}" data-error-linea role="alert">${escapar(erroresStock[String(l.producto.id)])}</span>` : ''}`], ['Precio con IVA', (l) => dinero(precio(l.producto))],
+      ['Cantidad', (l) => `<label class="visually-hidden" for="cant-${escapar(l.producto.id)}">Cantidad de ${escapar(l.producto.nombre)}, máximo ${stockDe(l.producto)}</label><input class="form-control form-control-sm" style="max-width:6rem" type="number" min="1" step="1" max="${stockDe(l.producto)}" id="cant-${escapar(l.producto.id)}"${erroresStock[String(l.producto.id)] ? ` aria-invalid="true" aria-describedby="error-linea-${escapar(l.producto.id)}"` : ''} data-cantidad="${escapar(l.producto.id)}" value="${l.cantidad}">`],
+      ['Descuento', (l) => dinero(l.descuento)], ['Subtotal', (l) => (cotizacion && cotizacion.subtotales[String(l.producto.id)] != null ? dinero(cotizacion.subtotales[String(l.producto.id)]) : '<span class="text-body-secondary">—</span>')]],
     filas: lineas,
     acciones: (l) => `<button type="button" class="btn btn-sm btn-outline-danger" data-quitar-linea="${escapar(l.producto.id)}" aria-label="Quitar ${escapar(l.producto.nombre)}">Quitar</button>`
-  }) + `<div class="text-end"><p class="fw-bold fs-5 mb-0" data-total-venta>Total: ${formatearPrecio(estimado())}</p><p class="small text-body-secondary mb-0" data-iva-venta>Incluye IVA ${formatearPrecio(ivaIncluido())}</p></div>`;
-  document.querySelector('[data-cobrar-venta]').disabled = !lineas.length;
+  }) + `<div class="text-end" aria-live="polite" aria-busy="${cotizando}">${!lineas.length
+    ? `<p class="fw-bold fs-5 mb-0" data-total-venta>Total: ${formatearPrecio(0)}</p>`
+    : cotizando
+      ? '<p class="fw-bold fs-5 mb-0" data-total-venta>Total: <span class="fw-normal" data-calculando>Calculando…</span></p>'
+      : cotizacion
+        ? `<p class="fw-bold fs-5 mb-0" data-total-venta>Total: ${formatearPrecio(cotizacion.total)}</p><p class="small text-body-secondary mb-0" data-iva-venta>Incluye IVA ${formatearPrecio(cotizacion.iva)}</p>`
+        : `<p class="fw-bold fs-5 mb-0" data-total-venta>Total: —</p><p class="small text-danger mb-0" data-error-cotizacion>${escapar(errorCotizacion)}</p>`}</div>`;
+  if (enfocado) document.getElementById(enfocado)?.focus();
+  document.querySelector('[data-cobrar-venta]').disabled = !lineas.length || cotizando || !cotizacion;
   actualizarStockFormulario();
 }
 
 async function cobrar() {
-  const cliente = document.querySelector('#venta-cliente').value.trim() || '9999999999';
+  if (!cotizacion || cotizando) return;
+  const cliente = clienteVenta();
+  const total = cotizacion.total;
   let pagos = null;
   const venta = await formulario({
     titulo: 'Cobrar venta', textoConfirmar: 'Cobrar',
-    mensaje: `Cliente: ${cliente}. ${lineas.length} línea(s). Total ${formatearPrecio(estimado())} (incluye IVA ${formatearPrecio(ivaIncluido())}).`,
+    mensaje: `Cliente: ${cliente}. ${lineas.length} línea(s). Total ${formatearPrecio(total)} (incluye IVA ${formatearPrecio(cotizacion.iva)}).`,
     contenido: '<div data-contenedor-pagos></div>',
-    alPreparar: (f) => { pagos = crearPagos(f.querySelector('[data-contenedor-pagos]'), { total: estimado(), id: 'pagos-venta' }); },
+    alPreparar: (f) => { pagos = crearPagos(f.querySelector('[data-contenedor-pagos]'), { total, id: 'pagos-venta' }); },
     validarExtra: () => (pagos.validar() ? null : 'Revisa la forma de pago: los montos deben sumar el total.'),
     alFallar: (fallo, _, nodo) => pagos?.ajustarDesdeError(fallo, nodo),
-    alConfirmar: () => ventasModel.crear({ clienteId: cliente, items: lineas.map((l) => ({ productoId: String(l.producto.id), cantidad: l.cantidad, ...(l.descuento ? { descuento: l.descuento } : {}) })), pagos: pagos.obtener() }),
+    alConfirmar: () => ventasModel.crear({ clienteId: cliente, items: itemsVenta(), pagos: pagos.obtener() }),
     exito: (r) => r?.data ?? r
   });
   if (!venta) return;
   lineas = [];
-  pintarLineas();
+  cambiarCarrito();
   mostrarMensaje(region, `Venta ${venta.id ?? ''} registrada por ${formatearPrecio(venta.total)}.`, 'exito');
   lista?.recargar();
   cargarProductos();
@@ -210,6 +276,7 @@ if (formLinea && puede('ventas:crear') && document.body.dataset.sinAcceso !== 't
   const nombreCliente = document.querySelector('[data-nombre-cliente]');
   formLinea.cliente.addEventListener('change', async () => {
     const ced = formLinea.cliente.value.trim();
+    if (lineas.length) cambiarCarrito();
     if (!ced || ced === '9999999999') { nombreCliente.textContent = 'CONSUMIDOR FINAL'; return; }
     try {
       const r = await clientesModel.listar({ buscar: ced, limit: 1 });
@@ -234,7 +301,7 @@ if (formLinea && puede('ventas:crear') && document.body.dataset.sinAcceso !== 't
     }
     const existente = lineas.find((l) => String(l.producto.id) === String(producto.id));
     if (existente) { existente.cantidad = enLinea + cantidad; existente.descuento += descuento; } else lineas.push({ producto, cantidad, descuento });
-    pintarLineas();
+    cambiarCarrito();
     formLinea.cantidad.value = '1'; formLinea.descuento.value = '0'; comboInput().focus();
   });
   document.querySelector('[data-lineas]').addEventListener('change', (e) => {
@@ -245,12 +312,12 @@ if (formLinea && puede('ventas:crear') && document.body.dataset.sinAcceso !== 't
       if (solicitada > stock) mostrarMensaje(region, `Solo quedan ${stock} unidades de ${l.producto.nombre}.`, 'error');
       l.cantidad = Math.min(stock, solicitada);
       e.target.value = String(l.cantidad);
-      pintarLineas();
+      cambiarCarrito();
     }
   });
   document.querySelector('[data-lineas]').addEventListener('click', (e) => {
     const id = e.target.closest('[data-quitar-linea]')?.dataset.quitarLinea;
-    if (id) { lineas = lineas.filter((l) => String(l.producto.id) !== id); pintarLineas(); comboInput().focus(); }
+    if (id) { lineas = lineas.filter((l) => String(l.producto.id) !== id); cambiarCarrito(); comboInput().focus(); }
   });
   document.querySelector('[data-cobrar-venta]').addEventListener('click', () => cobrar().catch((err) => mostrarMensaje(region, err.mensaje || 'No se pudo cobrar.', 'error')));
 }

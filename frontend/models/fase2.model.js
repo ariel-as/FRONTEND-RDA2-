@@ -71,6 +71,7 @@ export const entradasModel = {
 };
 export const ventasModel = {
   crear: (body) => post('/admin/ventas', body),
+  cotizar: (body) => post('/admin/ventas/cotizacion', body),
   listar: (p) => get('/admin/ventas', p),
   detalle: (id) => get(`/admin/ventas/${e(id)}`),
   anular: (id, motivo) => patch(`/admin/ventas/${e(id)}/anular`, { motivo })
